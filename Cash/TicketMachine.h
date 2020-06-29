@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <functional>
 #include "MouseCtl.h"
 #include "CardServer.h"
 
@@ -35,6 +36,7 @@ public:
 	bool Init(SharedMouse mouse);
 
 private:
+	bool InitDraw(void);
 	bool PayCash(void);
 	void Clear(void);
 	void DrawBtn(void);
@@ -42,13 +44,14 @@ private:
 	TicketMachine();
 	~TicketMachine();
 
-	std::map<std::string, int> _images;		// ‰æ‘œî•ñŠi”[
+	std::map<std::string, int> _images;						// ‰æ‘œî•ñŠi”[
+	std::map<PayType, std::function<void(void)>> _draw;
 
-	const int screen_sizeX;					// ½¸Ø°İ»²½ŞX
-	const int screen_sizeY;					// ½¸Ø°İ»²½ŞY
-	const int money_sizeX;					// money²Ò°¼ŞX
-	const int money_sizeY;					// money²Ò°¼ŞY
-	const int font_size;					// Ì«İÄ»²½Ş
+	const int screen_sizeX;									// ½¸Ø°İ»²½ŞX
+	const int screen_sizeY;									// ½¸Ø°İ»²½ŞY
+	const int money_sizeX;									// money²Ò°¼ŞX
+	const int money_sizeY;									// money²Ò°¼ŞY
+	const int font_size;									// Ì«İÄ»²½Ş
 	const int comment_offset;
 	const int draw_offsetX;
 	const int draw_offsetY;
@@ -57,11 +60,11 @@ private:
 	const int pay_btn_sizeX;
 	const int pay_btn_sizeY;
 
-	std::vector<int> _moneyType;			// x•¥‚¢è–@
-	SharedMouse _mouse;						// Ï³½‚Ìî•ñ
+	std::vector<int> _moneyType;							// x•¥‚¢è–@
+	SharedMouse _mouse;										// Ï³½‚Ìî•ñ
 
-	std::string _btnKey;					// •\¦‚·‚éÎŞÀİ‚Ö‚Ì·°
-	Vector2 _btnPos;						// ÎŞÀİ‚ğ•\¦‚·‚éÀ•W
+	std::string _btnKey;									// •\¦‚·‚éÎŞÀİ‚Ö‚Ì·°
+	Vector2 _btnPos;										// ÎŞÀİ‚ğ•\¦‚·‚éÀ•W
 
 	PayType _payType;
 	MapInt _cashData;

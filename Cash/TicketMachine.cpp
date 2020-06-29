@@ -98,6 +98,8 @@ void TicketMachine::Draw(void)
 	int moneyLine = 0;
 	int totalMoney = 0;
 
+	_draw[_payType]();
+
 	// 切符の値段表示
 	DrawString(
 		screen_sizeX / 2 - font_size,
@@ -261,6 +263,110 @@ VecInt& TicketMachine::GetMoneyType(void)
 	return _moneyType;
 }
 
+bool TicketMachine::InitDraw(void)
+{
+	_draw.try_emplace(PayType::MAX, []() {
+		TRACE("functionのDraw:MAX\n"); 
+		});
+	_draw.try_emplace(PayType::CARD, []() {TRACE("functionのDraw:CARD\n"); });
+	_draw.try_emplace(PayType::CASH, [&]() {
+		TRACE("functionのDraw:CASH\n"); 
+		int moneyLine = 0;
+		int totalMoney = 0;
+		DrawGraph(0, 0, _images["act_money"], true);
+		if (_paySuccess)
+		{
+			DrawString(0, comment_offset + GetFontSize() / 2,
+				"決済完了\nお釣りを受け取る際は受け取りボタンを押してください。",
+				0xffffff);
+			DrawString(draw_offsetX, draw_offsetY, "投入金額", 0xffffff);
+			DrawString(draw_offsetX, draw_offsetY, "　　　　　　　枚数", 0xffffff);
+
+			for (auto moneyData : _cashData)
+			{
+				DrawFormatString(
+					draw_offsetX + GetFontSize(),
+					(draw_offsetY + GetFontSize()) + moneyLine * GetFontSize(),
+					0xffffff, "%d円", moneyData.first
+					);
+				DrawFormatString(
+					draw_offsetX + GetFontSize(),
+					(draw_offsetY + GetFontSize()) + moneyLine * GetFontSize(),
+					0xffffff, "        %d枚", moneyData.second
+					);
+				moneyLine++;
+				totalMoney += (moneyData.first * moneyData.second);
+			}
+
+			DrawFormatString(
+				draw_offsetX,
+				(draw_offsetY + GetFontSize() * 2) + moneyLine * GetFontSize(),
+				0xffffff, "合計金額%d円", totalMoney
+				);
+
+			DrawString(draw_offsetX * 2, draw_offsetY, "釣銭", 0xffffff);
+			DrawString(draw_offsetX * 2, draw_offsetY, "　　　　　　　枚数", 0xffffff);
+
+			int changeLine = 0;
+			for (auto moneyData : _cashDataChange)
+			{
+				DrawFormatString(
+					draw_offsetX * 2,
+					(draw_offsetY + GetFontSize()) + changeLine * GetFontSize(),
+					0xffffff, "%5d円", moneyData.first
+					);
+				DrawFormatString(
+					draw_offsetX * 2,
+					(draw_offsetY + GetFontSize()) + changeLine * GetFontSize(),
+					0xffffff, "        %9d枚", moneyData.second
+					);
+				changeLine++;
+				totalMoney += (moneyData.first * moneyData.second);
+			}
+		}
+		else
+		{
+			DrawString(0, comment_offset + GetFontSize() / 2,
+				"左の枠内の現金を選択しクリックして入金してください。\n入金が完了したら決済ボタンを押してください。",
+				0xffffff);
+			DrawString(draw_offsetX, draw_offsetY, "投入金額", 0xffffff);
+			DrawString(draw_offsetX, draw_offsetY, "　　　　　　　枚数", 0xffffff);
+
+			for (auto moneyData : _cashData)
+			{
+				DrawFormatString(
+					draw_offsetX + GetFontSize(),
+					(draw_offsetY + GetFontSize()) + moneyLine * GetFontSize(),
+					0xffffff, "%d円", moneyData.first
+					);
+				DrawFormatString(
+					draw_offsetX + GetFontSize(),
+					(draw_offsetY + GetFontSize()) + moneyLine * GetFontSize(),
+					0xffffff, "        %d枚", moneyData.second
+					);
+				moneyLine++;
+				totalMoney += (moneyData.first * moneyData.second);
+			}
+
+			DrawFormatString(
+				draw_offsetX,
+				(draw_offsetY + GetFontSize() * 2) + moneyLine * GetFontSize(),
+				0xffffff, "合計金額%d円", totalMoney
+				);
+
+			if (totalMoney < price_cash)
+			{
+				DrawString(
+					draw_offsetX,
+					(draw_offsetY + GetFontSize() * 3) + moneyLine * GetFontSize(),
+					"金額が足りません", 0xff0000, true
+					);
+			}
+		}});
+
+	return true;
+}
+
 bool TicketMachine::PayCash(void)
 {
 	int totalCash = 0;
@@ -398,6 +504,8 @@ bool TicketMachine::Init(SharedMouse mouse)
 	(screen_sizeX - money_sizeX * 2) - pay_btn_sizeX,
 	static_cast<int>(money_sizeY * (_moneyType.size()))
 	};
+
+	InitDraw();
 
 	return true;
 }
