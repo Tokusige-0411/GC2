@@ -51,7 +51,7 @@ private:
 
 	std::map<std::string, int> _images;						// ‰æ‘œî•ñŠi”[
 	std::map<PayType, std::function<void(void)>> _draw;
-	std::map < PayType, std::function<bool(TicketMachine&, void)>> _pay;
+	std::map < PayType, bool(TicketMachine::*)()> _pay;
 
 	const int screen_sizeX;									// ½¸Ø°İ»²½ŞX
 	const int screen_sizeY;									// ½¸Ø°İ»²½ŞY

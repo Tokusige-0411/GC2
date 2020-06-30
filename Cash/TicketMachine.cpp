@@ -60,7 +60,7 @@ void TicketMachine::Run(void)
 			//	_payType = PayType::MAX;
 			//	break;
 			//}
-			if (_pay[_payType]())
+			if ((this->*_pay[_payType])())
 			{
 				_paySuccess = true;
 			}
@@ -70,23 +70,28 @@ void TicketMachine::Run(void)
 
 bool TicketMachine::InsertCash(int cash)
 {
-	if (_payType == PayType::MAX)
+	//if (_paySuccess)
+	//{
+	//	return false;
+	//}
+
+	//if (_payType == PayType::MAX)
+	//{
+	//	_payType = PayType::CASH;
+	//}
+
+	//if (_payType != PayType::CASH)
+	//{
+	//	return false;
+	//}
+	if (!_paySuccess && _payType != PayType::CARD)
 	{
 		_payType = PayType::CASH;
+		_cashData.try_emplace(cash, 0);
+		_cashData[cash]++;
+		return true;
 	}
-
-	if (_payType != PayType::CASH)
-	{
-		return false;
-	}
-	if (_paySuccess)
-	{
-		return false;
-	}
-
-	_cashData.try_emplace(cash, 0);
-	_cashData[cash]++;
-	return true;
+	return false;
 }
 
 bool TicketMachine::InsertCard(void)
@@ -282,9 +287,9 @@ bool TicketMachine::InitDraw(void)
 
 bool TicketMachine::InitPay(void)
 {
-	_pay.try_emplace(PayType::MAX, TicketMachine::PayMax());
-	_pay.try_emplace(PayType::CARD, TicketMachine::PayCard());
-	_pay.try_emplace(PayType::CASH, TicketMachine::PayCash());
+	_pay.try_emplace(PayType::MAX, &TicketMachine::PayMax);
+	_pay.try_emplace(PayType::CARD, &TicketMachine::PayCard);
+	_pay.try_emplace(PayType::CASH, &TicketMachine::PayCash);
 	return true;
 }
 
