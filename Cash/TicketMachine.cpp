@@ -37,27 +37,32 @@ void TicketMachine::Run(void)
 		else
 		{
 			// 決済処理の実行
-			switch (_payType)
+
+			//switch (_payType)
+			//{
+			//case PayType::CASH:
+			//	if (PayCash())
+			//	{
+			//		_paySuccess = true;
+			//	}
+			//	break;
+			//case PayType::CARD:
+			//	if (lpCardServer.Payment(price_card))
+			//	{
+			//		_cardData = lpCardServer.GetCardState();
+			//		_paySuccess = true;
+			//	}
+			//	break;
+			//case PayType::MAX:
+			//	break;
+			//default:
+			//	TRACE("エラーな支払い方\n");
+			//	_payType = PayType::MAX;
+			//	break;
+			//}
+			if (_pay[_payType]())
 			{
-			case PayType::CASH:
-				if (PayCash())
-				{
-					_paySuccess = true;
-				}
-				break;
-			case PayType::CARD:
-				if (lpCardServer.Payment(price_card))
-				{
-					_cardData = lpCardServer.GetCardState();
-					_paySuccess = true;
-				}
-				break;
-			case PayType::MAX:
-				break;
-			default:
-				TRACE("エラーな支払い方\n");
-				_payType = PayType::MAX;
-				break;
+				_paySuccess = true;
 			}
 		}
 	}
@@ -100,9 +105,6 @@ bool TicketMachine::InsertCard(void)
 
 void TicketMachine::Draw(void)
 {
-	//int moneyLine = 0;
-	//int totalMoney = 0;
-
 	// 切符の値段表示
 	DrawString(
 		screen_sizeX / 2 - font_size,
@@ -111,7 +113,14 @@ void TicketMachine::Draw(void)
 		0xffffff
 	);
 
-	_draw[_payType]();
+	if (_draw.find(_payType) != _draw.end())
+	{
+		_draw[_payType]();
+	}
+	//if (_draw.count(_payType))
+	//{
+	//	_draw[_payType]();
+	//}
 
 	DrawBtn();
 }
@@ -271,6 +280,14 @@ bool TicketMachine::InitDraw(void)
 	return true;
 }
 
+bool TicketMachine::InitPay(void)
+{
+	_pay.try_emplace(PayType::MAX, TicketMachine::PayMax());
+	_pay.try_emplace(PayType::CARD, TicketMachine::PayCard());
+	_pay.try_emplace(PayType::CASH, TicketMachine::PayCash());
+	return true;
+}
+
 bool TicketMachine::PayCash(void)
 {
 	int totalCash = 0;
@@ -362,6 +379,21 @@ bool TicketMachine::PayCash(void)
 	return false;
 }
 
+bool TicketMachine::PayCard(void)
+{
+	if (lpCardServer.Payment(price_card))
+	{
+		_cardData = lpCardServer.GetCardState();
+		return true;
+	}
+	return false;
+}
+
+bool TicketMachine::PayMax(void)
+{
+	return false;
+}
+
 void TicketMachine::Clear(void)
 {
 	_btnKey = "btn";
@@ -410,6 +442,7 @@ bool TicketMachine::Init(SharedMouse mouse)
 	};
 
 	InitDraw();
+	InitPay();
 
 	return true;
 }

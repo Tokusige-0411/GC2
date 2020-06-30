@@ -37,7 +37,12 @@ public:
 
 private:
 	bool InitDraw(void);
+	bool InitPay(void);
+
 	bool PayCash(void);
+	bool PayCard(void);
+	bool PayMax(void);
+
 	void Clear(void);
 	void DrawBtn(void);
 
@@ -46,19 +51,20 @@ private:
 
 	std::map<std::string, int> _images;						// ‰æ‘œî•ñŠi”[
 	std::map<PayType, std::function<void(void)>> _draw;
+	std::map < PayType, std::function<bool(TicketMachine&, void)>> _pay;
 
 	const int screen_sizeX;									// ½¸Ø°İ»²½ŞX
 	const int screen_sizeY;									// ½¸Ø°İ»²½ŞY
 	const int money_sizeX;									// money²Ò°¼ŞX
 	const int money_sizeY;									// money²Ò°¼ŞY
 	const int font_size;									// Ì«İÄ»²½Ş
-	const int comment_offset;
-	const int draw_offsetX;
-	const int draw_offsetY;
-	const int price_cash;
-	const int price_card;
-	const int pay_btn_sizeX;
-	const int pay_btn_sizeY;
+	const int comment_offset;								// ºÒİÄ•”•ª‚ÌµÌ¾¯Ä
+	const int draw_offsetX;									// •¶š•`‰æµÌ¾¯ÄX
+	const int draw_offsetY;									// •¶š•`‰æµÌ¾¯ÄY
+	const int price_cash;									// Œ»‹àx•¥‚¢’l’i
+	const int price_card;									// ¶°ÄŞx•¥‚¢’l’i
+	const int pay_btn_sizeX;								// 
+	const int pay_btn_sizeY;								// 
 
 	std::vector<int> _moneyType;							// x•¥‚¢è–@
 	SharedMouse _mouse;										// Ï³½‚Ìî•ñ
