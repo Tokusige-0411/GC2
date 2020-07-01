@@ -51,7 +51,9 @@ private:
 
 	std::map<std::string, int> _images;						// ‰æ‘œî•ñŠi”[
 	std::map<PayType, std::function<void(void)>> _draw;
-	std::map < PayType, bool(TicketMachine::*)()> _pay;
+	std::map<PayType, bool(TicketMachine::*)()> _pay;
+
+	std::map<PayType, std::function<void()>> _insert;
 
 	const int screen_sizeX;									// ½¸Ø°İ»²½ŞX
 	const int screen_sizeY;									// ½¸Ø°İ»²½ŞY
@@ -63,8 +65,8 @@ private:
 	const int draw_offsetY;									// •¶š•`‰æµÌ¾¯ÄY
 	const int price_cash;									// Œ»‹àx•¥‚¢’l’i
 	const int price_card;									// ¶°ÄŞx•¥‚¢’l’i
-	const int pay_btn_sizeX;								// 
-	const int pay_btn_sizeY;								// 
+	const int pay_btn_sizeX;								// ÎŞÀİ»²½ŞX
+	const int pay_btn_sizeY;								// ÎŞÀİ»²½ŞY
 
 	std::vector<int> _moneyType;							// x•¥‚¢è–@
 	SharedMouse _mouse;										// Ï³½‚Ìî•ñ
@@ -72,10 +74,10 @@ private:
 	std::string _btnKey;									// •\¦‚·‚éÎŞÀİ‚Ö‚Ì·°
 	Vector2 _btnPos;										// ÎŞÀİ‚ğ•\¦‚·‚éÀ•W
 
-	PayType _payType;
-	MapInt _cashData;
-	MapInt _cashDataChange;
-	PairInt _cardData;
-	bool _paySuccess;
+	PayType _payType;										// x•¥‚¢•û–@
+	MapInt _cashData;										// “ü‹àÃŞ°À
+	MapInt _cashDataChange;									// ‚¨‚Â‚è‚ÌÃŞ°À
+	PairInt _cardData;										// <c‚, ˆø‹Šz(¶°ÄŞ‚Ìê‡‚ÌÁ¹¯Ä‚Ì’l’i)>
+	bool _paySuccess;										// x•¥‚¢‚ª¬Œ÷‚µ‚½‚©‚Ç‚¤‚©
 };
 

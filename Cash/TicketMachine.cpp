@@ -3,6 +3,9 @@
 #include "_debug/_DebugConOut.h"
 #include "TicketMachine.h"
 #include "Myself.h"
+#include "InsertMax.h"
+#include "InsertCash.h"
+#include "InsertCard.h"
 
 void TicketMachine::Run(void)
 {
