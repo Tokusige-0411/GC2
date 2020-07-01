@@ -40,40 +40,32 @@ bool Myself::Run(void)
 		{
 			TRACE("クリックした\n");
 			const VecInt& _moneyType = lpTicketMachine.GetMoneyType();
-			//int thisMoney = _mouse->GetPos().y / money_sizeY;
 			Vector2 pos = _mouse->GetPos();
 			if ((pos.x < money_sizeX))
 			{
+				int type = _moneyType[pos.y / money_sizeY];
 				if ((pos.y < static_cast<int>(_moneyType.size()) * money_sizeY))
 				{
 					TRACE("お金の画像をクリック\n");
-					int type = _moneyType[pos.y / money_sizeY];
 					if (_cash[type] > 0)
 					{
-						if (lpTicketMachine.InsertCash(type))
-						{
-							_cash[type]--;
-						}
+						//if (lpTicketMachine.InsertCash(type))
+						//{
+						//	_cash[type]--;
+						//}
+						lpTicketMachine.Insert(type);
+						_cash[type]--;
 					}
 				}
 				else
 				{
 					if (pos.y < static_cast<int>(_moneyType.size() + 1) * money_sizeY)
 					{
-						lpTicketMachine.InsertCard();
+						//lpTicketMachine.InsertCard();
+						lpTicketMachine.Insert(type);
 					}
 				}
 			}
-			//if ((_mouse->GetPos().x < money_sizeX) &&
-			//	(_mouse->GetPos().y < static_cast<int>(money_sizeY * _moneyType.size()))
-			//	)
-			//{
-			//	TRACE("お金の画像をクリック");
-			//	if (_cash[_moneyType[_mouse->GetPos().y / money_sizeY]] > 0)
-			//	{
-			//		_cash[_moneyType[_mouse->GetPos().y / money_sizeY]] -= 1;
-			//	}
-			//}
 		}
 
 		lpTicketMachine.Run();

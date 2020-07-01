@@ -160,6 +160,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="MouseCtl.h" />
     <ClInclude Include="Myself.h" />
+    <ClInclude Include="PayType.h" />
     <ClInclude Include="TicketMachine.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="_debug\_DebugConOut.h" />

@@ -6,19 +6,13 @@
 #include <functional>
 #include "MouseCtl.h"
 #include "CardServer.h"
+#include "PayType.h"
 
 using MapInt = std::map<int, int>;
 using VecInt = std::vector<int>;
 using SharedMouse = std::shared_ptr<MouseCtl>;
 
 #define lpTicketMachine TicketMachine::GetInstance()
-
-enum class PayType
-{
-	CASH,		// 現金
-	CARD,		// ICｶｰﾄﾞ
-	MAX,		// 未設定
-};
 
 class TicketMachine
 {
@@ -31,6 +25,7 @@ public:
 	void Run(void);							// 毎ﾌﾚｰﾑ実行
 	bool InsertCash(int cash);				// 入金受付処理
 	bool InsertCard(void);
+	void Insert(int cash);
 	void Draw(void);
 	VecInt& GetMoneyType(void);
 	bool Init(SharedMouse mouse);
@@ -53,7 +48,7 @@ private:
 	std::map<PayType, std::function<void(void)>> _draw;
 	std::map<PayType, bool(TicketMachine::*)()> _pay;
 
-	std::map<PayType, std::function<void()>> _insert;
+	std::map<PayType, std::function<void(MapInt&, PairInt&, int)>> _insert;
 
 	const int screen_sizeX;									// ｽｸﾘｰﾝｻｲｽﾞX
 	const int screen_sizeY;									// ｽｸﾘｰﾝｻｲｽﾞY
@@ -68,7 +63,7 @@ private:
 	const int pay_btn_sizeX;								// ﾎﾞﾀﾝｻｲｽﾞX
 	const int pay_btn_sizeY;								// ﾎﾞﾀﾝｻｲｽﾞY
 
-	std::vector<int> _moneyType;							// 支払い手法
+	std::vector<int> _moneyType;							// お金の種類
 	SharedMouse _mouse;										// ﾏｳｽの情報
 
 	std::string _btnKey;									// 表示するﾎﾞﾀﾝへのｷｰ

@@ -1,7 +1,7 @@
 #pragma once
 #include"TicketMachine.h"
 
-struct InsertCaed
+struct InsertCard
 {
 	void operator()(MapInt& cashData, PairInt& cardData, int cash)
 	{
