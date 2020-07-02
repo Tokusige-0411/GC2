@@ -8,25 +8,30 @@ void TicketMachine::Run(void)
 {
 	Vector2 pos = _mouse->GetPos();
 
-	auto chackBtn = [&]() {
-		if ((pos.x >= _btnPos.x) && (pos.x <= _btnPos.x + pay_btn_sizeX) &&
-			(pos.y >= _btnPos.y) && (pos.y <= _btnPos.y + pay_btn_sizeY))
+	auto chackBtn = [&](Vector2& btnPos) {
+		if ((pos.x >= btnPos.x) && (pos.x <= btnPos.x + pay_btn_sizeX) &&
+			(pos.y >= btnPos.y) && (pos.y <= btnPos.y + pay_btn_sizeY))
 		{
 			return true;
 		}
 		return false;
 	};
 
-	if ((_mouse->GetClicking()) && (chackBtn()))
-	{
-		_btnKey = "btn_push";
-	}
-	else
-	{
-		_btnKey = "btn";
-	}
+	auto btnState = [&](std::string& btnKey) {
+		if ((_mouse->GetClicking()) && (chackBtn(_btnPos)))
+		{
+			btnKey = "btn_push";
+		}
+		else
+		{
+			btnKey = "btn";
+		}
+	};
 
-	if ((_mouse->GetClickTrg()) && (chackBtn()))
+	btnState(_btnKey);
+	btnState(_calBtnKey);
+
+	if ((_mouse->GetClickTrg()) && (chackBtn(_btnPos)))
 	{
 		if (_paySuccess)
 		{
@@ -61,15 +66,27 @@ void TicketMachine::Run(void)
 			}
 		}
 	}
+
+	if ((_mouse->GetClickTrg()) && (chackBtn(_calBtnPos)))
+	{
+		if (!_paySuccess)
+		{
+			lpMyself.MergeChange(_cashData);
+			Clear();
+		}
+	}
 }
 
 bool TicketMachine::InsertCash(int cash)
 {
+	if (_paySuccess)
+	{
+		return false;
+	}
 	if (_payType == PayType::MAX)
 	{
 		_payType = PayType::CASH;
 	}
-
 	if (_payType != PayType::CASH)
 	{
 		return false;
@@ -358,7 +375,9 @@ void TicketMachine::Clear(void)
 	_calBtnKey = "btn";
 	_paySuccess = false;
 	_payType = PayType::MAX;
+	_cashData.clear();
 	_cashDataChange.clear();
+	_cardData = { 0, 0 };
 }
 
 void TicketMachine::DrawBtn(void)
