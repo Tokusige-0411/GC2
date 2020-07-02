@@ -10,7 +10,7 @@
 void TicketMachine::Run(void)
 {
 	Vector2 pos = _mouse->GetPos();
-
+	
 	auto chackBtn = [&]() {
 		if ((pos.x >= _btnPos.x) && (pos.x <= _btnPos.x + pay_btn_sizeX) &&
 			(pos.y >= _btnPos.y) && (pos.y <= _btnPos.y + pay_btn_sizeY))
@@ -19,6 +19,14 @@ void TicketMachine::Run(void)
 		}
 		return false;
 	};
+
+	//auto chackMoney = [&]() {
+	//	if (pos.x < money_sizeX && pos.y < money_sizeY * (_moneyType.size() + 1))
+	//	{
+	//		return true;
+	//	}
+	//	return false;
+	//};
 
 	if ((_mouse->GetClicking()) && (chackBtn()))
 	{
@@ -48,44 +56,51 @@ void TicketMachine::Run(void)
 	}
 }
 
-bool TicketMachine::InsertCash(int cash)
-{
-	if (_paySuccess)
-	{
-		return false;
-	}
-
-	if (_payType == PayType::MAX)
-	{
-		_payType = PayType::CASH;
-	}
-
-	if (_payType != PayType::CASH)
-	{
-		return false;
-	}
-	_cashData.try_emplace(cash, 0);
-	_cashData[cash]++;
-	return true;
-}
-
-bool TicketMachine::InsertCard(void)
-{
-	if (_payType == PayType::MAX)
-	{
-		_payType = PayType::CARD;
-	}
-	else
-	{
-		return false;
-	}
-	_cardData = lpCardServer.GetCardState();
-	return true;
-}
+//bool TicketMachine::InsertCash(int cash)
+//{
+//	if (_paySuccess)
+//	{
+//		return false;
+//	}
+//
+//	if (_payType == PayType::MAX)
+//	{
+//		_payType = PayType::CASH;
+//	}
+//
+//	if (_payType != PayType::CASH)
+//	{
+//		return false;
+//	}
+//	_payData.try_emplace(cash, 0);
+//	_payData[cash]++;
+//	return true;
+//}
+//
+//bool TicketMachine::InsertCard(void)
+//{
+//	if (_payType == PayType::MAX)
+//	{
+//		_payType = PayType::CARD;
+//	}
+//	else
+//	{
+//		return false;
+//	}
+//
+//	auto data = lpCardServer.GetCardState();
+//	_payData.try_emplace(data.first, data.second);
+//
+//	return true;
+//}
 
 void TicketMachine::Insert(int cash)
 {
-	_insert[_payType](_cashData, _cardData, cash);
+	if ()
+	{
+
+	}
+	_insert[_payType](_payType, _payData, cash);
 }
 
 void TicketMachine::Draw(void)
@@ -137,12 +152,12 @@ bool TicketMachine::InitDraw(void)
 			DrawFormatString(
 				draw_offsetX + GetFontSize(),
 				draw_offsetY + GetFontSize(),
-				0xffffff, "残高　　　　%d円", _cardData.first
+				0xffffff, "残高　　　　%d円", _payData.begin()->first
 			);
 			DrawFormatString(
 				draw_offsetX + GetFontSize(),
 				draw_offsetY + GetFontSize() * 2,
-				0xffffff, "引去額　　　%d円", _cardData.second
+				0xffffff, "引去額　　　%d円", _payData.begin()->second
 			);
 
 		}
@@ -155,9 +170,9 @@ bool TicketMachine::InitDraw(void)
 			DrawFormatString(
 				draw_offsetX + GetFontSize(),
 				draw_offsetY + GetFontSize(),
-				0xffffff, "残高　　　　%d円", _cardData.first
+				0xffffff, "残高　　　　%d円", _payData.begin()->first
 			);
-			if (_cardData.first < price_card)
+			if (_payData.begin()->first < price_card)
 			{
 				DrawString(
 					draw_offsetX,
@@ -180,7 +195,7 @@ bool TicketMachine::InitDraw(void)
 			DrawString(draw_offsetX, draw_offsetY, "投入金額", 0xffffff);
 			DrawString(draw_offsetX, draw_offsetY, "　　　　　　　枚数", 0xffffff);
 
-			for (auto moneyData : _cashData)
+			for (auto moneyData : _payData)
 			{
 				DrawFormatString(
 					draw_offsetX + GetFontSize(),
@@ -230,7 +245,7 @@ bool TicketMachine::InitDraw(void)
 			DrawString(draw_offsetX, draw_offsetY, "投入金額", 0xffffff);
 			DrawString(draw_offsetX, draw_offsetY, "　　　　　　　枚数", 0xffffff);
 
-			for (auto moneyData : _cashData)
+			for (auto moneyData : _payData)
 			{
 				DrawFormatString(
 					draw_offsetX + GetFontSize(),
@@ -276,7 +291,7 @@ bool TicketMachine::InitPay(void)
 bool TicketMachine::PayCash(void)
 {
 	int totalCash = 0;
-	auto tmpCashData = _cashData;
+	auto tmpCashData = _payData;
 
 	for (auto data : tmpCashData)
 	{
@@ -368,7 +383,8 @@ bool TicketMachine::PayCard(void)
 {
 	if (lpCardServer.Payment(price_card))
 	{
-		_cardData = lpCardServer.GetCardState();
+		auto data = lpCardServer.GetCardState();
+		_payData.try_emplace(data.first, data.second);
 		return true;
 	}
 	return false;
@@ -387,6 +403,7 @@ void TicketMachine::Clear(void)
 	_cashData.clear();
 	_cashDataChange.clear();
 	_cardData = { 0, 0 };
+	_payData.clear();
 }
 
 void TicketMachine::DrawBtn(void)
@@ -430,8 +447,9 @@ bool TicketMachine::Init(SharedMouse mouse)
 	InitPay();
 
 	_insert.try_emplace(PayType::MAX, InsertMax());
-	_insert.try_emplace(PayType::CARD, InsertCard::InsertCard());
-	_insert.try_emplace(PayType::CASH, InsertCash::InsertCash());
+	_insert.try_emplace(PayType::CASH, InsertCash());
+	_insert.try_emplace(PayType::CARD, InsertCard());
+
 
 	return true;
 }

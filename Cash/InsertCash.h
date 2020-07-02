@@ -3,9 +3,9 @@
 
 struct InsertCash
 {
-	void operator()(MapInt& cashData, PairInt& cardData, int cash)
+	bool operator()(PayType& paytype, MapInt& payData, int cash)
 	{
-		cashData.try_emplace(cash, 0);
-		cashData[cash]++;
+		payData.try_emplace(cash, 0);
+		payData[cash]++;
 	}
 };

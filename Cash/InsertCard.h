@@ -3,8 +3,8 @@
 
 struct InsertCard
 {
-	void operator()(MapInt& cashData, PairInt& cardData, int cash)
+	bool operator()(PayType& paytype, MapInt& payData, int cash)
 	{
-		cardData = lpCardServer.GetCardState();
+		payData = lpCardServer.GetCardState();
 	}
 };

@@ -11,8 +11,13 @@
 using MapInt = std::map<int, int>;
 using VecInt = std::vector<int>;
 using SharedMouse = std::shared_ptr<MouseCtl>;
+using InsertFunc = std::function<void(PayType&, MapInt&, int)>;
 
 #define lpTicketMachine TicketMachine::GetInstance()
+
+struct InsertMax;
+struct InsertCash;
+struct InsertCard;
 
 class TicketMachine
 {
@@ -23,8 +28,8 @@ public:
 		return s_Instance;
 	}
 	void Run(void);							// 毎ﾌﾚｰﾑ実行
-	bool InsertCash(int cash);				// 入金受付処理
-	bool InsertCard(void);
+	//bool InsertCash(int cash);				// 入金受付処理
+	//bool InsertCard(void);
 	void Insert(int cash);
 	void Draw(void);
 	VecInt& GetMoneyType(void);
@@ -48,7 +53,7 @@ private:
 	std::map<PayType, std::function<void(void)>> _draw;
 	std::map<PayType, bool(TicketMachine::*)()> _pay;
 
-	std::map<PayType, std::function<void(MapInt&, PairInt&, int)>> _insert;
+	std::map<PayType, std::function<bool(PayType&, MapInt&, int)>> _insert;
 
 	const int screen_sizeX;									// ｽｸﾘｰﾝｻｲｽﾞX
 	const int screen_sizeY;									// ｽｸﾘｰﾝｻｲｽﾞY
@@ -72,6 +77,9 @@ private:
 	PayType _payType;										// 支払い方法
 	MapInt _cashData;										// 入金ﾃﾞｰﾀ
 	MapInt _cashDataChange;									// おつりのﾃﾞｰﾀ
+
+	MapInt _payData;										// 支払い情報
+
 	PairInt _cardData;										// <残高, 引去額(ｶｰﾄﾞの場合のﾁｹｯﾄの値段)>
 	bool _paySuccess;										// 支払いが成功したかどうか
 };
