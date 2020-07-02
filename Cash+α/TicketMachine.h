@@ -62,6 +62,8 @@ private:
 
 	std::string _btnKey;					// •\¦‚·‚éÎŞÀİ‚Ö‚Ì·°
 	Vector2 _btnPos;						// ÎŞÀİ‚ğ•\¦‚·‚éÀ•W
+	Vector2 _calBtnPos;						// ·¬İ¾ÙÎŞÀİ
+	std::string _calBtnKey;					// ·¬İ¾ÙÎŞÀİ‚Ì·°
 
 	PayType _payType;
 	MapInt _cashData;

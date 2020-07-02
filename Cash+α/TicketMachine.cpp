@@ -355,11 +355,10 @@ bool TicketMachine::PayCash(void)
 void TicketMachine::Clear(void)
 {
 	_btnKey = "btn";
+	_calBtnKey = "btn";
 	_paySuccess = false;
 	_payType = PayType::MAX;
-	_cashData.clear();
 	_cashDataChange.clear();
-	_cardData = { 0, 0 };
 }
 
 void TicketMachine::DrawBtn(void)
@@ -367,9 +366,14 @@ void TicketMachine::DrawBtn(void)
 	SetFontSize(font_size * 2);
 
 	DrawGraph(_btnPos.x, _btnPos.y, _images[_btnKey], true);
-	//_btnPos += font_size / 2;
 	std::string btnName = (!_paySuccess ? "　決　済" : " 受け取り");
 	DrawString(_btnPos.x + font_size / 2, _btnPos.y + font_size / 2, btnName.c_str(), 0x000000);
+
+	if (_payType != PayType::MAX && !_paySuccess)
+	{
+		DrawGraph(_calBtnPos.x, _calBtnPos.y, _images[_calBtnKey], true);
+		DrawString(_calBtnPos.x + font_size / 2, _calBtnPos.y + font_size / 2, "キャンセル", 0xff0000);
+	}
 }
 
 bool TicketMachine::Init(SharedMouse mouse)
@@ -396,7 +400,12 @@ bool TicketMachine::Init(SharedMouse mouse)
 
 	_btnPos = {
 	(screen_sizeX - money_sizeX * 2) - pay_btn_sizeX,
-	static_cast<int>(money_sizeY * (_moneyType.size()))
+	static_cast<int>(money_sizeY * (_moneyType.size() - 1))
+	};
+
+	_calBtnPos = {
+		(screen_sizeX - money_sizeX * 2) - pay_btn_sizeX,
+		static_cast<int>(money_sizeY * (_moneyType.size()) + 10)
 	};
 
 	return true;

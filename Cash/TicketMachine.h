@@ -30,7 +30,7 @@ public:
 	void Run(void);							// 毎ﾌﾚｰﾑ実行
 	//bool InsertCash(int cash);				// 入金受付処理
 	//bool InsertCard(void);
-	void Insert(int cash);
+	bool Insert(PayType type, int cash);
 	void Draw(void);
 	VecInt& GetMoneyType(void);
 	bool Init(SharedMouse mouse);
@@ -75,12 +75,10 @@ private:
 	Vector2 _btnPos;										// ﾎﾞﾀﾝを表示する座標
 
 	PayType _payType;										// 支払い方法
-	MapInt _cashData;										// 入金ﾃﾞｰﾀ
 	MapInt _cashDataChange;									// おつりのﾃﾞｰﾀ
 
 	MapInt _payData;										// 支払い情報
 
-	PairInt _cardData;										// <残高, 引去額(ｶｰﾄﾞの場合のﾁｹｯﾄの値段)>
 	bool _paySuccess;										// 支払いが成功したかどうか
 };
 

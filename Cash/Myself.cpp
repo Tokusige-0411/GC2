@@ -49,20 +49,17 @@ bool Myself::Run(void)
 					TRACE("‚¨‹à‚Ì‰æ‘œ‚ðƒNƒŠƒbƒN\n");
 					if (_cash[type] > 0)
 					{
-						if (lpTicketMachine.InsertCash(type))
+						if (lpTicketMachine.Insert(PayType::CASH, type))
 						{
 							_cash[type]--;
 						}
-						//lpTicketMachine.Insert(type);
-						//_cash[type]--;
 					}
 				}
 				else
 				{
 					if (pos.y < static_cast<int>(_moneyType.size() + 1) * money_sizeY)
 					{
-						lpTicketMachine.InsertCard();
-						//lpTicketMachine.Insert(type);
+						lpTicketMachine.Insert(PayType::CARD, 0);
 					}
 				}
 			}

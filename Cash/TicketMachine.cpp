@@ -94,13 +94,17 @@ void TicketMachine::Run(void)
 //	return true;
 //}
 
-void TicketMachine::Insert(int cash)
+bool TicketMachine::Insert(PayType type, int cash)
 {
-	if ()
+	if (_paySuccess)
 	{
-
+		return false;
 	}
-	_insert[_payType](_payType, _payData, cash);
+	if (_payType == PayType::MAX)
+	{
+		_payType = type;
+	}
+	return _insert[type](_payType, _payData, cash);
 }
 
 void TicketMachine::Draw(void)
@@ -400,9 +404,7 @@ void TicketMachine::Clear(void)
 	_btnKey = "btn";
 	_paySuccess = false;
 	_payType = PayType::MAX;
-	_cashData.clear();
 	_cashDataChange.clear();
-	_cardData = { 0, 0 };
 	_payData.clear();
 }
 

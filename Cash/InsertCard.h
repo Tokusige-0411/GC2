@@ -3,8 +3,14 @@
 
 struct InsertCard
 {
-	bool operator()(PayType& paytype, MapInt& payData, int cash)
+	bool operator()(PayType& payType ,MapInt& payData, int cash)
 	{
-		payData = lpCardServer.GetCardState();
+		if (payType != PayType::CARD)
+		{
+			return false;
+		}
+		auto data = lpCardServer.GetCardState();
+		payData.try_emplace(data.first, data.second);
+		return true;
 	}
 };
