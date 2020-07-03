@@ -8,6 +8,7 @@ Field::Field()
 Field::Field(Vector2 offset)
 {
 	_offset = offset;
+	_screenID = 0;
 }
 
 Field::~Field()
