@@ -1,10 +1,18 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <map>
 #include "Field.h"
 #include "Vector2.h"
 
 #define lpSceneMng SceneMng::GetInstance()
+
+enum class PLAYER_NUM
+{
+	ONE,
+	TWO,
+	MAX,
+};
 
 class SceneMng
 {
@@ -28,6 +36,8 @@ private:
 	const Vector2 _screenSize;
 
 	std::vector<std::shared_ptr<Field>> _playerField;
+
+	std::map<PLAYER_NUM, std::map<INPUT_ID, std::pair<int, int>>> _keyData
 	int _frame;
 };
 

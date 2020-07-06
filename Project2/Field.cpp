@@ -4,14 +4,14 @@
 
 Field::Field()
 {
+	Init();
 }
 
-Field::Field(Vector2 offset) :_chip{ 6, 13 }, _puyoSize{ 40, 40 }, _fieldSize{ _chip.x * _puyoSize.x, _chip.y * _puyoSize.y }
+Field::Field(Vector2 offset, Vector2 size) :_puyoSize{ 40, 40 }
 {
 	_offset = offset;
-	_screenID = MakeScreen(_fieldSize.x, _fieldSize.y, true);
-	_puyoPos1 = { _puyoSize.x * 2 + 20, 20 };
-	_puyoPos2 = { _puyoSize.x * 2 + 20, 60 };
+	_fieldSize = size;
+	Init();
 }
 
 Field::~Field()
@@ -37,6 +37,14 @@ void Field::Draw()
 	DrawCircle(_puyoPos1.x, _puyoPos1.y, _puyoSize.x / 2 - 2, 0xffffff, true);
 	DrawCircle(_puyoPos2.x, _puyoPos2.y, _puyoSize.x / 2 - 2, 0xffffff, true);
 	DrawCircle(_puyoSize.y / 2, _puyoSize.y / 2, _puyoSize.x / 2 - 2, 0xffffff, true);
+}
+
+bool Field::Init(void)
+{
+	_screenID = MakeScreen(_fieldSize.x, _fieldSize.y, true);
+	_puyoPos1 = { _puyoSize.x * 2 + 20, 20 };
+	_puyoPos2 = { _puyoSize.x * 2 + 20, 60 };
+	return true;
 }
 
 int Field::GetScreenID(void)

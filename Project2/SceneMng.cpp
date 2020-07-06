@@ -27,7 +27,7 @@ void SceneMng::Draw()
 	}
 
 	DrawBox(320, 120, 360, 200, 0xffffff, false);
-	DrawBox(480, 120, 520, 200, 0xffffff, false);
+	DrawBox(440, 120, 480, 200, 0xffffff, false);
 
 	ScreenFlip();
 }
@@ -51,11 +51,11 @@ bool SceneMng::SysInit()
 	return true;
 }
 
-SceneMng::SceneMng() : _screenSize{840, 600}
+SceneMng::SceneMng() : _screenSize{800, 600}
 {
 	SysInit();
-	_playerField.emplace_back(std::make_shared<Field>(Vector2(40, 40)));
-	_playerField.emplace_back(std::make_shared<Field>(Vector2(560, 40)));
+	_playerField.emplace_back(std::make_shared<Field>(Vector2(40, 40), Vector2(240, 520)));
+	_playerField.emplace_back(std::make_shared<Field>(Vector2(520, 40), Vector2(240, 520)));
 	_frame = 0;
 }
 
