@@ -152,6 +152,8 @@
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\detail\Vector2.h" />
+    <ClInclude Include="common\Vector2.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="INPUT_ID.h" />
     <ClInclude Include="SceneMng.h" />
