@@ -5,7 +5,7 @@ class Field
 {
 public:
 	Field();
-	Field(Vector2 offset, Vector2 size);
+	Field(Vector2&& offset, Vector2&& size);
 	~Field();
 	void Update(void);
 	void Draw(void);

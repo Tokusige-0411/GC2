@@ -7,10 +7,10 @@ Field::Field()
 	Init();
 }
 
-Field::Field(Vector2 offset, Vector2 size) :_puyoSize{ 40, 40 }
+Field::Field(Vector2&& offset, Vector2&& size) :_puyoSize{ 40, 40 }
 {
-	_offset = offset;
-	_fieldSize = size;
+	_offset = std::move(offset);
+	_fieldSize = std::move(size);
 	Init();
 }
 

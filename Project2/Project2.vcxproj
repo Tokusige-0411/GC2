@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Field.cpp" />
+    <ClCompile Include="INPUT_ID.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneMng.cpp" />
     <ClCompile Include="Vector2.cpp" />

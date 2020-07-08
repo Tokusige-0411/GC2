@@ -39,6 +39,8 @@ private:
 	std::vector<std::shared_ptr<Field>> _playerField;
 
 	std::map<PLAYER_NUM, std::map<INPUT_ID, std::pair<int, int>>> _keyData;
+	std::map<PLAYER_NUM, std::map<INPUT_ID, int>> _keyList;
+
 	int _frame;
 };
 
