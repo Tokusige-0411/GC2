@@ -18,5 +18,5 @@ INPUT_ID operator*(INPUT_ID id)
 
 INPUT_ID operator++(INPUT_ID& id)
 {
-	return static_cast<INPUT_ID>(std::underlying_type<INPUT_ID>::type(id) + 1);
+	return id = static_cast<INPUT_ID>(std::underlying_type<INPUT_ID>::type(id) + 1);
 }

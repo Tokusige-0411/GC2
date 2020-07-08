@@ -1,16 +1,18 @@
 #include<Dxlib.h>
 #include"Field.h"
 #include"SceneMng.h"
+#include"KeyState.h"
 
 Field::Field()
 {
 	Init();
 }
 
-Field::Field(Vector2&& offset, Vector2&& size) :_puyoSize{ 40, 40 }
+Field::Field(PLAYER_NUM player, Vector2&& offset, Vector2&& size) :_puyoSize{ 40, 40 }
 {
 	_offset = std::move(offset);
 	_fieldSize = std::move(size);
+	_player = player;
 	Init();
 }
 
@@ -20,6 +22,23 @@ Field::~Field()
 
 void Field::Update(void)
 {
+	_input->Update();
+
+	auto move = [](std::weak_ptr<InputState> keyData, const INPUT_ID id, int& pNum, const int size) {
+		if (!keyData.expired())
+		{
+			if ((*keyData.lock()).State(id).first && !(*keyData.lock()).State(id).second)
+			{
+				pNum += size;
+			}
+		}
+	};
+
+	move(_input, INPUT_ID::LEFT, _puyoPos1.x, -_puyoSize.x);
+	move(_input, INPUT_ID::RIGHT, _puyoPos1.x, _puyoSize.x);
+	move(_input, INPUT_ID::LEFT, _puyoPos2.x, -_puyoSize.x);
+	move(_input, INPUT_ID::RIGHT, _puyoPos2.x, _puyoSize.x);
+
 	if (!(lpSceneMng.GetFrameCount() % 60))
 	{
 		_puyoPos1.y += _puyoSize.y;
@@ -44,6 +63,7 @@ bool Field::Init(void)
 	_screenID = MakeScreen(_fieldSize.x, _fieldSize.y, true);
 	_puyoPos1 = { _puyoSize.x * 2 + 20, 20 };
 	_puyoPos2 = { _puyoSize.x * 2 + 20, 60 };
+	_input = std::make_shared<KeyState>(_player);
 	return true;
 }
 

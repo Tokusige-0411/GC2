@@ -144,8 +144,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseScene.cpp" />
     <ClCompile Include="Field.cpp" />
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="InputState.cpp" />
     <ClCompile Include="INPUT_ID.cpp" />
+    <ClCompile Include="KeyState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneMng.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -153,10 +157,15 @@
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseScene.h" />
     <ClInclude Include="common\detail\Vector2.h" />
     <ClInclude Include="common\Vector2.h" />
     <ClInclude Include="Field.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="InputState.h" />
     <ClInclude Include="INPUT_ID.h" />
+    <ClInclude Include="KeyState.h" />
+    <ClInclude Include="PLAYER_NUM.h" />
     <ClInclude Include="SceneMng.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="_debug\_DebugConOut.h" />

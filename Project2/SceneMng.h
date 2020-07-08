@@ -2,18 +2,14 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include "BaseScene.h"
 #include "Field.h"
+#include "InputState.h"
 #include "Vector2.h"
 #include "INPUT_ID.h"
+#include "PLAYER_NUM.h"
 
 #define lpSceneMng SceneMng::GetInstance()
-
-enum class PLAYER_NUM
-{
-	ONE,
-	TWO,
-	MAX,
-};
 
 class SceneMng
 {
@@ -28,6 +24,7 @@ public:
 	void Draw();
 
 	int GetFrameCount();
+	const std::map<INPUT_ID, int>& GetKeyList(PLAYER_NUM player);
 
 private:
 	bool SysInit();
@@ -36,9 +33,8 @@ private:
 
 	const Vector2 _screenSize;
 
-	std::vector<std::shared_ptr<Field>> _playerField;
+	unique_Base _activeScene;
 
-	std::map<PLAYER_NUM, std::map<INPUT_ID, std::pair<int, int>>> _keyData;
 	std::map<PLAYER_NUM, std::map<INPUT_ID, int>> _keyList;
 
 	int _frame;
