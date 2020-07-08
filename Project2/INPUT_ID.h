@@ -11,7 +11,7 @@ enum class INPUT_ID
 	MAX
 };
 
-INPUT_ID begin(INPUT_ID) { return INPUT_ID::UP; }
-INPUT_ID end(INPUT_ID) { return INPUT_ID::MAX; }
-INPUT_ID operator*(INPUT_ID id) { return id; }
-INPUT_ID operator++(INPUT_ID& id) { return INPUT_ID(std::underlying_type<INPUT_ID>::type(id) + 1); }
+INPUT_ID begin(INPUT_ID);
+INPUT_ID end(INPUT_ID);
+INPUT_ID operator*(INPUT_ID id);
+INPUT_ID operator++(INPUT_ID& id);
