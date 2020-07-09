@@ -7,8 +7,8 @@ class KeyState :
     public InputState
 {
 public:
-    KeyState(PLAYER_NUM player);
-    ~KeyState();
+    KeyState(PLAYER_ID player);
+    ~KeyState() override;
     void Update(void) override;
 
 private:

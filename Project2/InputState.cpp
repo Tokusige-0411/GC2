@@ -16,17 +16,14 @@ InputState::~InputState()
 
 void InputState::SetOld(void)
 {
-	// ”ÍˆÍfor•¶‚Ì’†‚È‚Ì‚Å”ÍˆÍŠO‚ÌÁª¯¸‚Í‚µ‚È‚­‚Ä‚à‚¢‚¢
 	for (auto key : INPUT_ID())
 	{
 		try
 		{
-			// µ°ÙÄŞ(¾¶İÄŞ)‚É¡‚Ì·°ó‘Ô‚ğ“ü‚ê‚é
 			_state[key].second = _state[key].first;
 		}
 		catch (...)
 		{
-			// ´×°‚ªo‚½ê‡
 			AST();
 			_state.emplace(key, KeyPair{ 0, 1 });
 		}

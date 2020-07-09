@@ -1,6 +1,7 @@
 #pragma once
 #include<memory>
 #include"InputState.h"
+#include"Puyo.h"
 #include"Vector2.h"
 #include"PLAYER_NUM.h"
 
@@ -8,7 +9,7 @@ class Field
 {
 public:
 	Field();
-	Field(PLAYER_NUM player, Vector2&& offset, Vector2&& size);
+	Field(Vector2&& offset, Vector2&& size);
 	~Field();
 	void Update(void);
 	void Draw(void);
@@ -17,15 +18,15 @@ public:
 	Vector2 GetOffset(void);
 
 private:
-	const Vector2 _puyoSize;
-
 	Vector2 _fieldSize;
 	Vector2 _offset;
-	Vector2 _puyoPos1;
-	Vector2 _puyoPos2;
 
 	std::shared_ptr<InputState> _input;				// ì¸óÕèÓïÒ
-	PLAYER_NUM _player;								// playerâΩÇ©
+
+	std::unique_ptr<Puyo> _puyo;
+
+	PLAYER_ID _player;								// playerâΩÇ©
+	static int _plCount;										// Ãﬂ⁄≤‘∞î‘çÜ
 
 	int _screenID;
 };

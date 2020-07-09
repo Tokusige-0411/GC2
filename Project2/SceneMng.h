@@ -24,7 +24,7 @@ public:
 	void Draw();
 
 	int GetFrameCount();
-	const std::map<INPUT_ID, int>& GetKeyList(PLAYER_NUM player);
+	const std::map<INPUT_ID, int>& GetKeyList(PLAYER_ID player);
 
 private:
 	bool SysInit();
@@ -33,9 +33,9 @@ private:
 
 	const Vector2 _screenSize;
 
-	unique_Base _activeScene;
+	unique_Base _activeScene;									// “®‚¢‚Ä‚¢‚é¼°Ý
 
-	std::map<PLAYER_NUM, std::map<INPUT_ID, int>> _keyList;
+	std::map<PLAYER_ID, std::map<INPUT_ID, int>> _keyList;
 
 	int _frame;
 };

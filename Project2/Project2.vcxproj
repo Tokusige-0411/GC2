@@ -151,6 +151,9 @@
     <ClCompile Include="INPUT_ID.cpp" />
     <ClCompile Include="KeyState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MouseState.cpp" />
+    <ClCompile Include="PadState.cpp" />
+    <ClCompile Include="Puyo.cpp" />
     <ClCompile Include="SceneMng.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="_debug\_DebugConOut.cpp" />
@@ -165,7 +168,10 @@
     <ClInclude Include="InputState.h" />
     <ClInclude Include="INPUT_ID.h" />
     <ClInclude Include="KeyState.h" />
+    <ClInclude Include="MouseState.h" />
+    <ClInclude Include="PadState.h" />
     <ClInclude Include="PLAYER_NUM.h" />
+    <ClInclude Include="Puyo.h" />
     <ClInclude Include="SceneMng.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="_debug\_DebugConOut.h" />

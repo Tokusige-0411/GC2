@@ -1,6 +1,6 @@
 #pragma once
 
-enum class PLAYER_NUM
+enum class PLAYER_ID
 {
 	ONE,
 	TWO,

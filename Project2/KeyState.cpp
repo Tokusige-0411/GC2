@@ -2,7 +2,7 @@
 #include"SceneMng.h"
 #include"KeyState.h"
 
-KeyState::KeyState(PLAYER_NUM player)
+KeyState::KeyState(PLAYER_ID player)
 {
 	GetHitKeyStateAll(_buf);
 	auto keyList = lpSceneMng.GetKeyList(player);
@@ -12,7 +12,6 @@ KeyState::KeyState(PLAYER_NUM player)
 	{
 		_keyCon.emplace_back(keyList[id]);
 	}
-	return;
 }
 
 KeyState::~KeyState()

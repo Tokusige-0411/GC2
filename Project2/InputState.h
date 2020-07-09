@@ -14,9 +14,9 @@ public:
 	void SetOld(void);							// old情報記憶
 	const KeyMap& State(void)const;				// ｷｰの情報をそのまま返す
 	const KeyPair& State(INPUT_ID id)const;		// ｷｰの情報の中身を返す
-	bool State(INPUT_ID id, int data);
+	bool State(INPUT_ID id, int data);			// ｷｰ情報保存
 
 private:
-	KeyMap _state;
+	KeyMap _state;								// キー情報
 };
 
