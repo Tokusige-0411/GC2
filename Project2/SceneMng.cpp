@@ -59,14 +59,14 @@ SceneMng::SceneMng() : _screenSize{800, 600}
 	_keyList[PLAYER_ID::ONE].try_emplace(INPUT_ID::LEFT, KEY_INPUT_A);
 	_keyList[PLAYER_ID::ONE].try_emplace(INPUT_ID::RIGHT, KEY_INPUT_D);
 	_keyList[PLAYER_ID::ONE].try_emplace(INPUT_ID::R_ROTA, KEY_INPUT_V);
-	_keyList[PLAYER_ID::ONE].try_emplace(INPUT_ID::L_LOTA, KEY_INPUT_B);
+	_keyList[PLAYER_ID::ONE].try_emplace(INPUT_ID::L_ROTA, KEY_INPUT_B);
 
 	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::UP, KEY_INPUT_UP);
 	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::DOWN, KEY_INPUT_DOWN);
 	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::LEFT, KEY_INPUT_LEFT);
 	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::RIGHT, KEY_INPUT_RIGHT);
 	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::R_ROTA, KEY_INPUT_NUMPAD1);
-	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::L_LOTA, KEY_INPUT_NUMPAD2);
+	_keyList[PLAYER_ID::TWO].try_emplace(INPUT_ID::L_ROTA, KEY_INPUT_NUMPAD2);
 
 	_frame = 0;
 }

@@ -20,8 +20,17 @@ void Puyo::Update(void)
 	}
 }
 
-void Puyo::Move(void)
+void Puyo::Move(INPUT_ID id)
 {
+	switch (id)
+	{
+	case INPUT_ID::RIGHT:
+		_pos.x += _puyoSize.x;
+		break;
+	case INPUT_ID::LEFT:
+		_pos.x -= _puyoSize.x;
+		break;
+	}
 }
 
 void Puyo::Draw(void)

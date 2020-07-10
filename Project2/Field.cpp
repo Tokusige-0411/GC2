@@ -1,7 +1,9 @@
 #include<Dxlib.h>
 #include"Field.h"
 #include"SceneMng.h"
-#include"KeyState.h"
+//#include"input/KeyState.h"
+//#include"input/PadState.h"
+#include"input/KeyInput.h"
 
 int Field::_plCount = 0;
 
@@ -26,7 +28,17 @@ Field::~Field()
 
 void Field::Update(void)
 {
-	_input->Update();
+	//_input->Update();
+	(*_controller)();
+
+	for (auto data : _controller->GetContData())
+	{
+		if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
+		{
+			_puyo->Move(data.first);
+		}
+	}
+
 	_puyo->Update();
 	Draw();
 }
@@ -42,7 +54,10 @@ void Field::Draw()
 bool Field::Init(void)
 {
 	_screenID = MakeScreen(_fieldSize.x, _fieldSize.y, true);
-	_input = std::make_shared<KeyState>(_player);
+	//_input = std::make_unique<KeyState>(_player);
+	//_input = std::make_shared<PadState>();
+	_controller = std::make_unique<KeyInput>();
+	_controller->SetUp(static_cast<int>(_player));
 	return true;
 }
 

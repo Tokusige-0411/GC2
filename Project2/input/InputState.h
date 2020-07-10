@@ -1,5 +1,6 @@
 #pragma once
 #include<map>
+#include<vector>
 #include"INPUT_ID.h"
 
 using KeyPair = std::pair<int, int>;
@@ -18,5 +19,8 @@ public:
 
 private:
 	KeyMap _state;								// ƒL[î•ñ
+
+protected:
+	std::vector<int> _keyCon;					// ·°ºİÌ¨¸Şî•ñ
 };
 

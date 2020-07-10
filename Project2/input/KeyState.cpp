@@ -1,5 +1,5 @@
 #include<Dxlib.h>
-#include"SceneMng.h"
+#include"../SceneMng.h"
 #include"KeyState.h"
 
 KeyState::KeyState(PLAYER_ID player)

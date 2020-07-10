@@ -1,5 +1,7 @@
 #pragma once
+#include<memory>
 #include"Vector2.h"
+#include"input/INPUT_ID.h"
 
 enum class Puyo_Type
 {
@@ -17,7 +19,7 @@ public:
 	Puyo(Vector2&& pos, Puyo_Type id);
 	~Puyo();
 	void Update(void);
-	void Move(void);
+	void Move(INPUT_ID id);
 	void Draw(void);
 
 private:

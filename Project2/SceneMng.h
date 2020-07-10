@@ -4,9 +4,9 @@
 #include <map>
 #include "BaseScene.h"
 #include "Field.h"
-#include "InputState.h"
+#include "input/InputState.h"
 #include "Vector2.h"
-#include "INPUT_ID.h"
+#include "input/INPUT_ID.h"
 #include "PLAYER_NUM.h"
 
 #define lpSceneMng SceneMng::GetInstance()

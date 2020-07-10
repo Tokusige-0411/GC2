@@ -1,4 +1,4 @@
-#include"_debug/_DebugConOut.h"
+#include"../_debug/_DebugConOut.h"
 #include "InputState.h"
 
 InputState::InputState()
