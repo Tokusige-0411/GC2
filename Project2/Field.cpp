@@ -4,6 +4,7 @@
 //#include"input/KeyState.h"
 //#include"input/PadState.h"
 #include"input/KeyInput.h"
+#include"input/Mouse.h"
 
 int Field::_plCount = 0;
 
@@ -56,7 +57,7 @@ bool Field::Init(void)
 	_screenID = MakeScreen(_fieldSize.x, _fieldSize.y, true);
 	//_input = std::make_unique<KeyState>(_player);
 	//_input = std::make_shared<PadState>();
-	_controller = std::make_unique<KeyInput>();
+	_controller = std::make_unique<Mouse>();
 	_controller->SetUp(static_cast<int>(_player));
 	return true;
 }
