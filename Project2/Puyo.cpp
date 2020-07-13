@@ -14,10 +14,10 @@ Puyo::~Puyo()
 
 void Puyo::Update(void)
 {
-	if (!(lpSceneMng.GetFrameCount() % 60))
-	{
-		_pos.y += _puyoSize.y;
-	}
+	//if (!(lpSceneMng.GetFrameCount() % 60))
+	//{
+	//	_pos.y += _puyoSize.y;
+	//}
 }
 
 void Puyo::Move(INPUT_ID id)
@@ -29,6 +29,12 @@ void Puyo::Move(INPUT_ID id)
 		break;
 	case INPUT_ID::LEFT:
 		_pos.x -= _puyoSize.x;
+		break;
+	case INPUT_ID::UP:
+		_pos.y -= _puyoSize.y;
+		break;
+	case INPUT_ID::DOWN:
+		_pos.y += _puyoSize.y;
 		break;
 	}
 }

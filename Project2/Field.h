@@ -22,12 +22,11 @@ private:
 	Vector2 _fieldSize;
 	Vector2 _offset;
 
-	//std::unique_ptr<InputState> _input;
 	std::unique_ptr<Controller> _controller;		// “ü—Íî•ñ
 
 	std::unique_ptr<Puyo> _puyo;					// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
 
-	PLAYER_ID _player;								// player‰½‚©
+	int _player;								// player‰½‚©
 	static int _plCount;							// ÌßÚ²Ô°”Ô†
 
 	int _screenID;									// ½¸Ø°İî•ñ

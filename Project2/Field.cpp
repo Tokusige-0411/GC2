@@ -1,10 +1,9 @@
 #include<Dxlib.h>
 #include"Field.h"
 #include"SceneMng.h"
-//#include"input/KeyState.h"
-//#include"input/PadState.h"
 #include"input/KeyInput.h"
 #include"input/Mouse.h"
+#include"input/PadInput.h"
 
 int Field::_plCount = 0;
 
@@ -17,10 +16,10 @@ Field::Field(Vector2&& offset, Vector2&& size)
 {
 	_offset = offset;
 	_fieldSize = size;
-	_player = static_cast<PLAYER_ID>(_plCount);
+	_player = _plCount;
+	_plCount++;
 	Init();
 	_puyo = std::make_unique<Puyo>(std::move(Vector2( 100, 20 )), Puyo_Type::RED);
-	_plCount++;
 }
 
 Field::~Field()
@@ -29,7 +28,6 @@ Field::~Field()
 
 void Field::Update(void)
 {
-	//_input->Update();
 	(*_controller)();
 
 	for (auto data : _controller->GetContData())
@@ -55,10 +53,9 @@ void Field::Draw()
 bool Field::Init(void)
 {
 	_screenID = MakeScreen(_fieldSize.x, _fieldSize.y, true);
-	//_input = std::make_unique<KeyState>(_player);
-	//_input = std::make_shared<PadState>();
-	_controller = std::make_unique<Mouse>();
-	_controller->SetUp(static_cast<int>(_player));
+	//_controller = std::make_unique<PadInput>();
+	_controller = std::make_unique<KeyInput>();
+	_controller->SetUp(_player);
 	return true;
 }
 
