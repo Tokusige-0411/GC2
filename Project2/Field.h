@@ -17,6 +17,7 @@ public:
 	bool Init(void);
 	int GetScreenID(void);
 	Vector2 GetOffset(void);
+	Vector2 GetFieldSize(void);
 
 private:
 	Vector2 _fieldSize;
@@ -25,8 +26,9 @@ private:
 	std::unique_ptr<Controller> _controller;		// “ü—Íî•ñ
 
 	std::unique_ptr<Puyo> _puyo;					// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
+	std::vector<std::unique_ptr<Puyo>> _puyoList;	// ‚Õ‚æ‚Ìî•ñ(Ì¨°ÙÄŞ“à)
 
-	int _player;								// player‰½‚©
+	int _player;									// player‰½‚©
 	static int _plCount;							// ÌßÚ²Ô°”Ô†
 
 	int _screenID;									// ½¸Ø°İî•ñ

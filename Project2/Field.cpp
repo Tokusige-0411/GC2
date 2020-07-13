@@ -68,3 +68,8 @@ Vector2 Field::GetOffset(void)
 {
 	return _offset;
 }
+
+Vector2 Field::GetFieldSize(void)
+{
+	return _fieldSize;
+}
