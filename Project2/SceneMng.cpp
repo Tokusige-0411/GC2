@@ -48,7 +48,6 @@ bool SceneMng::SysInit()
 SceneMng::SceneMng() : _screenSize{800, 600}
 {
 	SysInit();
-
 	_frame = 0;
 }
 
