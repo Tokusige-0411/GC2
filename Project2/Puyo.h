@@ -13,6 +13,13 @@ enum class Puyo_Type
 	MAX
 };
 
+enum class Puyo_State
+{
+	FORLD,
+	SET,
+	MAX
+};
+
 class Puyo
 {
 public:
