@@ -30,6 +30,9 @@ private:
 	std::vector<int> _dataBase;
 	std::vector<int*> _data;
 
+	// ËŞ¯Ä‰‰Z‚Å‚à‚Å‚«‚»‚¤A‚Æ‚è‚ ‚¦‚¸Ï¯Ìß
+	std::map<INPUT_ID, bool> _moveFlag;				// Še•ûŒüˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
+
 	int _player;									// player‰½‚©
 	static int _plCount;							// ÌßÚ²Ô°”Ô†
 

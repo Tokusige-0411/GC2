@@ -177,3 +177,9 @@ Vector2Template<T> operator-(const Vector2Template<T>& u, const Vector2Template<
 	return Vector2Template<T>(u.x - v.x, u.y - v.y);
 }
 
+template<class T>
+Vector2Template<T> operator/(const Vector2Template<T>& u, const Vector2Template<T>& v)
+{
+	return Vector2Template<T>(u.x / v.x, u.y / v.y);
+}
+

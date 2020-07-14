@@ -13,13 +13,6 @@ enum class Puyo_Type
 	MAX
 };
 
-enum class Puyo_State
-{
-	FORLD,
-	SET,
-	MAX
-};
-
 class Puyo
 {
 public:
@@ -28,6 +21,8 @@ public:
 	void Update(void);
 	void Move(INPUT_ID id);
 	void Draw(void);
+	Vector2 Pos(void);
+	Vector2 Size(void);
 
 private:
 	const Vector2 _puyoSize;

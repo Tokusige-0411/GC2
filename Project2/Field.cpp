@@ -22,7 +22,7 @@ Field::Field(Vector2&& offset, Vector2&& size)
 	_player = _plCount;
 	_plCount++;
 	Init();
-	_puyo = std::make_unique<Puyo>(std::move(Vector2( 100, 20 )), Puyo_Type::RED);
+	_puyo = std::make_unique<Puyo>(std::move(Vector2( 100, 60 )), Puyo_Type::RED);
 }
 
 Field::~Field()
@@ -33,11 +33,21 @@ void Field::Update(void)
 {
 	(*_controller)();
 
+	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
+	Vector2 _chipPos = { _puyo->Pos().x / _puyo->Size().x, _puyo->Pos().y / _puyo->Size().y };
+	_moveFlag[INPUT_ID::LEFT] = (_chipPos.x - 1 >= 0);
+	_moveFlag[INPUT_ID::RIGHT] = (_chipPos.x + 1 < STG_SIZE_X);
+	_moveFlag[INPUT_ID::UP] = (_chipPos.y - 1 >= 0);
+	_moveFlag[INPUT_ID::DOWN] = (_chipPos.y + 1 < STG_SIZE_Y);
+
 	for (auto data : _controller->GetContData())
 	{
-		if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
+		if (_moveFlag[data.first])
 		{
-			_puyo->Move(data.first);
+			if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
+			{
+				_puyo->Move(data.first);
+			}
 		}
 	}
 
@@ -66,6 +76,11 @@ bool Field::Init(void)
 		_data.emplace_back(&_dataBase[no * STG_SIZE_X]);
 	}
 
+	for (auto id: INPUT_ID())
+	{
+		_moveFlag.try_emplace(id, true);
+	}
+
 	return true;
 }
 
@@ -77,9 +92,4 @@ int Field::GetScreenID(void)
 Vector2 Field::GetOffset(void)
 {
 	return _offset;
-}
-
-Vector2 Field::GetFieldSize(void)
-{
-	return _fieldSize;
 }

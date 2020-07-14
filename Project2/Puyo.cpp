@@ -2,7 +2,7 @@
 #include "Puyo.h"
 #include "SceneMng.h"
 
-Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{20, 20}
+Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
 {
 	_pos = pos;
 	_puyoID = id;
@@ -16,7 +16,7 @@ void Puyo::Update(void)
 {
 	//if (!(lpSceneMng.GetFrameCount() % 60))
 	//{
-	//	_pos.y += _puyoSize.y;
+	//	_pos.y += _puyoSize.y / 2;
 	//}
 }
 
@@ -25,10 +25,10 @@ void Puyo::Move(INPUT_ID id)
 	switch (id)
 	{
 	case INPUT_ID::RIGHT:
-		_pos.x += _puyoSize.x * 2;
+		_pos.x += _puyoSize.x;
 		break;
 	case INPUT_ID::LEFT:
-		_pos.x -= _puyoSize.x * 2;
+		_pos.x -= _puyoSize.x;
 		break;
 	case INPUT_ID::UP:
 		_pos.y -= _puyoSize.y;
@@ -41,5 +41,15 @@ void Puyo::Move(INPUT_ID id)
 
 void Puyo::Draw(void)
 {
-	DrawCircle(_pos.x, _pos.y, _puyoSize.x, 0xffffff, true);
+	DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, 0xffffff, true);
+}
+
+Vector2 Puyo::Pos(void)
+{
+	return _pos;
+}
+
+Vector2 Puyo::Size(void)
+{
+	return _puyoSize;
 }
