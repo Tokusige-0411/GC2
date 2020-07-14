@@ -5,6 +5,9 @@
 #include"input/Mouse.h"
 #include"input/PadInput.h"
 
+#define STG_SIZE_X 6
+#define STG_SIZE_Y 13
+
 int Field::_plCount = 0;
 
 Field::Field()
@@ -56,6 +59,13 @@ bool Field::Init(void)
 	//_controller = std::make_unique<PadInput>();
 	_controller = std::make_unique<KeyInput>();
 	_controller->SetUp(_player);
+
+	_dataBase.resize(STG_SIZE_X * STG_SIZE_Y);
+	for (int no = 0; no < STG_SIZE_Y; no++)
+	{
+		_data.emplace_back(&_dataBase[no * STG_SIZE_X]);
+	}
+
 	return true;
 }
 
