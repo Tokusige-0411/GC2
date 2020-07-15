@@ -13,6 +13,20 @@ enum class Puyo_Type
 	MAX
 };
 
+struct DirBit
+{
+	unsigned int up : 1;
+	unsigned int down : 1;
+	unsigned int left : 1;
+	unsigned int right : 1;
+};
+
+union DirPermit
+{
+	DirBit bit;
+	unsigned int perBit;
+};
+
 class Puyo
 {
 public:
@@ -23,9 +37,12 @@ public:
 	void Draw(void);
 	Vector2 Pos(void);
 	Vector2 Size(void);
+	Vector2 Chip(void);
+	void SetDirPermit(DirPermit dirParmit);
 
 private:
 	const Vector2 _puyoSize;
+	DirPermit _dirParmit;
 	Vector2 _pos;
 	Puyo_Type _puyoID;
 };

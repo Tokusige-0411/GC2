@@ -6,6 +6,7 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
 {
 	_pos = pos;
 	_puyoID = id;
+	_dirParmit = { 0, 0, 0, 0 };
 }
 
 Puyo::~Puyo()
@@ -52,4 +53,14 @@ Vector2 Puyo::Pos(void)
 Vector2 Puyo::Size(void)
 {
 	return _puyoSize;
+}
+
+Vector2 Puyo::Chip(void)
+{
+	return Vector2(_pos.x / _puyoSize.x, _pos.y / _puyoSize.y);
+}
+
+void Puyo::SetDirPermit(DirPermit dirParmit)
+{
+	_dirParmit = dirParmit;
 }

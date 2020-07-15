@@ -24,14 +24,10 @@ private:
 
 	std::unique_ptr<Controller> _controller;		// 入力情報
 
-	std::unique_ptr<Puyo> _puyo;					// ぷよの情報(後々vectorに)
-	std::vector<std::unique_ptr<Puyo>> _puyoList;	// ぷよの情報(ﾌｨｰﾙﾄﾞ内)
+	std::vector<std::unique_ptr<Puyo>> _puyo;		// ぷよの情報(後々vectorに)
 
-	std::vector<int> _dataBase;
-	std::vector<int*> _data;
-
-	// ﾋﾞｯﾄ演算でもできそう、とりあえずﾏｯﾌﾟ
-	std::map<INPUT_ID, bool> _moveFlag;				// 各方向移動できるかどうか
+	std::vector<int> _dataBase;						// ｽﾃｰｼﾞのﾃﾞｰﾀ
+	std::vector<int*> _data;						// ｽﾃｰｼﾞにｱｸｾｽするためのﾃﾞｰﾀ部
 
 	int _player;									// player何か
 	static int _plCount;							// ﾌﾟﾚｲﾔｰ番号
