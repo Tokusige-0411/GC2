@@ -15,10 +15,10 @@ Puyo::~Puyo()
 
 void Puyo::Update(void)
 {
-	//if (!(lpSceneMng.GetFrameCount() % 60))
-	//{
-	//	_pos.y += _puyoSize.y / 2;
-	//}
+	if (!(lpSceneMng.GetFrameCount() % 60))
+	{
+		Move(INPUT_ID::DOWN);
+	}
 }
 
 void Puyo::Move(INPUT_ID id)
@@ -26,16 +26,28 @@ void Puyo::Move(INPUT_ID id)
 	switch (id)
 	{
 	case INPUT_ID::RIGHT:
-		_pos.x += _puyoSize.x;
+		if (_dirParmit.bit.right)
+		{
+			_pos.x += _puyoSize.x;
+		}
 		break;
 	case INPUT_ID::LEFT:
-		_pos.x -= _puyoSize.x;
+		if (_dirParmit.bit.left)
+		{
+			_pos.x -= _puyoSize.x;
+		}
 		break;
 	case INPUT_ID::UP:
-		_pos.y -= _puyoSize.y;
+		if (_dirParmit.bit.up)
+		{
+			_pos.y -= _puyoSize.y;
+		}
 		break;
 	case INPUT_ID::DOWN:
-		_pos.y += _puyoSize.y;
+		if (_dirParmit.bit.down)
+		{
+			_pos.y += _puyoSize.y;
+		}
 		break;
 	}
 }

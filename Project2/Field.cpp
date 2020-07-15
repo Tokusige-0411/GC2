@@ -34,15 +34,24 @@ void Field::Update(void)
 	(*_controller)();
 
 	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
-	DirPermit moveChack = { 1, 1, 1, 1 };
+	DirPermit moveChack = { 0, 1, 1, 1 };
 
-	
-	for (auto data : _controller->GetContData())
+	for (auto&& puyo : _puyo)
 	{
-		if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
+		moveChack.bit.left = (puyo->Chip().x - 1 >= 0);
+		moveChack.bit.right = (puyo->Chip().x + 1 < STG_SIZE_X);
+		moveChack.bit.down = (puyo->Chip().y + 1 < STG_SIZE_Y);
+		puyo->SetDirPermit(moveChack);
+		for (auto data : _controller->GetContData())
 		{
+			if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
+			{
+				puyo->Move(data.first);
+			}
 		}
+		//puyo->Update();
 	}
+	
 
 	Draw();
 }
@@ -51,7 +60,7 @@ void Field::Draw()
 {
 	SetDrawScreen(_screenID);
 	ClsDrawScreen();
-	for (auto& puyo : _puyo)
+	for (auto&& puyo : _puyo)
 	{
 		puyo->Draw();
 	}
