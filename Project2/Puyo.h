@@ -5,11 +5,13 @@
 
 enum class Puyo_Type
 {
+	NON,
 	RED,
 	BRUE,
 	GREEN,
 	YELLOW,
 	PURPLE,
+	WALL,
 	MAX
 };
 
@@ -35,9 +37,10 @@ public:
 	void Update(void);
 	void Move(INPUT_ID id);
 	void Draw(void);
-	Vector2 Pos(void);
-	Vector2 Size(void);
-	Vector2 Chip(void);
+	const Vector2& Pos(void);
+	const Vector2& Size(void);
+	const Vector2& Grid(int size);
+	const Puyo_Type& Type(void);
 	void SetDirPermit(DirPermit dirParmit);
 
 private:

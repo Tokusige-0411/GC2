@@ -40,13 +40,13 @@ void Puyo::Move(INPUT_ID id)
 	case INPUT_ID::UP:
 		if (_dirParmit.bit.up)
 		{
-			_pos.y -= _puyoSize.y;
+			_pos.y -= _puyoSize.y / 2;
 		}
 		break;
 	case INPUT_ID::DOWN:
 		if (_dirParmit.bit.down)
 		{
-			_pos.y += _puyoSize.y;
+			_pos.y += _puyoSize.y / 2;
 		}
 		break;
 	}
@@ -57,19 +57,24 @@ void Puyo::Draw(void)
 	DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, 0xffffff, true);
 }
 
-Vector2 Puyo::Pos(void)
+const Vector2& Puyo::Pos(void)
 {
 	return _pos;
 }
 
-Vector2 Puyo::Size(void)
+const Vector2& Puyo::Size(void)
 {
 	return _puyoSize;
 }
 
-Vector2 Puyo::Chip(void)
+const Vector2& Puyo::Grid(int size)
 {
-	return Vector2(_pos.x / _puyoSize.x, _pos.y / _puyoSize.y);
+	return Vector2(_pos.x / size, _pos.y / size);
+}
+
+const Puyo_Type& Puyo::Type(void)
+{
+	return _puyoID;
 }
 
 void Puyo::SetDirPermit(DirPermit dirParmit)
