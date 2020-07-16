@@ -20,7 +20,7 @@ Field::Field(Vector2&& offset, Vector2&& size) : stgGridSize_{8, 14}
 	_player = _plCount;
 	_plCount++;
 	Init();
-	_puyo.push_front(std::make_unique<Puyo>(std::move(Vector2( 100, 60 )), Puyo_Type::RED));
+	_puyo.emplace_back(std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60 )), Puyo_Type::RED));
 }
 
 Field::~Field()
@@ -45,7 +45,7 @@ void Field::Update(void)
 			if (data.first == INPUT_ID::DOWN && !moveChack.bit.down)
 			{
 				_data[grid.y][grid.x] = _puyo.front()->Type();
-				_puyo.push_front(std::make_unique<Puyo>(std::move(Vector2(100, 60)), Puyo_Type::RED));
+				_puyo.emplace(_puyo.begin(),std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), Puyo_Type::RED));
 			}
 			else 
 			{
@@ -54,13 +54,14 @@ void Field::Update(void)
 		}
 	}
 
-	for (auto&& puyo : _puyo)
+	moveChack = { 0, 0, 0, 0 };
+	for (int i = 1; i < _puyo.size(); i++)
 	{
-		Vector2 grid = puyo->Grid(_blockSize);
-		moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
-		moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
-		moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
-		puyo->SetDirPermit(moveChack);
+		//Vector2 grid = puyo->Grid(_blockSize);
+		//moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
+		//moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
+		//moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
+		_puyo[i]->SetDirPermit(moveChack);
 		//puyo->Update();
 	}
 	
@@ -75,7 +76,7 @@ void Field::Draw()
 	{
 		puyo->Draw();
 	}
-	DrawBox(0, 40, _fieldSize.x, _fieldSize.y, 0xffffff, false);
+	DrawBox(0, 0, stgGridSize_.x * _blockSize, stgGridSize_.y * _blockSize, 0xffffff, false);
 }
 
 bool Field::Init(void)

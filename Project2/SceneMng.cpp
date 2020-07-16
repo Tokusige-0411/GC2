@@ -20,9 +20,6 @@ void SceneMng::Draw()
 
 	_activeScene->Draw();
 
-	DrawBox(320, 120, 360, 200, 0xffffff, false);
-	DrawBox(440, 120, 480, 200, 0xffffff, false);
-
 	ScreenFlip();
 }
 
