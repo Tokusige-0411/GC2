@@ -18,6 +18,8 @@ public:
 	bool Init(void);
 	int GetScreenID(void);
 	Vector2 GetOffset(void);
+	bool InstancePuyo(void);
+	bool SetEraseData(void);
 
 private:
 	const Vector2 stgGridSize_;
@@ -29,8 +31,11 @@ private:
 
 	std::vector<std::unique_ptr<Puyo>> _puyo;		// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
 
-	std::vector<Puyo_Type> _dataBase;						// ½Ã°¼Ş‚ÌÃŞ°À
-	std::vector<Puyo_Type*> _data;						// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”
+	std::vector<Puyo_Type> _dataBase;				// ½Ã°¼Ş‚ÌÃŞ°À
+	std::vector<Puyo_Type*> _data;					// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”
+
+	std::vector<Puyo_Type> eraseDataBase_;			// íœ‚Õ‚æ‚ÌÃŞ°À
+	std::vector<Puyo_Type*> eraseData_;				// íœ‚Õ‚æ±¸¾½ÃŞ°À
 
 	int _player;									// player‰½‚©
 	static int _plCount;							// ÌßÚ²Ô°”Ô†

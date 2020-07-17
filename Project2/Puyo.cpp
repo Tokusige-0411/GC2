@@ -7,18 +7,33 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
 	_pos = pos;
 	_puyoID = id;
 	_dirParmit = { 0, 0, 0, 0 };
+	dropCnt_ = 0;
+	dropInt_ = 10;
+	dropSpeed_ = 5;
 }
 
 Puyo::~Puyo()
 {
 }
 
-void Puyo::Update(void)
+bool Puyo::Update(void)
 {
-	if (!(lpSceneMng.GetFrameCount() % 60))
+	if (dropCnt_ < dropInt_)
 	{
-		Move(INPUT_ID::DOWN);
+		dropCnt_++;
+		return false;
 	}
+
+	if (_dirParmit.bit.down)
+	{
+		_pos.y += dropSpeed_;
+	}
+	else
+	{
+		return true;
+	}
+	dropCnt_ = 0;
+	return false;
 }
 
 void Puyo::Move(INPUT_ID id)
@@ -40,14 +55,11 @@ void Puyo::Move(INPUT_ID id)
 	case INPUT_ID::UP:
 		if (_dirParmit.bit.up)
 		{
-			_pos.y -= _puyoSize.y / 2;
+			_pos.y -= _puyoSize.y;
 		}
 		break;
 	case INPUT_ID::DOWN:
-		if (_dirParmit.bit.down)
-		{
-			_pos.y += _puyoSize.y / 2;
-		}
+		SoftDrop();
 		break;
 	}
 }
@@ -67,9 +79,9 @@ const Vector2& Puyo::Size(void)
 	return _puyoSize;
 }
 
-const Vector2& Puyo::Grid(int size)
+const Vector2 Puyo::Grid(int size)
 {
-	return Vector2(_pos.x / size, _pos.y / size);
+	return Vector2(_pos.x / size, (_pos.y - (size / 2)) / size );
 }
 
 const Puyo_Type& Puyo::Type(void)
@@ -80,4 +92,19 @@ const Puyo_Type& Puyo::Type(void)
 void Puyo::SetDirPermit(DirPermit dirParmit)
 {
 	_dirParmit = dirParmit;
+}
+
+void Puyo::SoftDrop(void)
+{
+	dropCnt_ = dropInt_;
+}
+
+bool Puyo::Alive(void)
+{
+	return alive_;
+}
+
+void Puyo::Alive(bool flag)
+{
+	alive_ = flag;
 }

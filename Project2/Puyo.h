@@ -1,5 +1,6 @@
 #pragma once
 #include<memory>
+#include<map>
 #include"Vector2.h"
 #include"input/INPUT_ID.h"
 
@@ -34,19 +35,31 @@ class Puyo
 public:
 	Puyo(Vector2&& pos, Puyo_Type id);
 	~Puyo();
-	void Update(void);
+	bool Update(void);
 	void Move(INPUT_ID id);
 	void Draw(void);
 	const Vector2& Pos(void);
 	const Vector2& Size(void);
-	const Vector2& Grid(int size);
+	const Vector2 Grid(int size);
 	const Puyo_Type& Type(void);
 	void SetDirPermit(DirPermit dirParmit);
+	void SoftDrop(void);
+	bool Alive(void);
+	void Alive(bool flag);
 
 private:
 	const Vector2 _puyoSize;
 	DirPermit _dirParmit;
+
 	Vector2 _pos;
 	Puyo_Type _puyoID;
+	bool alive_;
+
+	int color_;
+	std::map<Puyo_Type, int> colorMap_;
+
+	int dropInt_;
+	int dropCnt_;
+	int dropSpeed_;
 };
 

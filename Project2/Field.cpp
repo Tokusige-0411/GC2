@@ -1,4 +1,5 @@
 #include<Dxlib.h>
+#include<functional>
 #include"Field.h"
 #include"SceneMng.h"
 #include"input/KeyInput.h"
@@ -20,7 +21,7 @@ Field::Field(Vector2&& offset, Vector2&& size) : stgGridSize_{8, 14}
 	_player = _plCount;
 	_plCount++;
 	Init();
-	_puyo.emplace_back(std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60 )), Puyo_Type::RED));
+	InstancePuyo();
 }
 
 Field::~Field()
@@ -38,31 +39,40 @@ void Field::Update(void)
 	moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
 	moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
 	_puyo.front()->SetDirPermit(moveChack);
+
 	for (auto data : _controller->GetContData())
 	{
 		if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
 		{
-			if (data.first == INPUT_ID::DOWN && !moveChack.bit.down)
-			{
-				_data[grid.y][grid.x] = _puyo.front()->Type();
-				_puyo.emplace(_puyo.begin(),std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), Puyo_Type::RED));
-			}
-			else 
-			{
 				_puyo.front()->Move(data.first);
-			}
 		}
 	}
 
-	moveChack = { 0, 0, 0, 0 };
-	for (int i = 1; i < _puyo.size(); i++)
+	auto data = _controller->GetContData();
+	if (data[INPUT_ID::DOWN][static_cast<int>(Trg::Now)] && data[INPUT_ID::DOWN][static_cast<int>(Trg::Old)])
 	{
-		//Vector2 grid = puyo->Grid(_blockSize);
-		//moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
-		//moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
-		//moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
+		_puyo[0]->SoftDrop();
+	}
+
+	if (_puyo[0]->Update())
+	{
+		auto grid = _puyo[0]->Grid(_blockSize);
+		_data[grid.y][grid.x] = _puyo[0]->Type();
+
+		SetEraseData();
+
+		//for (auto&& puyo : _puyo)
+		//{
+		//	puyo->Alive(false);
+		//}
+
+		InstancePuyo();
+	}
+
+	moveChack = { 0, 0, 0, 0 };
+	for (int i = 1; i < static_cast<int>(_puyo.size()); i++)
+	{
 		_puyo[i]->SetDirPermit(moveChack);
-		//puyo->Update();
 	}
 	
 	Draw();
@@ -101,6 +111,22 @@ bool Field::Init(void)
 		_data[stgGridSize_.y - 1][x] = Puyo_Type::WALL;
 	}
 
+	// çÌèúÇ’ÇÊäiî[îzóÒèâä˙âª
+	eraseDataBase_.resize(stgGridSize_.x * stgGridSize_.y);
+	for (int no = 0; no < stgGridSize_.y; no++)
+	{
+		eraseData_.emplace_back(&eraseDataBase_[no * stgGridSize_.x]);
+	}
+	for (int y = 0; y < stgGridSize_.y; y++)
+	{
+		eraseData_[y][0] = Puyo_Type::WALL;
+		eraseData_[y][stgGridSize_.x - 1] = Puyo_Type::WALL;
+	}
+	for (int x = 0; x < stgGridSize_.x; x++)
+	{
+		eraseData_[stgGridSize_.y - 1][x] = Puyo_Type::WALL;
+	}
+
 	return true;
 }
 
@@ -112,4 +138,42 @@ int Field::GetScreenID(void)
 Vector2 Field::GetOffset(void)
 {
 	return _offset;
+}
+
+bool Field::InstancePuyo(void)
+{
+	_puyo.emplace(_puyo.begin(), std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), Puyo_Type::RED));
+	return false;
+}
+
+bool Field::SetEraseData(void)
+{
+	memset(eraseDataBase_.data(), 0, eraseDataBase_.size() * sizeof(Puyo_Type));
+	auto grid = _puyo[0]->Grid(_blockSize);
+	int count = 0;
+
+	std::function<void(Puyo_Type, Vector2)> chPuyo = [&](Puyo_Type type, Vector2 grid) {
+		if (eraseData_[grid.y][grid.x] == Puyo_Type::NON)
+		{
+			if (_data[grid.y][grid.x] == type)
+			{
+				count++;
+				eraseData_[grid.y][grid.x] = _data[grid.y][grid.x];
+				chPuyo(type, { grid.x, grid.y + 1 });
+				chPuyo(type, { grid.x, grid.y - 1 });
+				chPuyo(type, { grid.x - 1, grid.y });
+				chPuyo(type, { grid.x + 1, grid.y });
+			}
+
+		}
+	};
+
+	chPuyo(_puyo[0]->Type(), _puyo[0]->Grid(_blockSize));
+
+	if (count < 4)
+	{
+		memset(eraseDataBase_.data(), 0, eraseDataBase_.size() * sizeof(Puyo_Type));
+	}
+
+	return false;
 }
