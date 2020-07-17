@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include <random>
 #include "BaseScene.h"
 #include "Field.h"
 #include "input/InputState.h"
@@ -24,6 +25,8 @@ public:
 	void Draw();
 
 	int GetFrameCount();
+	std::mt19937 GetMt();
+
 private:
 	bool SysInit();
 	SceneMng();
@@ -34,5 +37,7 @@ private:
 	unique_Base _activeScene;									// “®‚¢‚Ä‚¢‚é¼°Ý
 
 	int _frame;
+
+	std::mt19937 _mt;
 };
 

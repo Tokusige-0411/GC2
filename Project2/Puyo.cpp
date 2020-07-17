@@ -7,9 +7,16 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
 	_pos = pos;
 	_puyoID = id;
 	_dirParmit = { 0, 0, 0, 0 };
+	alive_ = true;
 	dropCnt_ = 0;
 	dropInt_ = 10;
 	dropSpeed_ = 5;
+	colorMap_.try_emplace(Puyo_Type::RED,  0xff0000);
+	colorMap_.try_emplace(Puyo_Type::BRUE, 0x0000ff);
+	colorMap_.try_emplace(Puyo_Type::GREEN, 0x00ff00);
+	colorMap_.try_emplace(Puyo_Type::YELLOW, 0xffff00);
+	colorMap_.try_emplace(Puyo_Type::PURPLE, 0x800080);
+	color_ = colorMap_[id];
 }
 
 Puyo::~Puyo()
@@ -66,7 +73,7 @@ void Puyo::Move(INPUT_ID id)
 
 void Puyo::Draw(void)
 {
-	DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, 0xffffff, true);
+	DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, color_, true);
 }
 
 const Vector2& Puyo::Pos(void)

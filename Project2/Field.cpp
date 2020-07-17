@@ -1,5 +1,6 @@
 #include<Dxlib.h>
 #include<functional>
+#include<random>
 #include"Field.h"
 #include"SceneMng.h"
 #include"input/KeyInput.h"
@@ -61,10 +62,18 @@ void Field::Update(void)
 
 		SetEraseData();
 
-		//for (auto&& puyo : _puyo)
-		//{
-		//	puyo->Alive(false);
-		//}
+		for (auto&& puyo : _puyo)
+		{
+			auto grid = puyo->Grid(_blockSize);
+			if (eraseData_[grid.y][grid.x] == puyo->Type())
+			{
+				puyo->Alive(false);
+				_data[grid.y][grid.x] = Puyo_Type::NON;
+			}
+		}
+
+		auto itl = std::remove_if(_puyo.begin(), _puyo.end(), [](auto&& puyo) {return !(puyo->Alive()); });
+		_puyo.erase(itl, _puyo.end());
 
 		InstancePuyo();
 	}
@@ -117,15 +126,6 @@ bool Field::Init(void)
 	{
 		eraseData_.emplace_back(&eraseDataBase_[no * stgGridSize_.x]);
 	}
-	for (int y = 0; y < stgGridSize_.y; y++)
-	{
-		eraseData_[y][0] = Puyo_Type::WALL;
-		eraseData_[y][stgGridSize_.x - 1] = Puyo_Type::WALL;
-	}
-	for (int x = 0; x < stgGridSize_.x; x++)
-	{
-		eraseData_[stgGridSize_.y - 1][x] = Puyo_Type::WALL;
-	}
 
 	return true;
 }
@@ -142,7 +142,7 @@ Vector2 Field::GetOffset(void)
 
 bool Field::InstancePuyo(void)
 {
-	_puyo.emplace(_puyo.begin(), std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), Puyo_Type::RED));
+	_puyo.emplace(_puyo.begin(), std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	return false;
 }
 

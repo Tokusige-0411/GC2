@@ -1,6 +1,5 @@
 #pragma once
 #include<memory>
-#include<list>
 #include"input/InputState.h"
 #include"input/Controller.h"
 #include"Puyo.h"

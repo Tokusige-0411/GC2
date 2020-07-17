@@ -28,6 +28,11 @@ int SceneMng::GetFrameCount()
 	return _frame;
 }
 
+std::mt19937 SceneMng::GetMt()
+{
+	return _mt;
+}
+
 bool SceneMng::SysInit()
 {
 	ChangeWindowMode(true);
