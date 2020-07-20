@@ -8,6 +8,13 @@
 
 class PlayerUnit;
 
+enum class FieldState
+{
+	Drop,
+	Rensa,
+	Max
+};
+
 class Field
 {
 public:
@@ -21,8 +28,11 @@ public:
 	Vector2 GetOffset(void);
 	bool InstancePuyo(void);
 	bool SetEraseData(void);
+	//bool SetParmit(std::unique_ptr<Puyo>& puyo);			// ぷよ一個一個Parmit調べる
 
 private:
+	friend class PlayerUnit;
+
 	const Vector2 stgGridSize_;
 	Vector2 _fieldSize;
 	Vector2 _offset;
@@ -30,7 +40,7 @@ private:
 
 	std::unique_ptr<Controller> _controller;		// 入力情報
 
-	std::vector<std::unique_ptr<Puyo>> _puyo;		// ぷよの情報(後々vectorに)
+	std::vector<std::unique_ptr<Puyo>> _puyoVec;		// ぷよの情報(後々vectorに)
 
 	std::vector<Puyo_Type> _dataBase;				// ｽﾃｰｼﾞのﾃﾞｰﾀ
 	std::vector<Puyo_Type*> _data;					// ｽﾃｰｼﾞにｱｸｾｽするためのﾃﾞｰﾀ部
@@ -40,11 +50,11 @@ private:
 
 	std::unique_ptr<PlayerUnit> playerUnit_;		// ぷよ操作関連ｸﾗｽ
 
+	FieldState fieldState_;							// ﾌｨｰﾙﾄﾞがどの状態か(落下か連鎖か)
+
 	int _player;									// player何か
 	static int _plCount;							// ﾌﾟﾚｲﾔｰ番号
 
 	int _screenID;									// ｽｸﾘｰﾝ情報
-
-	friend class PlayerUnit;
 };
 

@@ -9,6 +9,6 @@ public:
 	void Update();
 
 private:
-	Field& field_;
+	const Field& field_;
 };
 

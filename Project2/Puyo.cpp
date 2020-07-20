@@ -60,10 +60,10 @@ void Puyo::Move(INPUT_ID id)
 		}
 		break;
 	case INPUT_ID::UP:
-		if (_dirParmit.bit.up)
-		{
-			_pos.y -= _puyoSize.y;
-		}
+		//if (_dirParmit.bit.up)
+		//{
+		//	_pos.y -= _puyoSize.y;
+		//}
 		break;
 	case INPUT_ID::DOWN:
 		SoftDrop();
