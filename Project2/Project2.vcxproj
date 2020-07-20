@@ -153,6 +153,7 @@
     <ClCompile Include="input\PadState.cpp" />
     <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
+    <ClCompile Include="PlayerUnit.cpp" />
     <ClCompile Include="Puyo.cpp" />
     <ClCompile Include="SceneMng.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="input\KeyInput.h" />
     <ClInclude Include="input\Mouse.h" />
     <ClInclude Include="input\PadInput.h" />
+    <ClInclude Include="PlayerUnit.h" />
     <ClInclude Include="PLAYER_NUM.h" />
     <ClInclude Include="Puyo.h" />
     <ClInclude Include="SceneMng.h" />

@@ -6,6 +6,7 @@
 #include"input/KeyInput.h"
 #include"input/Mouse.h"
 #include"input/PadInput.h"
+#include"PlayerUnit.h"
 
 int Field::_plCount = 0;
 
@@ -126,6 +127,8 @@ bool Field::Init(void)
 	{
 		eraseData_.emplace_back(&eraseDataBase_[no * stgGridSize_.x]);
 	}
+
+	playerUnit_ = std::make_unique<PlayerUnit>(*this);
 
 	return true;
 }

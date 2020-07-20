@@ -6,6 +6,8 @@
 #include"Vector2.h"
 #include"PLAYER_NUM.h"
 
+class PlayerUnit;
+
 class Field
 {
 public:
@@ -36,9 +38,13 @@ private:
 	std::vector<Puyo_Type> eraseDataBase_;			// íœ‚Õ‚æ‚ÌÃŞ°À
 	std::vector<Puyo_Type*> eraseData_;				// íœ‚Õ‚æ±¸¾½ÃŞ°À
 
+	std::unique_ptr<PlayerUnit> playerUnit_;		// ‚Õ‚æ‘€ìŠÖ˜A¸×½
+
 	int _player;									// player‰½‚©
 	static int _plCount;							// ÌßÚ²Ô°”Ô†
 
 	int _screenID;									// ½¸Ø°İî•ñ
+
+	friend class PlayerUnit;
 };
 
