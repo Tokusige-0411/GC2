@@ -40,7 +40,7 @@ private:
 
 	std::unique_ptr<Controller> _controller;		// “ü—Íî•ñ
 
-	std::vector<std::unique_ptr<Puyo>> _puyoVec;		// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
+	std::vector<std::unique_ptr<Puyo>> _puyoVec;	// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
 
 	std::vector<Puyo_Type> _dataBase;				// ½Ã°¼Ş‚ÌÃŞ°À
 	std::vector<Puyo_Type*> _data;					// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”

@@ -35,36 +35,20 @@ void Field::Update(void)
 {
 	(*_controller)();
 
-	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
-	//DirPermit moveChack = { 0, 1, 1, 1 };
-	//Vector2 grid = _puyoVec.front()->Grid(_blockSize);
-	//moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
-	//moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
-	//moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
-	//_puyoVec.front()->SetDirPermit(moveChack);
-
 	bool nextFlag = true;
 	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
 		{
 			nextFlag &= SetParmit(puyo);
 		});
 
-	if (nextFlag)
-	{
-		if (fieldState_ == FieldState::Drop)
-		{
-			InstancePuyo();
-		}
-	}
-
 	playerUnit_->Update();
 
-	bool rensaFlag = false;
+	bool rensaFlag = true;
 	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
 		{
-			if (!(puyo->Update()))
+			if (puyo->Update())
 			{
-				rensaFlag = true;
+				rensaFlag = false;
 			}
 		});
 
@@ -84,8 +68,11 @@ void Field::Update(void)
 		}
 		else
 		{
-			//InstancePuyo();
-			//SetParmit(_puyoVec[0]);
+			if (nextFlag)
+			{
+				InstancePuyo();
+				SetParmit(_puyoVec[0]);
+			}
 			fieldState_ = FieldState::Drop;
 		}
 	}
@@ -221,6 +208,7 @@ bool Field::SetParmit(std::unique_ptr<Puyo>& puyo)
 	if (_data[grid.y + 1][grid.x] == Puyo_Type::NON)
 	{
 		moveChack.bit.down = true;
+		_data[grid.y][grid.x] = Puyo_Type::NON;
 	}
 	else
 	{

@@ -28,19 +28,19 @@ bool Puyo::Update(void)
 	if (dropCnt_ < dropInt_)
 	{
 		dropCnt_++;
-		return false;
+		return true;
 	}
 
 	if (_dirParmit.bit.down)
 	{
 		_pos.y += dropSpeed_;
+		dropCnt_ = 0;
+		return true;
 	}
 	else
 	{
-		return true;
+		return false;
 	}
-	dropCnt_ = 0;
-	return false;
 }
 
 void Puyo::Move(INPUT_ID id)
@@ -60,10 +60,10 @@ void Puyo::Move(INPUT_ID id)
 		}
 		break;
 	case INPUT_ID::UP:
-		//if (_dirParmit.bit.up)
-		//{
-		//	_pos.y -= _puyoSize.y;
-		//}
+		if (_dirParmit.bit.up)
+		{
+			_pos.y -= _puyoSize.y;
+		}
 		break;
 	case INPUT_ID::DOWN:
 		SoftDrop();
