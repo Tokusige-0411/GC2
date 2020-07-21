@@ -36,40 +36,58 @@ void Field::Update(void)
 	(*_controller)();
 
 	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
-	DirPermit moveChack = { 0, 1, 1, 1 };
-	Vector2 grid = _puyoVec.front()->Grid(_blockSize);
-	moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
-	moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
-	moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
-	_puyoVec.front()->SetDirPermit(moveChack);
+	//DirPermit moveChack = { 0, 1, 1, 1 };
+	//Vector2 grid = _puyoVec.front()->Grid(_blockSize);
+	//moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
+	//moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
+	//moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
+	//_puyoVec.front()->SetDirPermit(moveChack);
 
-	//bool nextFlag = true;
-	//std::for_each(_puyoVec.crbegin(), _puyoVec.crend(), [&](auto&& puyo)
-	//{
-	//	nextFlag &= SetParmit(puyo);
-	//});
+	bool nextFlag = true;
+	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
+		{
+			nextFlag &= SetParmit(puyo);
+		});
 
-	//if (nextFlag)
-	//{
-	//	if (fieldState_ == FieldState::Drop)
-	//	{
-	//		InstancePuyo();
-	//	}
-	//}
+	if (nextFlag)
+	{
+		if (fieldState_ == FieldState::Drop)
+		{
+			InstancePuyo();
+		}
+	}
 
 	playerUnit_->Update();
 
-	if (_puyoVec[0]->Update())
+	bool rensaFlag = false;
+	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
+		{
+			if (!(puyo->Update()))
+			{
+				rensaFlag = true;
+			}
+		});
+
+	if (rensaFlag)
 	{
-		auto grid = _puyoVec[0]->Grid(_blockSize);
-		_data[grid.y][grid.x] = _puyoVec[0]->Type();
-
-		SetEraseData();
-
-		auto itl = std::remove_if(_puyoVec.begin(), _puyoVec.end(), [](auto&& puyo) {return !(puyo->Alive()); });
-		_puyoVec.erase(itl, _puyoVec.end());
-
-		InstancePuyo();
+		fieldState_ = FieldState::Rensa;
+		bool delFlag = false;
+		for (auto&& puyo : _puyoVec)
+		{
+			delFlag |= SetEraseData(puyo);
+		}
+		
+		if (delFlag)
+		{
+			auto itl = std::remove_if(_puyoVec.begin(), _puyoVec.end(), [](auto&& puyo) {return !(puyo->Alive()); });
+			_puyoVec.erase(itl, _puyoVec.end());
+		}
+		else
+		{
+			//InstancePuyo();
+			//SetParmit(_puyoVec[0]);
+			fieldState_ = FieldState::Drop;
+		}
 	}
 	
 	Draw();
@@ -137,10 +155,10 @@ bool Field::InstancePuyo(void)
 	return false;
 }
 
-bool Field::SetEraseData(void)
+bool Field::SetEraseData(std::unique_ptr<Puyo>& puyo)
 {
 	memset(eraseDataBase_.data(), 0, eraseDataBase_.size() * sizeof(Puyo_Type));
-	auto grid = _puyoVec[0]->Grid(_blockSize);
+	auto grid = puyo->Grid(_blockSize);
 	int count = 0;
 
 	std::function<void(Puyo_Type, Vector2)> chPuyo = [&](Puyo_Type type, Vector2 grid) {
@@ -159,7 +177,7 @@ bool Field::SetEraseData(void)
 		}
 	};
 
-	chPuyo(_puyoVec[0]->Type(), _puyoVec[0]->Grid(_blockSize));
+	chPuyo(puyo->Type(), puyo->Grid(_blockSize));
 
 	if (count < 4)
 	{
@@ -176,22 +194,44 @@ bool Field::SetEraseData(void)
 				_data[grid.y][grid.x] = Puyo_Type::NON;
 			}
 		}
+		return true;
 	}
-
 	return false;
 }
 
-//bool Field::SetParmit(std::unique_ptr<Puyo>& puyo)
-//{
-//	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
-//	DirPermit moveChack = { 0, 1, 1, 1 };
-//	Vector2 grid = puyo->Grid(_blockSize);
-//
-//	moveChack.bit.left = (_data[grid.y][grid.x - 1] == Puyo_Type::NON);
-//	moveChack.bit.right = (_data[grid.y][grid.x + 1] == Puyo_Type::NON);
-//	moveChack.bit.down = (_data[grid.y + 1][grid.x] == Puyo_Type::NON);
-//
-//	puyo->SetDirPermit(moveChack);
-//
-//	return moveChack.bit.down;
-//}
+bool Field::SetParmit(std::unique_ptr<Puyo>& puyo)
+{
+	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
+	DirPermit moveChack = { 0, 0, 0, 0 };
+	Vector2 grid = puyo->Grid(_blockSize);
+
+	if (_data[grid.y][grid.x - 1] == Puyo_Type::NON)
+	{
+		moveChack.bit.left = true;
+	}
+	if (_data[grid.y][grid.x + 1] == Puyo_Type::NON)
+	{
+		moveChack.bit.right = true;
+	}
+	if (_data[grid.y - 1][grid.x] == Puyo_Type::NON)
+	{
+		moveChack.bit.up = true;
+	}
+
+	if (_data[grid.y + 1][grid.x] == Puyo_Type::NON)
+	{
+		moveChack.bit.down = true;
+	}
+	else
+	{
+		_data[grid.y][grid.x] = puyo->Type();
+	}
+
+	puyo->SetDirPermit(moveChack);
+
+	if (moveChack.bit.down)
+	{
+		return false;
+	}
+	return true;
+}

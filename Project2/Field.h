@@ -27,8 +27,8 @@ public:
 	int GetScreenID(void);
 	Vector2 GetOffset(void);
 	bool InstancePuyo(void);
-	bool SetEraseData(void);
-	//bool SetParmit(std::unique_ptr<Puyo>& puyo);			// ‚Õ‚æˆêŒÂˆêŒÂParmit’²‚×‚é
+	bool SetEraseData(std::unique_ptr<Puyo>& puyo);
+	bool SetParmit(std::unique_ptr<Puyo>& puyo);			// ‚Õ‚æˆêŒÂˆêŒÂParmit’²‚×‚é
 
 private:
 	friend class PlayerUnit;
