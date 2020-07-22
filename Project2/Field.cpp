@@ -105,12 +105,12 @@ bool Field::Init(void)
 	}
 	for (int y = 0; y < stgGridSize_.y; y++)
 	{
-		_data[y][0] = Puyo_Type::WALL;
-		_data[y][stgGridSize_.x - 1] = Puyo_Type::WALL;
+		_data[y][0] = std::make_shared<Puyo>(Vector2(_blockSize / 2, _blockSize / 2 + y * _blockSize), Puyo_Type::WALL);
+		_data[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * _blockSize - _blockSize / 2, _blockSize / 2 + y * _blockSize), Puyo_Type::WALL);
 	}
 	for (int x = 0; x < stgGridSize_.x; x++)
 	{
-		_data[stgGridSize_.y - 1][x] = Puyo_Type::WALL;
+		_data[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(_blockSize / 2 + x * _blockSize, stgGridSize_.y * _blockSize - _blockSize / 2), Puyo_Type::WALL);
 	}
 
 	// çÌèúÇ’ÇÊäiî[îzóÒèâä˙âª
@@ -138,29 +138,30 @@ Vector2 Field::GetOffset(void)
 
 bool Field::InstancePuyo(void)
 {
-	_puyoVec.emplace(_puyoVec.begin(), std::make_unique<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
+	_puyoVec.emplace(_puyoVec.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	return false;
 }
 
-bool Field::SetEraseData(std::unique_ptr<Puyo>& puyo)
+bool Field::SetEraseData(SharedPuyo& puyo)
 {
-	memset(eraseDataBase_.data(), 0, eraseDataBase_.size() * sizeof(Puyo_Type));
 	auto grid = puyo->Grid(_blockSize);
 	int count = 0;
 
 	std::function<void(Puyo_Type, Vector2)> chPuyo = [&](Puyo_Type type, Vector2 grid) {
-		if (eraseData_[grid.y][grid.x] == Puyo_Type::NON)
+		if (!eraseData_[grid.y][grid.x])
 		{
-			if (_data[grid.y][grid.x] == type)
+			if (_data[grid.y][grid.x])
 			{
-				count++;
-				eraseData_[grid.y][grid.x] = _data[grid.y][grid.x];
-				chPuyo(type, { grid.x, grid.y + 1 });
-				chPuyo(type, { grid.x, grid.y - 1 });
-				chPuyo(type, { grid.x - 1, grid.y });
-				chPuyo(type, { grid.x + 1, grid.y });
+				if (_data[grid.y][grid.x]->Type() == type)
+				{
+					count++;
+					eraseData_[grid.y][grid.x] = _data[grid.y][grid.x];
+					chPuyo(type, { grid.x, grid.y + 1 });
+					chPuyo(type, { grid.x, grid.y - 1 });
+					chPuyo(type, { grid.x - 1, grid.y });
+					chPuyo(type, { grid.x + 1, grid.y });
+				}
 			}
-
 		}
 	};
 
@@ -168,17 +169,26 @@ bool Field::SetEraseData(std::unique_ptr<Puyo>& puyo)
 
 	if (count < 4)
 	{
-		memset(eraseDataBase_.data(), 0, eraseDataBase_.size() * sizeof(Puyo_Type));
+		for (int y = 0; y < stgGridSize_.y; y++)
+		{
+			for (int x = 0; x < stgGridSize_.x; x++)
+			{
+				if (eraseData_[y][x])
+				{
+					eraseData_[y][x].reset();
+				}
+			}
+		}
 	}
 	else
 	{
 		for (auto&& puyo : _puyoVec)
 		{
 			auto grid = puyo->Grid(_blockSize);
-			if (eraseData_[grid.y][grid.x] == puyo->Type())
+			if (eraseData_[grid.y][grid.x] == puyo)
 			{
 				puyo->Alive(false);
-				_data[grid.y][grid.x] = Puyo_Type::NON;
+				_data[grid.y][grid.x].reset();
 			}
 		}
 		return true;
@@ -186,33 +196,33 @@ bool Field::SetEraseData(std::unique_ptr<Puyo>& puyo)
 	return false;
 }
 
-bool Field::SetParmit(std::unique_ptr<Puyo>& puyo)
+bool Field::SetParmit(SharedPuyo& puyo)
 {
 	// _dataBaseÇÃíÜêgÇ∆Ω√∞ºﬁì‡Ç©å©Çƒà⁄ìÆÇ≈Ç´ÇÈÇ©Ç«Ç§Ç©
 	DirPermit moveChack = { 0, 0, 0, 0 };
 	Vector2 grid = puyo->Grid(_blockSize);
 
-	if (_data[grid.y][grid.x - 1] == Puyo_Type::NON)
+	if (!_data[grid.y][grid.x - 1])
 	{
 		moveChack.bit.left = true;
 	}
-	if (_data[grid.y][grid.x + 1] == Puyo_Type::NON)
+	if (!_data[grid.y][grid.x + 1])
 	{
 		moveChack.bit.right = true;
 	}
-	if (_data[grid.y - 1][grid.x] == Puyo_Type::NON)
+	if (!_data[grid.y - 1][grid.x])
 	{
 		moveChack.bit.up = true;
 	}
 
-	if (_data[grid.y + 1][grid.x] == Puyo_Type::NON)
+	if (!_data[grid.y + 1][grid.x])
 	{
 		moveChack.bit.down = true;
-		_data[grid.y][grid.x] = Puyo_Type::NON;
+		_data[grid.y][grid.x].reset();
 	}
 	else
 	{
-		_data[grid.y][grid.x] = puyo->Type();
+		_data[grid.y][grid.x] = puyo;
 	}
 
 	puyo->SetDirPermit(moveChack);

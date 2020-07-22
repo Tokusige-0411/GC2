@@ -15,6 +15,8 @@ enum class FieldState
 	Max
 };
 
+using SharedPuyo = std::shared_ptr<Puyo>;
+
 class Field
 {
 public:
@@ -27,8 +29,8 @@ public:
 	int GetScreenID(void);
 	Vector2 GetOffset(void);
 	bool InstancePuyo(void);
-	bool SetEraseData(std::unique_ptr<Puyo>& puyo);
-	bool SetParmit(std::unique_ptr<Puyo>& puyo);			// ‚Õ‚æˆêŒÂˆêŒÂParmit’²‚×‚é
+	bool SetEraseData(SharedPuyo& puyo);
+	bool SetParmit(SharedPuyo& puyo);			// ‚Õ‚æˆêŒÂˆêŒÂParmit’²‚×‚é
 
 private:
 	friend class PlayerUnit;
@@ -40,13 +42,13 @@ private:
 
 	std::unique_ptr<Controller> _controller;		// “ü—Íî•ñ
 
-	std::vector<std::unique_ptr<Puyo>> _puyoVec;	// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
+	std::vector<SharedPuyo> _puyoVec;	// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
 
-	std::vector<Puyo_Type> _dataBase;				// ½Ã°¼Ş‚ÌÃŞ°À
-	std::vector<Puyo_Type*> _data;					// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”
+	std::vector<SharedPuyo> _dataBase;				// ½Ã°¼Ş‚ÌÃŞ°À
+	std::vector<SharedPuyo*> _data;					// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”
 
-	std::vector<Puyo_Type> eraseDataBase_;			// íœ‚Õ‚æ‚ÌÃŞ°À
-	std::vector<Puyo_Type*> eraseData_;				// íœ‚Õ‚æ±¸¾½ÃŞ°À
+	std::vector<SharedPuyo> eraseDataBase_;			// íœ‚Õ‚æ‚ÌÃŞ°À
+	std::vector<SharedPuyo*> eraseData_;				// íœ‚Õ‚æ±¸¾½ÃŞ°À
 
 	std::unique_ptr<PlayerUnit> playerUnit_;		// ‚Õ‚æ‘€ìŠÖ˜A¸×½
 
