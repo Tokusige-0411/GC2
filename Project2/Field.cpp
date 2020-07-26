@@ -72,8 +72,16 @@ void Field::Update(void)
 			{
 				InstancePuyo();
 				SetParmit(_puyoVec[0]);
+				fieldState_ = FieldState::Drop;
 			}
-			fieldState_ = FieldState::Drop;
+		}
+	}
+
+	if (fieldState_ == FieldState::Rensa)
+	{
+		for (auto&& puyo : _puyoVec)
+		{
+			puyo->SoftDrop();
 		}
 	}
 	

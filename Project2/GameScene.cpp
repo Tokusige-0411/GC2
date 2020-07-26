@@ -4,7 +4,7 @@
 GameScene::GameScene()
 {
 	_playerField.emplace_back(std::make_unique<Field>(std::move(Vector2(0, 0)), std::move(Vector2(240, 520))));
-	_playerField.emplace_back(std::make_unique<Field>(std::move(Vector2(400, 0)), std::move(Vector2(240, 520))));
+	//_playerField.emplace_back(std::make_unique<Field>(std::move(Vector2(400, 0)), std::move(Vector2(240, 520))));
 }
 
 GameScene::~GameScene()

@@ -12,6 +12,8 @@ enum class FieldState
 {
 	Drop,
 	Rensa,
+	Puyon,
+	Fall,
 	Max
 };
 
