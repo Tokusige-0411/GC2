@@ -8,6 +8,11 @@
 #include"input/Mouse.h"
 #include"input/PadInput.h"
 #include"PlayerUnit.h"
+#include"PuyoCtl/DropMode.h"
+#include"PuyoCtl/FallMode.h"
+#include"PuyoCtl/MunyonMode.h"
+#include"PuyoCtl/PuyonMode.h"
+#include"PuyoCtl/RensaMode.h"
 
 int Field::_plCount = 0;
 
@@ -34,8 +39,10 @@ Field::~Field()
 void Field::Update(void)
 {
 	(*_controller)();
+	fieldMode_[fieldState_](*this);
 
-	bool nextFlag = true;
+
+	/*bool nextFlag = true;
 	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
 		{
 			nextFlag &= SetParmit(puyo);
@@ -75,7 +82,7 @@ void Field::Update(void)
 				fieldState_ = FieldState::Drop;
 			}
 		}
-	}
+	}*/
 
 	if (fieldState_ == FieldState::Rensa)
 	{
@@ -129,6 +136,12 @@ bool Field::Init(void)
 	}
 
 	playerUnit_ = std::make_unique<PlayerUnit>(*this);
+
+	fieldMode_.try_emplace(FieldState::Drop, DropMode());
+	fieldMode_.try_emplace(FieldState::Puyon, PuyonMode());
+	fieldMode_.try_emplace(FieldState::Rensa, RensaMode());
+	fieldMode_.try_emplace(FieldState::Fall, FallMode());
+	fieldMode_.try_emplace(FieldState::Munyon, MunyonMode());
 	fieldState_ = FieldState::Drop;
 
 	return true;
