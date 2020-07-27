@@ -38,8 +38,9 @@ public:
 	int GetScreenID(void);
 	Vector2 GetOffset(void);
 	bool InstancePuyo(void);
-	bool SetEraseData(SharedPuyo& puyo);
+	bool SetEraseData(SharedPuyo& puyo);		// Á‚¹‚é‚Õ‚æ‚Ìİ’è‚ğ‚·‚é
 	bool SetParmit(SharedPuyo& puyo);			// ‚Õ‚æˆêŒÂˆêŒÂParmit’²‚×‚é
+	bool SetPuyon(SharedPuyo& puyo);			// ‚Õ‚æ‚ñŠÇ—
 
 private:
 	friend class PlayerUnit;

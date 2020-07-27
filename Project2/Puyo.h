@@ -46,6 +46,7 @@ public:
 	void SoftDrop(void);
 	bool Alive(void);
 	void Alive(bool flag);
+	bool AddPuyonCnt(void);
 
 private:
 	const Vector2 _puyoSize;
@@ -61,5 +62,8 @@ private:
 	int dropInt_;
 	int dropCnt_;
 	int dropSpeed_;
+
+	int puyonCnt_;
+	int puyonCntMax_;
 };
 

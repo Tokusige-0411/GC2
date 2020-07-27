@@ -17,6 +17,8 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
 	colorMap_.try_emplace(Puyo_Type::YELLOW, 0xffff00);
 	colorMap_.try_emplace(Puyo_Type::PURPLE, 0x800080);
 	color_ = colorMap_[id];
+	puyonCnt_ = 0;
+	puyonCntMax_ = 10;
 }
 
 Puyo::~Puyo()
@@ -73,7 +75,8 @@ void Puyo::Move(INPUT_ID id)
 
 void Puyo::Draw(void)
 {
-	DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, color_, true);
+	//DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, color_, true);
+	DrawOval(_pos.x, _pos.y, _puyoSize.x / 2, _puyoSize.y / 2, color_, true);
 }
 
 const Vector2& Puyo::Pos(void)
@@ -114,4 +117,15 @@ bool Puyo::Alive(void)
 void Puyo::Alive(bool flag)
 {
 	alive_ = flag;
+}
+
+bool Puyo::AddPuyonCnt(void)
+{
+	if (puyonCnt_ >= puyonCntMax_)
+	{
+		puyonCnt_ = 0;
+		return true;
+	}
+	puyonCnt_++;
+	return false;
 }

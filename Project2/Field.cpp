@@ -211,3 +211,8 @@ bool Field::SetParmit(SharedPuyo& puyo)
 	}
 	return true;
 }
+
+bool Field::SetPuyon(SharedPuyo& puyo)
+{
+	return (puyo->AddPuyonCnt());
+}

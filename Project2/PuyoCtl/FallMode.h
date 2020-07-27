@@ -11,18 +11,18 @@ struct FallMode
 				nextFlag &= field.SetParmit(puyo);
 			});
 
-		bool rensaFlag = true;
+		bool puyonFlag = true;
 		std::for_each(field._puyoVec.rbegin(), field._puyoVec.rend(), [&](auto& puyo)
 			{
 				if (puyo->Update())
 				{
-					rensaFlag = false;
+					puyonFlag = false;
 				}
 			});
 
-		if (rensaFlag)
+		if (puyonFlag)
 		{
-			field.fieldState_ = FieldState::Rensa;
+			field.fieldState_ = FieldState::Puyon;
 		}
 	}
 };
