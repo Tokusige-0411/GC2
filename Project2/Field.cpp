@@ -41,50 +41,7 @@ void Field::Update(void)
 	(*_controller)();
 	fieldMode_[fieldState_](*this);
 
-
-	/*bool nextFlag = true;
-	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
-		{
-			nextFlag &= SetParmit(puyo);
-		});
-
-	playerUnit_->Update();
-
-	bool rensaFlag = true;
-	std::for_each(_puyoVec.rbegin(), _puyoVec.rend(), [&](auto& puyo)
-		{
-			if (puyo->Update())
-			{
-				rensaFlag = false;
-			}
-		});
-
-	if (rensaFlag)
-	{
-		fieldState_ = FieldState::Rensa;
-		bool delFlag = false;
-		for (auto&& puyo : _puyoVec)
-		{
-			delFlag |= SetEraseData(puyo);
-		}
-		
-		if (delFlag)
-		{
-			auto itl = std::remove_if(_puyoVec.begin(), _puyoVec.end(), [](auto&& puyo) {return !(puyo->Alive()); });
-			_puyoVec.erase(itl, _puyoVec.end());
-		}
-		else
-		{
-			if (nextFlag)
-			{
-				InstancePuyo();
-				SetParmit(_puyoVec[0]);
-				fieldState_ = FieldState::Drop;
-			}
-		}
-	}*/
-
-	if (fieldState_ == FieldState::Rensa)
+	if (fieldState_ == FieldState::Fall)
 	{
 		for (auto&& puyo : _puyoVec)
 		{

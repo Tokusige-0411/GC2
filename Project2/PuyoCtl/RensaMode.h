@@ -14,7 +14,7 @@ struct RensaMode
 		{
 			auto itl = std::remove_if(field._puyoVec.begin(), field._puyoVec.end(), [](auto&& puyo) {return !(puyo->Alive()); });
 			field._puyoVec.erase(itl, field._puyoVec.end());
-			//field.fieldState_ = FieldState::Fall;
+			field.fieldState_ = FieldState::Fall;
 		}
 		else
 		{
