@@ -9,6 +9,7 @@ public:
 	void Update();
 
 private:
-	const Field& field_;
+	Field& field_;
+	int targetID_;
 };
 

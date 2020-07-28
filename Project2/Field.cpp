@@ -25,7 +25,7 @@ Field::Field(Vector2&& offset, Vector2&& size) : stgGridSize_{8, 14}
 {
 	_offset = offset;
 	_fieldSize = size;
-	_blockSize = 40;
+	blockSize_ = 40;
 	_player = _plCount;
 	_plCount++;
 	Init();
@@ -43,7 +43,7 @@ void Field::Update(void)
 
 	if (fieldState_ == FieldState::Fall)
 	{
-		for (auto&& puyo : _puyoVec)
+		for (auto&& puyo : puyoVec_)
 		{
 			puyo->SoftDrop();
 		}
@@ -56,16 +56,16 @@ void Field::Draw()
 {
 	SetDrawScreen(_screenID);
 	ClsDrawScreen();
-	for (auto&& puyo : _puyoVec)
+	for (auto&& puyo : puyoVec_)
 	{
 		puyo->Draw();
 	}
-	DrawBox(0, 0, stgGridSize_.x * _blockSize, stgGridSize_.y * _blockSize, 0xffffff, false);
+	DrawBox(0, 0, stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, 0xffffff, false);
 }
 
 bool Field::Init(void)
 {
-	_screenID = MakeScreen(stgGridSize_.x * _blockSize, stgGridSize_.y * _blockSize, true);
+	_screenID = MakeScreen(stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, true);
 	//_controller = std::make_unique<PadInput>();
 	_controller = std::make_unique<KeyInput>();
 	_controller->SetUp(_player);
@@ -77,12 +77,12 @@ bool Field::Init(void)
 	}
 	for (int y = 0; y < stgGridSize_.y; y++)
 	{
-		_data[y][0] = std::make_shared<Puyo>(Vector2(_blockSize / 2, _blockSize / 2 + y * _blockSize), Puyo_Type::WALL);
-		_data[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * _blockSize - _blockSize / 2, _blockSize / 2 + y * _blockSize), Puyo_Type::WALL);
+		_data[y][0] = std::make_shared<Puyo>(Vector2(blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
+		_data[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * blockSize_ - blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
 	}
 	for (int x = 0; x < stgGridSize_.x; x++)
 	{
-		_data[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(_blockSize / 2 + x * _blockSize, stgGridSize_.y * _blockSize - _blockSize / 2), Puyo_Type::WALL);
+		_data[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(blockSize_ / 2 + x * blockSize_, stgGridSize_.y * blockSize_ - blockSize_ / 2), Puyo_Type::WALL);
 	}
 
 	// çÌèúÇ’ÇÊäiî[îzóÒèâä˙âª
@@ -116,14 +116,14 @@ Vector2 Field::GetOffset(void)
 
 bool Field::InstancePuyo(void)
 {
-	_puyoVec.emplace(_puyoVec.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 100)), static_cast<Puyo_Type>(rand() % 5 + 1)));
-	_puyoVec.emplace(_puyoVec.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
+	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 140)), static_cast<Puyo_Type>(rand() % 5 + 1)));
+	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 100)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	return false;
 }
 
 bool Field::SetEraseData(SharedPuyo& puyo)
 {
-	auto grid = puyo->Grid(_blockSize);
+	auto grid = puyo->Grid(blockSize_);
 	int count = 0;
 
 	std::function<void(Puyo_Type, Vector2)> chPuyo = [&](Puyo_Type type, Vector2 grid) {
@@ -144,7 +144,7 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 		}
 	};
 
-	chPuyo(puyo->Type(), puyo->Grid(_blockSize));
+	chPuyo(puyo->Type(), puyo->Grid(blockSize_));
 
 	if (count < 4)
 	{
@@ -161,9 +161,9 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 	}
 	else
 	{
-		for (auto&& puyo : _puyoVec)
+		for (auto&& puyo : puyoVec_)
 		{
-			auto grid = puyo->Grid(_blockSize);
+			auto grid = puyo->Grid(blockSize_);
 			if (eraseData_[grid.y][grid.x] == puyo)
 			{
 				puyo->Alive(false);
@@ -179,7 +179,7 @@ bool Field::SetParmit(SharedPuyo& puyo)
 {
 	// _dataBaseÇÃíÜêgÇ∆Ω√∞ºﬁì‡Ç©å©Çƒà⁄ìÆÇ≈Ç´ÇÈÇ©Ç«Ç§Ç©
 	DirPermit moveChack = { 0, 0, 0, 0 };
-	Vector2 grid = puyo->Grid(_blockSize);
+	Vector2 grid = puyo->Grid(blockSize_);
 
 	if (!_data[grid.y][grid.x - 1])
 	{

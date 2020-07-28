@@ -5,21 +5,21 @@ struct RensaMode
 {
 	void operator()(Field& field) {
 		bool delFlag = false;
-		for (auto&& puyo : field._puyoVec)
+		for (auto&& puyo : field.puyoVec_)
 		{
 			delFlag |= field.SetEraseData(puyo);
 		}
 
 		if (delFlag)
 		{
-			auto itl = std::remove_if(field._puyoVec.begin(), field._puyoVec.end(), [](auto&& puyo) {return !(puyo->Alive()); });
-			field._puyoVec.erase(itl, field._puyoVec.end());
+			auto itl = std::remove_if(field.puyoVec_.begin(), field.puyoVec_.end(), [](auto&& puyo) {return !(puyo->Alive()); });
+			field.puyoVec_.erase(itl, field.puyoVec_.end());
 			field.fieldState_ = FieldState::Fall;
 		}
 		else
 		{
 			field.InstancePuyo();
-			field.SetParmit(field._puyoVec[0]);
+			field.SetParmit(field.puyoVec_[0]);
 			field.fieldState_ = FieldState::Drop;
 		}
 	}

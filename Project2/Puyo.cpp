@@ -89,6 +89,11 @@ const Vector2& Puyo::Pos(void)
 	return _pos;
 }
 
+void Puyo::Pos(Vector2&& pos)
+{
+	_pos = pos;
+}
+
 const Vector2& Puyo::Size(void)
 {
 	return _puyoSize;
@@ -107,6 +112,11 @@ const Puyo_Type& Puyo::Type(void)
 void Puyo::SetDirPermit(DirPermit dirParmit)
 {
 	_dirParmit = dirParmit;
+}
+
+const DirPermit& Puyo::GetDirParmit(void)
+{
+	return _dirParmit;
 }
 
 void Puyo::SoftDrop(void)

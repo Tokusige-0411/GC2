@@ -53,11 +53,11 @@ private:
 	const Vector2 stgGridSize_;											// ｽﾃｰｼﾞのﾏｽｻｲｽﾞ
 	Vector2 _fieldSize;													// ｽﾃｰｼﾞの描画ｻｲｽﾞ
 	Vector2 _offset;													// 描画位置補正座標
-	int _blockSize;														// 1ﾏｽのｻｲｽﾞ
+	int blockSize_;														// 1ﾏｽのｻｲｽﾞ
 
 	std::unique_ptr<Controller> _controller;							// 入力情報
 
-	std::vector<SharedPuyo> _puyoVec;									// ぷよの情報(後々vectorに)
+	std::vector<SharedPuyo> puyoVec_;									// ぷよの情報(後々vectorに)
 
 	std::vector<SharedPuyo> _dataBase;									// ｽﾃｰｼﾞのﾃﾞｰﾀ
 	std::vector<SharedPuyo*> _data;										// ｽﾃｰｼﾞにｱｸｾｽするためのﾃﾞｰﾀ部

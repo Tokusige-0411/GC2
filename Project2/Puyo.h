@@ -44,6 +44,7 @@ public:
 	const Vector2 Grid(int size);
 	const Puyo_Type& Type(void);
 	void SetDirPermit(DirPermit dirParmit);
+	const DirPermit& GetDirParmit(void);
 	void SoftDrop(void);
 	bool Alive(void);
 	void Alive(bool flag);

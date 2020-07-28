@@ -14,7 +14,7 @@ struct PuyonMode
 
 		for (int i = 0; i < 2; i++)
 		{
-			if (!field.SetPuyon(field._puyoVec[i]))
+			if (!field.SetPuyon(field.puyoVec_[i]))
 			{
 				rensaFlag = false;
 			}
