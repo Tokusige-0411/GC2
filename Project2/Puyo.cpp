@@ -76,7 +76,12 @@ void Puyo::Move(INPUT_ID id)
 void Puyo::Draw(void)
 {
 	//DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, color_, true);
-	DrawOval(_pos.x, _pos.y, _puyoSize.x / 2, _puyoSize.y / 2, color_, true);
+	DrawOval(
+		_pos.x, 
+		_pos.y + ((-puyonCntMax_ / 2) + puyonCnt_),
+		_puyoSize.x / 2, 
+		_puyoSize.y / 2, 
+		color_, true);
 }
 
 const Vector2& Puyo::Pos(void)

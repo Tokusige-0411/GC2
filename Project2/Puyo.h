@@ -39,6 +39,7 @@ public:
 	void Move(INPUT_ID id);
 	void Draw(void);
 	const Vector2& Pos(void);
+	void Pos(Vector2&& pos);
 	const Vector2& Size(void);
 	const Vector2 Grid(int size);
 	const Puyo_Type& Type(void);

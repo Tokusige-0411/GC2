@@ -116,6 +116,7 @@ Vector2 Field::GetOffset(void)
 
 bool Field::InstancePuyo(void)
 {
+	_puyoVec.emplace(_puyoVec.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 100)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	_puyoVec.emplace(_puyoVec.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * _blockSize - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	return false;
 }

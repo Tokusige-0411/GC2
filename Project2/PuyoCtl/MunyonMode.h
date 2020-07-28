@@ -4,6 +4,6 @@
 struct MunyonMode
 {
 	void operator()(Field& field) {
-
+		field.fieldState_ = FieldState::Rensa;
 	}
 };
