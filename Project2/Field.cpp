@@ -217,3 +217,12 @@ bool Field::SetPuyon(SharedPuyo& puyo)
 {
 	return (puyo->AddPuyonCnt());
 }
+
+bool Field::SetMunyon(SharedPuyo& puyo)
+{
+	auto CheckMunyon = [&](Puyo_Type id , Vector2 grid) {
+
+	};
+	auto grid = puyo->Grid(blockSize_);
+	return false;
+}
