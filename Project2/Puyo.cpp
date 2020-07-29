@@ -83,6 +83,22 @@ void Puyo::Draw(void)
 		_puyoSize.x / 2 + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 2,
 		_puyoSize.y / 2 - (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 3,
 		color_, true);
+	if (drawParmit_.bit.up)
+	{
+		DrawBox(pos_.x - _puyoSize.x / 2, pos_.y - _puyoSize.y / 2, pos_.x + _puyoSize.x / 2 + 1, pos_.y + 1, color_, true);
+	}
+	if (drawParmit_.bit.right)
+	{
+		DrawBox(pos_.x, pos_.y - _puyoSize.y / 2, pos_.x + _puyoSize.x / 2 + 1, pos_.y + _puyoSize.y / 2 + 1, color_, true);
+	}
+	if (drawParmit_.bit.down)
+	{
+		DrawBox(pos_.x - _puyoSize.x / 2, pos_.y, pos_.x + _puyoSize.x / 2 + 1, pos_.y + _puyoSize.y / 2 + 1, color_, true);
+	}
+	if (drawParmit_.bit.left)
+	{
+		DrawBox(pos_.x - _puyoSize.x / 2, pos_.y - _puyoSize.y / 2, pos_.x + 1, pos_.y + _puyoSize.y / 2 + 1, color_, true);
+	}
 }
 
 const Vector2& Puyo::Pos(void)

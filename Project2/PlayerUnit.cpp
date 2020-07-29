@@ -38,15 +38,9 @@ void PlayerUnit::Update()
 		}
 
 		Vector2 grid = { rotaPos.x / field_.blockSize_, rotaPos.y / field_.blockSize_ };
-		if (!field_._data[grid.y][grid.x])
+		if (!field_.data_[grid.y][grid.x])
 		{
 			field_.puyoVec_[targetID_ ^ 1]->Pos({ rotaPos.x, rotaPos.y });
-			if (field_.puyoVec_[0]->Pos().y > field_.puyoVec_[1]->Pos().y)
-			{
-				std::swap(field_.puyoVec_[0], field_.puyoVec_[1]);
-				targetID_ ^= 1;
-				TRACE("%d", targetID_);
-			}
 		}
 	};
 
@@ -73,6 +67,13 @@ void PlayerUnit::Update()
 		field_.fieldState_ = FieldState::Fall;
 		targetID_ = 0;
 		return;
+	}
+
+	if (field_.puyoVec_[0]->Pos().y > field_.puyoVec_[1]->Pos().y)
+	{
+		std::swap(field_.puyoVec_[0], field_.puyoVec_[1]);
+		targetID_ ^= 1;
+		TRACE("%d", targetID_);
 	}
 
 	auto data = field_._controller->GetContData();

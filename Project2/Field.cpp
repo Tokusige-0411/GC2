@@ -73,16 +73,16 @@ bool Field::Init(void)
 	_dataBase.resize(stgGridSize_.x * stgGridSize_.y);
 	for (int no = 0; no < stgGridSize_.y; no++)
 	{
-		_data.emplace_back(&_dataBase[no * stgGridSize_.x]);
+		data_.emplace_back(&_dataBase[no * stgGridSize_.x]);
 	}
 	for (int y = 0; y < stgGridSize_.y; y++)
 	{
-		_data[y][0] = std::make_shared<Puyo>(Vector2(blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
-		_data[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * blockSize_ - blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
+		data_[y][0] = std::make_shared<Puyo>(Vector2(blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
+		data_[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * blockSize_ - blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
 	}
 	for (int x = 0; x < stgGridSize_.x; x++)
 	{
-		_data[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(blockSize_ / 2 + x * blockSize_, stgGridSize_.y * blockSize_ - blockSize_ / 2), Puyo_Type::WALL);
+		data_[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(blockSize_ / 2 + x * blockSize_, stgGridSize_.y * blockSize_ - blockSize_ / 2), Puyo_Type::WALL);
 	}
 
 	// çÌèúÇ’ÇÊäiî[îzóÒèâä˙âª
@@ -116,8 +116,8 @@ Vector2 Field::GetOffset(void)
 
 bool Field::InstancePuyo(void)
 {
-	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 140)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 100)), static_cast<Puyo_Type>(rand() % 5 + 1)));
+	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 140)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	return false;
 }
 
@@ -129,12 +129,12 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 	std::function<void(Puyo_Type, Vector2)> chPuyo = [&](Puyo_Type type, Vector2 grid) {
 		if (!eraseData_[grid.y][grid.x])
 		{
-			if (_data[grid.y][grid.x])
+			if (data_[grid.y][grid.x])
 			{
-				if (_data[grid.y][grid.x]->Type() == type)
+				if (data_[grid.y][grid.x]->Type() == type)
 				{
 					count++;
-					eraseData_[grid.y][grid.x] = _data[grid.y][grid.x];
+					eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
 					chPuyo(type, { grid.x, grid.y + 1 });
 					chPuyo(type, { grid.x, grid.y - 1 });
 					chPuyo(type, { grid.x - 1, grid.y });
@@ -167,7 +167,7 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 			if (eraseData_[grid.y][grid.x] == puyo)
 			{
 				puyo->Alive(false);
-				_data[grid.y][grid.x].reset();
+				data_[grid.y][grid.x].reset();
 			}
 		}
 		return true;
@@ -181,27 +181,27 @@ bool Field::SetParmit(SharedPuyo& puyo)
 	DirPermit moveChack = { 0, 0, 0, 0 };
 	Vector2 grid = puyo->Grid(blockSize_);
 
-	if (!_data[grid.y][grid.x - 1])
+	if (!data_[grid.y][grid.x - 1])
 	{
 		moveChack.bit.left = true;
 	}
-	if (!_data[grid.y][grid.x + 1])
+	if (!data_[grid.y][grid.x + 1])
 	{
 		moveChack.bit.right = true;
 	}
-	if (!_data[grid.y - 1][grid.x])
+	if (!data_[grid.y - 1][grid.x])
 	{
 		moveChack.bit.up = true;
 	}
 
-	if (!_data[grid.y + 1][grid.x])
+	if (!data_[grid.y + 1][grid.x])
 	{
 		moveChack.bit.down = true;
-		_data[grid.y][grid.x].reset();
+		data_[grid.y][grid.x].reset();
 	}
 	else
 	{
-		_data[grid.y][grid.x] = puyo;
+		data_[grid.y][grid.x] = puyo;
 	}
 
 	puyo->SetDirPermit(moveChack);
@@ -221,8 +221,21 @@ bool Field::SetPuyon(SharedPuyo& puyo)
 bool Field::SetMunyon(SharedPuyo& puyo)
 {
 	auto CheckMunyon = [&](Puyo_Type id , Vector2 grid) {
-
+		if (data_[grid.y][grid.x])
+		{
+			if (data_[grid.y][grid.x]->Type() == id)
+			{
+				return true;
+			}
+		}
+		return false;
 	};
 	auto grid = puyo->Grid(blockSize_);
-	return false;
+	DirPermit tmpPermit;
+	tmpPermit.bit.up = CheckMunyon(puyo->Type(), { grid.x, grid.y - 1 });
+	tmpPermit.bit.right = CheckMunyon(puyo->Type(), { grid.x + 1, grid.y });
+	tmpPermit.bit.down = CheckMunyon(puyo->Type(), { grid.x, grid.y + 1 });
+	tmpPermit.bit.left = CheckMunyon(puyo->Type(), { grid.x - 1, grid.y });
+	puyo->SetDrawPermit(tmpPermit);
+	return true;
 }

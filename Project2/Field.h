@@ -61,7 +61,7 @@ private:
 	std::vector<SharedPuyo> puyoVec_;									// ‚Õ‚æ‚Ìî•ñ(ŒãXvector‚É)
 
 	std::vector<SharedPuyo> _dataBase;									// ½Ã°¼Ş‚ÌÃŞ°À
-	std::vector<SharedPuyo*> _data;										// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”
+	std::vector<SharedPuyo*> data_;										// ½Ã°¼Ş‚É±¸¾½‚·‚é‚½‚ß‚ÌÃŞ°À•”
 
 	std::vector<SharedPuyo> eraseDataBase_;								// íœ‚Õ‚æ‚ÌÃŞ°À
 	std::vector<SharedPuyo*> eraseData_;								// íœ‚Õ‚æ±¸¾½ÃŞ°À
