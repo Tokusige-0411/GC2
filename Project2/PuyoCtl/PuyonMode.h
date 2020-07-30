@@ -7,10 +7,10 @@ struct PuyonMode
 		bool rensaFlag = true;
 
 		// ‚Õ‚æ‚ñ‚ªI‚í‚Á‚Ä‚¢‚½‚çtrue, I‚í‚Á‚Ä‚¢‚È‚©‚Á‚½‚çfalse
-
-		for (int i = 0; i < 2; i++)
+		for (auto& puyo : field.puyoVec_)
 		{
-			if (!field.SetPuyon(field.puyoVec_[i]))
+			puyo->Update();
+			if (puyo->CheckPuyon())
 			{
 				rensaFlag = false;
 			}
@@ -18,7 +18,7 @@ struct PuyonMode
 
 		if (rensaFlag)
 		{
-			field.fieldState_ = FieldState::Munyon;
+			field.fieldState_ = FieldState::Rensa;
 		}
 	}
 };

@@ -2,16 +2,16 @@
 #include "Puyo.h"
 #include "SceneMng.h"
 
-Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
+Puyo::Puyo(Vector2&& pos, Puyo_Type id) :puyoSize_{40, 40}
 {
 	pos_ = pos;
 	puyoID_ = id;
-	dirParmit_ = { 0, 0, 0, 0 };
-	drawParmit_ = { 0, 0, 0, 0 };
+	dirPermit_ = { 0, 0, 0, 0 };
+	drawPermit_ = { 0, 0, 0, 0 };
 	alive_ = true;
 	dropCnt_ = 0;
-	dropInt_ = 10;
-	dropSpeed_ = 5;
+	dropInt_ = 20;
+	dropSpeed_ = 8;
 	colorMap_.try_emplace(Puyo_Type::RED,  0xff0000);
 	colorMap_.try_emplace(Puyo_Type::BRUE, 0x0000ff);
 	colorMap_.try_emplace(Puyo_Type::GREEN, 0x00ff00);
@@ -19,7 +19,6 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :_puyoSize{40, 40}
 	colorMap_.try_emplace(Puyo_Type::PURPLE, 0x800080);
 	color_ = colorMap_[id];
 	puyonCnt_ = 0;
-	puyonCntMax_ = 20;
 }
 
 Puyo::~Puyo()
@@ -28,13 +27,18 @@ Puyo::~Puyo()
 
 bool Puyo::Update(void)
 {
+	if (puyonCnt_)
+	{
+		puyonCnt_--;
+	}
+
 	if (dropCnt_ < dropInt_)
 	{
 		dropCnt_++;
 		return true;
 	}
 
-	if (dirParmit_.bit.down)
+	if (dirPermit_.bit.down)
 	{
 		pos_.y += dropSpeed_;
 		dropCnt_ = 0;
@@ -51,21 +55,21 @@ void Puyo::Move(INPUT_ID id)
 	switch (id)
 	{
 	case INPUT_ID::RIGHT:
-		if (dirParmit_.bit.right)
+		if (dirPermit_.bit.right)
 		{
-			pos_.x += _puyoSize.x;
+			pos_.x += puyoSize_.x;
 		}
 		break;
 	case INPUT_ID::LEFT:
-		if (dirParmit_.bit.left)
+		if (dirPermit_.bit.left)
 		{
-			pos_.x -= _puyoSize.x;
+			pos_.x -= puyoSize_.x;
 		}
 		break;
 	case INPUT_ID::UP:
-		if (dirParmit_.bit.up)
+		if (dirPermit_.bit.up)
 		{
-			pos_.y -= _puyoSize.y;
+			pos_.y -= puyoSize_.y;
 		}
 		break;
 	case INPUT_ID::DOWN:
@@ -76,28 +80,28 @@ void Puyo::Move(INPUT_ID id)
 
 void Puyo::Draw(void)
 {
-	//DrawCircle(_pos.x, _pos.y, _puyoSize.x / 2, color_, true);
-	DrawOval(
-		pos_.x, 
-		pos_.y + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) * 2,
-		_puyoSize.x / 2 + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 2,
-		_puyoSize.y / 2 - (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 3,
-		color_, true);
-	if (drawParmit_.bit.up)
+	DrawCircle(pos_.x, pos_.y, puyoSize_.x / 2, color_, true);
+	//DrawOval(
+	//	pos_.x, 
+	//	pos_.y + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) * 2,
+	//	_puyoSize.x / 2 + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 2,
+	//	_puyoSize.y / 2 - (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 3,
+	//	color_, true);
+	if (drawPermit_.bit.up)
 	{
-		DrawBox(pos_.x - _puyoSize.x / 2, pos_.y - _puyoSize.y / 2, pos_.x + _puyoSize.x / 2 + 1, pos_.y + 1, color_, true);
+		DrawBox(pos_.x - puyoSize_.x / 2, pos_.y - puyoSize_.y / 2, pos_.x + puyoSize_.x / 2 + 1, pos_.y + 1, color_, true);
 	}
-	if (drawParmit_.bit.right)
+	if (drawPermit_.bit.right)
 	{
-		DrawBox(pos_.x, pos_.y - _puyoSize.y / 2, pos_.x + _puyoSize.x / 2 + 1, pos_.y + _puyoSize.y / 2 + 1, color_, true);
+		DrawBox(pos_.x, pos_.y - puyoSize_.y / 2, pos_.x + puyoSize_.x / 2 + 1, pos_.y + puyoSize_.y / 2 + 1, color_, true);
 	}
-	if (drawParmit_.bit.down)
+	if (drawPermit_.bit.down)
 	{
-		DrawBox(pos_.x - _puyoSize.x / 2, pos_.y, pos_.x + _puyoSize.x / 2 + 1, pos_.y + _puyoSize.y / 2 + 1, color_, true);
+		DrawBox(pos_.x - puyoSize_.x / 2, pos_.y, pos_.x + puyoSize_.x / 2 + 1, pos_.y + puyoSize_.y / 2 + 1, color_, true);
 	}
-	if (drawParmit_.bit.left)
+	if (drawPermit_.bit.left)
 	{
-		DrawBox(pos_.x - _puyoSize.x / 2, pos_.y - _puyoSize.y / 2, pos_.x + 1, pos_.y + _puyoSize.y / 2 + 1, color_, true);
+		DrawBox(pos_.x - puyoSize_.x / 2, pos_.y - puyoSize_.y / 2, pos_.x + 1, pos_.y + puyoSize_.y / 2 + 1, color_, true);
 	}
 }
 
@@ -113,7 +117,7 @@ void Puyo::Pos(Vector2&& pos)
 
 const Vector2& Puyo::Size(void)
 {
-	return _puyoSize;
+	return puyoSize_;
 }
 
 const Vector2 Puyo::Grid(int size)
@@ -128,17 +132,17 @@ const Puyo_Type& Puyo::Type(void)
 
 void Puyo::SetDirPermit(DirPermit dirParmit)
 {
-	dirParmit_ = dirParmit;
+	dirPermit_ = dirParmit;
 }
 
-const DirPermit& Puyo::GetDirParmit(void)
+const DirPermit& Puyo::GetDirPermit(void)
 {
-	return dirParmit_;
+	return dirPermit_;
 }
 
 void Puyo::SetDrawPermit(DirPermit drawPermit)
 {
-	drawParmit_ = drawPermit;
+	drawPermit_ = drawPermit;
 }
 
 void Puyo::SoftDrop(void)
@@ -156,13 +160,12 @@ void Puyo::Alive(bool flag)
 	alive_ = flag;
 }
 
-bool Puyo::AddPuyonCnt(void)
+void Puyo::SetPuyon(void)
 {
-	if (puyonCnt_ >= puyonCntMax_)
-	{
-		puyonCnt_ = 0;
-		return true;
-	}
-	puyonCnt_++;
-	return false;
+	puyonCnt_ = 12;
+}
+
+bool Puyo::CheckPuyon(void)
+{
+	return (puyonCnt_ > 0);
 }

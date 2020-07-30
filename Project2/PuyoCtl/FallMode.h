@@ -5,10 +5,12 @@ struct FallMode
 {
 	void operator()(Field& field) 
 	{
-		bool nextFlag = true;
 		std::for_each(field.puyoVec_.rbegin(), field.puyoVec_.rend(), [&](auto& puyo)
 			{
-				nextFlag &= field.SetParmit(puyo);
+				if (field.SetParmit(puyo))
+				{
+					puyo->SetPuyon();
+				}
 			});
 
 		bool puyonFlag = true;

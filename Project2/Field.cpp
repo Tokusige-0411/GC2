@@ -213,11 +213,6 @@ bool Field::SetParmit(SharedPuyo& puyo)
 	return true;
 }
 
-bool Field::SetPuyon(SharedPuyo& puyo)
-{
-	return (puyo->AddPuyonCnt());
-}
-
 bool Field::SetMunyon(SharedPuyo& puyo)
 {
 	auto CheckMunyon = [&](Puyo_Type id , Vector2 grid) {

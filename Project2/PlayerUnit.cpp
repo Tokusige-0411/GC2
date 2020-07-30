@@ -47,12 +47,12 @@ void PlayerUnit::Update()
 	auto MergeParmit = [&](int targetID) {
 		// どちらかの左右のParmitがfalseならば、もう片方にも適用する
 		DirPermit tmpParmit;
-		tmpParmit = field_.puyoVec_[targetID ^ 1]->GetDirParmit();
-		if (!field_.puyoVec_[targetID]->GetDirParmit().bit.left)
+		tmpParmit = field_.puyoVec_[targetID ^ 1]->GetDirPermit();
+		if (!field_.puyoVec_[targetID]->GetDirPermit().bit.left)
 		{
 			tmpParmit.bit.left = 0;
 		}
-		if (!field_.puyoVec_[targetID]->GetDirParmit().bit.right)
+		if (!field_.puyoVec_[targetID]->GetDirPermit().bit.right)
 		{
 			tmpParmit.bit.right = 0;
 		}
@@ -62,7 +62,7 @@ void PlayerUnit::Update()
 	MergeParmit(targetID_);
 	MergeParmit(targetID_ ^ 1);
 
-	if (!field_.puyoVec_[targetID_]->GetDirParmit().bit.down || !field_.puyoVec_[targetID_ ^ 1]->GetDirParmit().bit.down)
+	if (!field_.puyoVec_[targetID_]->GetDirPermit().bit.down || !field_.puyoVec_[targetID_ ^ 1]->GetDirPermit().bit.down)
 	{
 		field_.fieldState_ = FieldState::Fall;
 		targetID_ = 0;

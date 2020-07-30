@@ -46,7 +46,7 @@ public:
 	const Vector2 Grid(int size);
 	const Puyo_Type& Type(void);
 	void SetDirPermit(DirPermit dirParmit);
-	const DirPermit& GetDirParmit(void);
+	const DirPermit& GetDirPermit(void);
 	void SetDrawPermit(DirPermit drawPermit);
 
 	void SoftDrop(void);
@@ -54,12 +54,13 @@ public:
 	bool Alive(void);
 	void Alive(bool flag);
 
-	bool AddPuyonCnt(void);
+	void SetPuyon(void);
+	bool CheckPuyon(void);
 
 private:
-	const Vector2 _puyoSize;					// ‚Õ‚æ‚Ì»²½Ş
-	DirPermit dirParmit_;						// ‚Ç‚±‚É“®‚¯‚é‚©‚ÌÌ×¸Ş
-	DirPermit drawParmit_;						// ‚Ç‚±‚ÉL‚Î‚·‚Ì‚©‚ÌÌ×¸Ş
+	const Vector2 puyoSize_;					// ‚Õ‚æ‚Ì»²½Ş
+	DirPermit dirPermit_;						// ‚Ç‚±‚É“®‚¯‚é‚©‚ÌÌ×¸Ş
+	DirPermit drawPermit_;						// ‚Ç‚±‚ÉL‚Î‚·‚Ì‚©‚ÌÌ×¸Ş
 
 	Vector2 pos_;								// À•W
 	Puyo_Type puyoID_;							// ‚Õ‚æ‚Ìí—Ş
@@ -73,6 +74,5 @@ private:
 	int dropSpeed_;								// ÄŞÛ¯Ìß‚Ì½Ëß°ÄŞ
 
 	int puyonCnt_;								// ‚Õ‚æ‚ñ‚Ì¶³İÀ°
-	int puyonCntMax_;							// ‚Õ‚æ‚ñŠÔ
 };
 
