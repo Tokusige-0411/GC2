@@ -116,8 +116,8 @@ Vector2 Field::GetOffset(void)
 
 bool Field::InstancePuyo(void)
 {
+	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 100)), static_cast<Puyo_Type>(rand() % 5 + 1)));
-	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 140)), static_cast<Puyo_Type>(rand() % 5 + 1)));
 	return false;
 }
 
@@ -210,27 +210,5 @@ bool Field::SetParmit(SharedPuyo& puyo)
 	{
 		return false;
 	}
-	return true;
-}
-
-bool Field::SetMunyon(SharedPuyo& puyo)
-{
-	auto CheckMunyon = [&](Puyo_Type id , Vector2 grid) {
-		if (data_[grid.y][grid.x])
-		{
-			if (data_[grid.y][grid.x]->Type() == id)
-			{
-				return true;
-			}
-		}
-		return false;
-	};
-	auto grid = puyo->Grid(blockSize_);
-	DirPermit tmpPermit;
-	tmpPermit.bit.up = CheckMunyon(puyo->Type(), { grid.x, grid.y - 1 });
-	tmpPermit.bit.right = CheckMunyon(puyo->Type(), { grid.x + 1, grid.y });
-	tmpPermit.bit.down = CheckMunyon(puyo->Type(), { grid.x, grid.y + 1 });
-	tmpPermit.bit.left = CheckMunyon(puyo->Type(), { grid.x - 1, grid.y });
-	puyo->SetDrawPermit(tmpPermit);
 	return true;
 }

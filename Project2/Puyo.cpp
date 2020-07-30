@@ -7,11 +7,12 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :puyoSize_{40, 40}
 	pos_ = pos;
 	puyoID_ = id;
 	dirPermit_ = { 0, 0, 0, 0 };
+	oldDirPermit_ = dirPermit_;
 	drawPermit_ = { 0, 0, 0, 0 };
 	alive_ = true;
 	dropCnt_ = 0;
-	dropInt_ = 20;
-	dropSpeed_ = 8;
+	dropInt_ = 15;
+	dropSpeed_ = 5;
 	colorMap_.try_emplace(Puyo_Type::RED,  0xff0000);
 	colorMap_.try_emplace(Puyo_Type::BRUE, 0x0000ff);
 	colorMap_.try_emplace(Puyo_Type::GREEN, 0x00ff00);
@@ -19,6 +20,8 @@ Puyo::Puyo(Vector2&& pos, Puyo_Type id) :puyoSize_{40, 40}
 	colorMap_.try_emplace(Puyo_Type::PURPLE, 0x800080);
 	color_ = colorMap_[id];
 	puyonCnt_ = 0;
+	puyonNum_ = 1;
+	munyonCnt_ = 0;
 }
 
 Puyo::~Puyo()
@@ -30,6 +33,11 @@ bool Puyo::Update(void)
 	if (puyonCnt_)
 	{
 		puyonCnt_--;
+	}
+
+	if (munyonCnt_)
+	{
+		munyonCnt_--;
 	}
 
 	if (dropCnt_ < dropInt_)
@@ -80,13 +88,14 @@ void Puyo::Move(INPUT_ID id)
 
 void Puyo::Draw(void)
 {
-	DrawCircle(pos_.x, pos_.y, puyoSize_.x / 2, color_, true);
-	//DrawOval(
-	//	pos_.x, 
-	//	pos_.y + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) * 2,
-	//	_puyoSize.x / 2 + (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 2,
-	//	_puyoSize.y / 2 - (puyonCnt_ - ((puyonCnt_ % (puyonCntMax_ / 2 + 1)) * 2) * (puyonCnt_ > (puyonCntMax_ / 2 + 1))) / 3,
-	//	color_, true);
+	//DrawCircle(pos_.x, pos_.y, puyoSize_.x / 2, color_, true);
+	DrawOval(
+		pos_.x, 
+		pos_.y + ((-abs(puyonCnt_ - 6) + 6) / puyonNum_) * 2,
+		puyoSize_.x / 2,
+		puyoSize_.y / 2 - (-abs(puyonCnt_ - 6) + 6) / puyonNum_,
+		color_, true
+	);
 	if (drawPermit_.bit.up)
 	{
 		DrawBox(pos_.x - puyoSize_.x / 2, pos_.y - puyoSize_.y / 2, pos_.x + puyoSize_.x / 2 + 1, pos_.y + 1, color_, true);
@@ -132,12 +141,18 @@ const Puyo_Type& Puyo::Type(void)
 
 void Puyo::SetDirPermit(DirPermit dirParmit)
 {
+	oldDirPermit_ = dirPermit_;
 	dirPermit_ = dirParmit;
 }
 
 const DirPermit& Puyo::GetDirPermit(void)
 {
 	return dirPermit_;
+}
+
+const DirPermit& Puyo::GetOldDirPermit(void)
+{
+	return oldDirPermit_;
 }
 
 void Puyo::SetDrawPermit(DirPermit drawPermit)
@@ -160,12 +175,23 @@ void Puyo::Alive(bool flag)
 	alive_ = flag;
 }
 
-void Puyo::SetPuyon(void)
+void Puyo::SetPuyon(int num)
 {
 	puyonCnt_ = 12;
+	puyonNum_ = num;
 }
 
 bool Puyo::CheckPuyon(void)
 {
 	return (puyonCnt_ > 0);
+}
+
+void Puyo::SetMunyon()
+{
+	munyonCnt_ = 12;
+}
+
+bool Puyo::CheckMunyon()
+{
+	return (munyonCnt_ > 0);
 }

@@ -40,8 +40,6 @@ public:
 	bool InstancePuyo(void);
 	bool SetEraseData(SharedPuyo& puyo);		// Á‚¹‚é‚Õ‚æ‚Ìİ’è‚ğ‚·‚é
 	bool SetParmit(SharedPuyo& puyo);			// ‚Õ‚æˆêŒÂˆêŒÂParmit’²‚×‚é
-	bool SetPuyon(SharedPuyo& puyo);			// ‚Õ‚æ‚ñŠÇ—
-	bool SetMunyon(SharedPuyo& puyo);			// ‚Õ‚æ‚ğ‚Â‚È‚°‚é
 
 private:
 	friend class PlayerUnit;

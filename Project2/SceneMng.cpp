@@ -1,4 +1,5 @@
 #include<Dxlib.h>
+#include"_debug/_DebugDispOut.h"
 #include"SceneMng.h"
 #include"GameScene.h"
 
@@ -7,6 +8,7 @@ void SceneMng::Run()
 	_activeScene = std::make_unique<GameScene>();
 	while (!ProcessMessage() || CheckHitKey(KEY_INPUT_ESCAPE))
 	{
+		_DebugDispOut::GetInstance().WaitMode();
 		_activeScene = (*_activeScene).Update(std::move(_activeScene));
 		Draw();
 		_frame++;

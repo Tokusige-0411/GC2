@@ -4,10 +4,21 @@
 struct MunyonMode
 {
 	void operator()(Field& field) {
+		bool nextFlag = true;
 		for (auto puyo : field.puyoVec_)
 		{
-			field.SetMunyon(puyo);
+			puyo->Update();
+			if (puyo->CheckMunyon())
+			{
+				nextFlag = false;
+			}
 		}
-		field.fieldState_ = FieldState::Rensa;
+
+		if (nextFlag)
+		{
+			field.InstancePuyo();
+			field.SetParmit(field.puyoVec_[0]);
+			field.fieldState_ = FieldState::Drop;
+		}
 	}
 };
