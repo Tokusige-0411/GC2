@@ -93,6 +93,13 @@ void Puyo::Move(INPUT_ID id)
 void Puyo::Draw(void)
 {
 	//DrawCircle(pos_.x, pos_.y, puyoSize_.x / 2, color_, true);
+	//DrawOval(
+	//	pos_.x, 
+	//	pos_.y + (-abs(puyonCnt_ - 6) + 6) * 2 / 3 * (4 - puyonNum_),
+	//	puyoSize_.x / 2,
+	//	puyoSize_.y / 2 - (-abs(puyonCnt_ - 6) + 6) / 3 * (4 - puyonNum_),
+	//	color_, true
+	//);
 	DrawOval(
 		pos_.x, 
 		pos_.y + (-abs(puyonCnt_ - 6) + 6) * 2 / 3 * (4 - puyonNum_),
