@@ -12,6 +12,7 @@ enum class Puyo_Type
 	GREEN,
 	YELLOW,
 	PURPLE,
+	OJAMA,
 	WALL,
 	MAX
 };
@@ -33,6 +34,7 @@ union DirPermit
 class Puyo
 {
 public:
+	Puyo();
 	Puyo(Vector2&& pos, Puyo_Type id);
 	~Puyo();
 
@@ -58,8 +60,9 @@ public:
 	void SetPuyon(int num);
 	bool CheckPuyon(void);
 
-	void SetMunyon();
-	bool CheckMunyon();
+	void SetMunyon(void);
+	bool CheckMunyon(void);
+	void ResetMunyon(void);
 
 private:
 	const Vector2 puyoSize_;					// ‚Õ‚æ‚Ì»²½Ş
@@ -67,20 +70,21 @@ private:
 	DirPermit oldDirPermit_;					// 1ÌÚ°Ñ‘O‚Ì‚Ç‚±‚É“®‚¯‚é‚©‚ÌÌ×¸Ş
 	DirPermit drawPermit_;						// ‚Ç‚±‚ÉL‚Î‚·‚Ì‚©‚ÌÌ×¸Ş
 
-	Vector2 pos_;								// À•W
-	Puyo_Type puyoID_;							// ‚Õ‚æ‚Ìí—Ş
-	bool alive_;								// Á‚¦‚é‚©Á‚¦‚È‚¢‚©
-
-	int color_;									// F
 	std::map<Puyo_Type, int> colorMap_;			// ¶×°º°ÄŞŠi”[Ï¯Ìß
-
-	int dropInt_;								// ÄŞÛ¯Ìß‚Ì²İÀ°ÊŞÙ
-	int dropCnt_;								// ÄŞÛ¯Ìß‚ÌŠÔŠu¶³İÄ
-	int dropSpeed_;								// ÄŞÛ¯Ìß‚Ì½Ëß°ÄŞ
 
 	int puyonCnt_;								// ‚Õ‚æ‚ñ‚Ì¶³İÀ°
 	int puyonNum_;								// ã‚©‚ç‰½”Ô–Ú‚©
 
 	int munyonCnt_;								// ‚Ş‚É‚å‚ñ¶³İÀ°
+
+protected:
+	Vector2 pos_;								// À•W
+	Puyo_Type puyoID_;							// ‚Õ‚æ‚Ìí—Ş
+	bool alive_;								// Á‚¦‚é‚©Á‚¦‚È‚¢‚©
+	int color_;									// F
+
+	int dropInt_;								// ÄŞÛ¯Ìß‚Ì²İÀ°ÊŞÙ
+	int dropCnt_;								// ÄŞÛ¯Ìß‚ÌŠÔŠu¶³İÄ
+	int dropSpeed_;								// ÄŞÛ¯Ìß‚Ì½Ëß°ÄŞ
 };
 

@@ -153,6 +153,7 @@
     <ClCompile Include="input\PadState.cpp" />
     <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
+    <ClCompile Include="OjamaPuyo.cpp" />
     <ClCompile Include="PlayerUnit.cpp" />
     <ClCompile Include="Puyo.cpp" />
     <ClCompile Include="SceneMng.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="BaseScene.h" />
     <ClInclude Include="common\detail\Vector2.h" />
     <ClInclude Include="common\Vector2.h" />
+    <ClInclude Include="OjamaPuyo.h" />
     <ClInclude Include="PuyoCtl\FallMode.h" />
     <ClInclude Include="input\Controller.h" />
     <ClInclude Include="Field.h" />

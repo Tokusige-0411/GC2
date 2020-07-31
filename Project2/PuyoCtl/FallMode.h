@@ -7,7 +7,10 @@ struct FallMode
 	{
 		std::for_each(field.puyoVec_.rbegin(), field.puyoVec_.rend(), [&](auto& puyo)
 			{
-				field.SetParmit(puyo);
+				if (!field.SetParmit(puyo))
+				{
+					puyo->ResetMunyon();
+				}
 			});
 
 		bool puyonFlag = true;
@@ -17,13 +20,12 @@ struct FallMode
 				{
 					puyonFlag = false;
 				}
-
 				if ((!puyo->GetDirPermit().bit.down) && (puyo->GetOldDirPermit().bit.down))
 				{
 					int count = 1;
 					puyo->SetPuyon(count);
 					auto grid = puyo->Grid(field.blockSize_);
-					while(count < 3)
+					while (count < 3)
 					{
 						if ((grid.y + count) < field.stgGridSize_.y)
 						{

@@ -2,6 +2,10 @@
 #include "Puyo.h"
 #include "SceneMng.h"
 
+Puyo::Puyo()
+{
+}
+
 Puyo::Puyo(Vector2&& pos, Puyo_Type id) :puyoSize_{40, 40}
 {
 	pos_ = pos;
@@ -91,9 +95,9 @@ void Puyo::Draw(void)
 	//DrawCircle(pos_.x, pos_.y, puyoSize_.x / 2, color_, true);
 	DrawOval(
 		pos_.x, 
-		pos_.y + ((-abs(puyonCnt_ - 6) + 6) / puyonNum_) * 2,
+		pos_.y + (-abs(puyonCnt_ - 6) + 6) * 2 / 3 * (4 - puyonNum_),
 		puyoSize_.x / 2,
-		puyoSize_.y / 2 - (-abs(puyonCnt_ - 6) + 6) / puyonNum_,
+		puyoSize_.y / 2 - (-abs(puyonCnt_ - 6) + 6) / 3 * (4 - puyonNum_),
 		color_, true
 	);
 	if (drawPermit_.bit.up)
@@ -186,12 +190,17 @@ bool Puyo::CheckPuyon(void)
 	return (puyonCnt_ > 0);
 }
 
-void Puyo::SetMunyon()
+void Puyo::SetMunyon(void)
 {
 	munyonCnt_ = 12;
 }
 
-bool Puyo::CheckMunyon()
+bool Puyo::CheckMunyon(void)
 {
 	return (munyonCnt_ > 0);
+}
+
+void Puyo::ResetMunyon(void)
+{
+	drawPermit_ = { 0, 0, 0, 0 };
 }
