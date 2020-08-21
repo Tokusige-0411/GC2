@@ -2,7 +2,6 @@
 #include "Puyo.h"
 #include "Field.h"
 
-using PairPuyo = std::pair<SharedPuyo, SharedPuyo>;
 using NextList = std::list<PairPuyo>;
 
 class NextPuyoCtl

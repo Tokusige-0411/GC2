@@ -10,7 +10,7 @@ PlayerUnit::~PlayerUnit()
 {
 }
 
-void PlayerUnit::Update()
+int PlayerUnit::Update(void)
 {
 	auto RotaPuyo = [&](Vector2 puyoPos1, Vector2 puyoPos2, bool rightRota) {
 		auto rotaVec = field_.blockSize_;
@@ -66,7 +66,7 @@ void PlayerUnit::Update()
 	{
 		field_.fieldState_ = FieldState::Fall;
 		targetID_ = 0;
-		return;
+		return targetID_;
 	}
 
 	if (field_.puyoVec_[0]->Pos().y > field_.puyoVec_[1]->Pos().y)
@@ -102,4 +102,6 @@ void PlayerUnit::Update()
 			field_.puyoVec_[targetID_ ^ 1]->Move(data.first);
 		}
 	}
+
+	return targetID_;
 }

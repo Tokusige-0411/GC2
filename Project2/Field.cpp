@@ -101,17 +101,34 @@ void Field::Draw()
 {
 	SetDrawScreen(screenID_);
 	ClsDrawScreen();
+	OjamaDraw();
+	GuideDraw();
 	for (auto&& puyo : puyoVec_)
 	{
 		puyo->Draw();
 	}
+	DrawBox(0, 0, stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, 0xffffff, false);
+}
+
+void Field::OjamaDraw(void)
+{
 	int count = 0;
 	for (auto ojama : ojamaList_)
 	{
 		DrawCircle(48 + count % 6 * blockSize_, 16, blockSize_ / 2, 0x888888, true);
 		count++;
 	}
-	DrawBox(0, 0, stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, 0xffffff, false);
+}
+
+void Field::GuideDraw(void)
+{
+	if (fieldState_ != FieldState::Drop)
+	{
+		return;
+	}
+	auto pos = puyoVec_[targetID_ ^ 1]->Pos();
+	DrawCircle(pos.x, pos.y, blockSize_ / 2 + 2, 0xffffff, true);
+	//guidePuyo.first->Draw();
 }
 
 void Field::DrawField(void)
@@ -123,15 +140,11 @@ void Field::DrawField(void)
 bool Field::Init(void)
 {
 	screenID_ = MakeScreen(stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, true);
-	//controller_ = std::make_unique<PadInput>();
-	//controller_ = std::make_unique<Mouse>();
-	//controller_ = std::make_unique<KeyInput>();
-	//controller_->SetUp(player_);
 
-	_dataBase.resize(stgGridSize_.x * stgGridSize_.y);
+	dataBase_.resize(stgGridSize_.x * stgGridSize_.y);
 	for (int no = 0; no < stgGridSize_.y; no++)
 	{
-		data_.emplace_back(&_dataBase[no * stgGridSize_.x]);
+		data_.emplace_back(&dataBase_[no * stgGridSize_.x]);
 	}
 	for (int y = 0; y < stgGridSize_.y; y++)
 	{
@@ -173,6 +186,7 @@ bool Field::Init(void)
 	result_ = ResultF::Win;
 
 	changeTrg_ = { 0, 1 };
+	contMap_.clear();
 	contType_ = ContType::KeyBoard;
 	contMap_.emplace(ContType::KeyBoard, std::make_unique<KeyInput>());
 	contMap_.emplace(ContType::Mouse, std::make_unique<Mouse>());
@@ -181,6 +195,8 @@ bool Field::Init(void)
 	{
 		data.second->SetUp(player_);
 	}
+
+	targetID_ = 0;
 
 	return true;
 }
@@ -202,6 +218,9 @@ bool Field::InstancePuyo(void)
 	pairPuyo.second->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 80));
 	puyoVec_.emplace(puyoVec_.begin(), pairPuyo.first);
 	puyoVec_.emplace(puyoVec_.begin(), pairPuyo.second);
+	auto type = puyoVec_[0]->Type();
+	auto pos = puyoVec_[0]->Pos();
+	guidePuyo.first = std::make_shared<Puyo>(Vector2(pos.x, pos.y), type);
 
 	return true;
 }
@@ -343,6 +362,11 @@ void Field::SetResult(ResultF result)
 const ResultF Field::GetResult(void)
 {
 	return result_;
+}
+
+Vector2 Field::ConvertGrid(Vector2 grid)
+{
+	return Vector2(grid.x * blockSize_ + blockSize_ / 2, grid.y * blockSize_ + blockSize_ / 2);
 }
 
 void Field::ChangeCont(void)

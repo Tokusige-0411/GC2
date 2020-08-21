@@ -43,6 +43,7 @@ enum class ResultF
 };
 
 using SharedPuyo = std::shared_ptr<Puyo>;
+using PairPuyo = std::pair<SharedPuyo, SharedPuyo>;
 
 class Field
 {
@@ -52,6 +53,8 @@ public:
 	~Field();
 	int Update(int ojama);						// ｽﾃｰｼﾞのｱｯﾌﾟﾃﾞｰﾄ
 	void Draw(void);							// ｽﾃｰｼﾞ描画
+	void OjamaDraw(void);
+	void GuideDraw(void);
 	void DrawField(void);						// ｽﾃｰｼﾞ描画用関数
 	bool Init(void);							// 初期化
 	int GetScreenID(void);						// ｽｸﾘｰﾝID取得
@@ -60,8 +63,9 @@ public:
 	bool SetEraseData(SharedPuyo& puyo);		// 消せるぷよの設定をする
 	bool SetParmit(SharedPuyo& puyo);			// ぷよ一個一個Parmit調べる
 	void InstanceOjama(void);					// 指定個数おじゃまﾘｽﾄに追加する
-	void SetResult(ResultF result);
-	const ResultF GetResult(void);
+	void SetResult(ResultF result);				// ﾘｻﾞﾙﾄ設定
+	const ResultF GetResult(void);				// ﾘｻﾞﾙﾄ情報取得
+	Vector2 ConvertGrid(Vector2 grid);			// ｸﾞﾘｯﾄﾞを座標に換算する
 
 private:
 	friend class PlayerUnit;
@@ -86,7 +90,7 @@ private:
 	std::unique_ptr<NextPuyoCtl> nextCtl_;								// ﾈｸｽﾄぷよ管理用
 	std::vector<SharedPuyo> puyoVec_;									// ぷよの情報(後々vectorに)
 
-	std::vector<SharedPuyo> _dataBase;									// ｽﾃｰｼﾞのﾃﾞｰﾀ
+	std::vector<SharedPuyo> dataBase_;									// ｽﾃｰｼﾞのﾃﾞｰﾀ
 	std::vector<SharedPuyo*> data_;										// ｽﾃｰｼﾞにｱｸｾｽするためのﾃﾞｰﾀ部
 
 	std::vector<SharedPuyo> eraseDataBase_;								// 削除ぷよのﾃﾞｰﾀ
@@ -112,9 +116,14 @@ private:
 
 	int screenID_;														// ｽｸﾘｰﾝ情報
 
-	static std::array<int , 2> changeKey_;
-	std::pair<int, int> changeTrg_;
+	static std::array<int , 2> changeKey_;								// ｺﾝﾄﾛｰﾗｰ変更ｷｰ
+	std::pair<int, int> changeTrg_;										// ｺﾝﾄﾛｰﾗｰ変更ｷｰの押下判定
 	ContType contType_;													// 何で操作するか
 	std::map<ContType, std::unique_ptr<Controller>> contMap_;			// ｺﾝﾄﾛｰﾗｰのﾏｯﾌﾟ
+
+	int targetID_;
+
+	PairPuyo guidePuyo;													// 落下地点表示ぷよ
+	std::list<SharedPuyo> guidePuyoList_;								// 
 };
 
