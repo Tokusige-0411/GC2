@@ -2,6 +2,7 @@
 #include"_debug/_DebugDispOut.h"
 #include"SceneMng.h"
 #include"GameScene.h"
+#include"EffectCtl.h"
 
 void SceneMng::Run()
 {
@@ -10,6 +11,7 @@ void SceneMng::Run()
 	{
 		_DebugDispOut::GetInstance().WaitMode();
 		_activeScene = (*_activeScene).Update(std::move(_activeScene));
+		lpEffectCtl.Update();
 		Draw();
 		_frame++;
 	}
@@ -21,6 +23,7 @@ void SceneMng::Draw()
 	ClsDrawScreen();
 
 	_activeScene->Draw();
+	lpEffectCtl.Draw();
 
 	ScreenFlip();
 }
@@ -38,7 +41,7 @@ std::mt19937 SceneMng::GetMt()
 bool SceneMng::SysInit()
 {
 	ChangeWindowMode(true);
-	SetGraphMode(_screenSize.x, _screenSize.y, 16);
+	SetGraphMode(screenSize_.x, screenSize_.y, 16);
 
 	if (DxLib_Init() == -1)
 	{
@@ -46,10 +49,13 @@ bool SceneMng::SysInit()
 	}
 
 	SetDrawScreen(DX_SCREEN_BACK);
+	SetUseDirect3DVersion(DX_DIRECT3D_11);
+
+	lpEffectCtl.Init(Vector2(screenSize_.x, screenSize_.y));
 	return true;
 }
 
-SceneMng::SceneMng() : _screenSize{800, 600}
+SceneMng::SceneMng() : screenSize_{800, 600}
 {
 	SysInit();
 	_frame = 0;

@@ -11,6 +11,7 @@ bool Mouse::SetUp(int no)
     _keyData = 0;
 
     _inputTbl = {
+        {INPUT_ID::DOWN, MOUSE_INPUT_MIDDLE},
         {INPUT_ID::L_ROTA, MOUSE_INPUT_LEFT},
         {INPUT_ID::R_ROTA, MOUSE_INPUT_RIGHT},
     };

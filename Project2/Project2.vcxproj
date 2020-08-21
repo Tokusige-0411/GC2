@@ -145,14 +145,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="EffectCtl.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="input\InputState.cpp" />
     <ClCompile Include="input\KeyInput.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="input\PadState.cpp" />
     <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
+    <ClCompile Include="NextPuyoCtl.cpp" />
     <ClCompile Include="OjamaPuyo.cpp" />
     <ClCompile Include="PlayerUnit.cpp" />
     <ClCompile Include="Puyo.cpp" />
@@ -165,14 +165,17 @@
     <ClInclude Include="BaseScene.h" />
     <ClInclude Include="common\detail\Vector2.h" />
     <ClInclude Include="common\Vector2.h" />
+    <ClInclude Include="EffectCtl.h" />
+    <ClInclude Include="FieldCtl\DrawMode.h" />
+    <ClInclude Include="FieldCtl\LoseMode.h" />
+    <ClInclude Include="FieldCtl\WinMode.h" />
+    <ClInclude Include="NextPuyoCtl.h" />
     <ClInclude Include="OjamaPuyo.h" />
     <ClInclude Include="PuyoCtl\FallMode.h" />
     <ClInclude Include="input\Controller.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="input\InputState.h" />
     <ClInclude Include="input\INPUT_ID.h" />
-    <ClInclude Include="input\PadState.h" />
     <ClInclude Include="input\KeyInput.h" />
     <ClInclude Include="input\Mouse.h" />
     <ClInclude Include="input\PadInput.h" />

@@ -76,7 +76,7 @@ void PlayerUnit::Update()
 		TRACE("%d", targetID_);
 	}
 
-	auto data = field_._controller->GetContData();
+	auto data = field_.contMap_[field_.contType_]->GetContData();
 	if ((data[INPUT_ID::L_ROTA][static_cast<int>(Trg::Now)] && !data[INPUT_ID::L_ROTA][static_cast<int>(Trg::Old)]) || 
 		(data[INPUT_ID::R_ROTA][static_cast<int>(Trg::Now)] && !data[INPUT_ID::R_ROTA][static_cast<int>(Trg::Old)]))
 	{
@@ -89,7 +89,12 @@ void PlayerUnit::Update()
 		field_.puyoVec_[targetID_ ^ 1]->SoftDrop();
 	}
 
-	for (auto data : field_._controller->GetContData())
+	//if (data[INPUT_ID::UP][static_cast<int>(Trg::Now)] && !data[INPUT_ID::UP][static_cast<int>(Trg::Old)])
+	//{
+	//	field_.puyoVec_.emplace(field_.puyoVec_.begin(), std::make_shared<OjamaPuyo>(std::move(Vector2(field_.stgGridSize_.x / 2 * field_.blockSize_ - 20, 60)), Puyo_ID::OJAMA));
+	//}
+
+	for (auto data : field_.contMap_[field_.contType_]->GetContData())
 	{
 		if (data.second[static_cast<int>(Trg::Now)] && !data.second[static_cast<int>(Trg::Old)])
 		{

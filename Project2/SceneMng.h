@@ -5,7 +5,6 @@
 #include <random>
 #include "BaseScene.h"
 #include "Field.h"
-#include "input/InputState.h"
 #include "Vector2.h"
 #include "input/INPUT_ID.h"
 #include "PLAYER_NUM.h"
@@ -32,7 +31,7 @@ private:
 	SceneMng();
 	~SceneMng();
 
-	const Vector2 _screenSize;
+	const Vector2 screenSize_;
 
 	unique_Base _activeScene;									// “®‚¢‚Ä‚¢‚é¼°Ý
 

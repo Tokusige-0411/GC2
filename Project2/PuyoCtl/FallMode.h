@@ -3,7 +3,7 @@
 
 struct FallMode
 {
-	void operator()(Field& field) 
+	bool operator()(Field& field) 
 	{
 		std::for_each(field.puyoVec_.rbegin(), field.puyoVec_.rend(), [&](auto& puyo)
 			{
@@ -16,7 +16,7 @@ struct FallMode
 		bool puyonFlag = true;
 		std::for_each(field.puyoVec_.rbegin(), field.puyoVec_.rend(), [&](auto& puyo)
 			{
-				if (puyo->Update())
+				if (puyo->Update(0))
 				{
 					puyonFlag = false;
 				}
@@ -47,5 +47,6 @@ struct FallMode
 		{
 			field.fieldState_ = FieldState::Puyon;
 		}
+		return true;
 	}
 };

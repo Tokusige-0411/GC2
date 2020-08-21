@@ -2,6 +2,7 @@
 #include<functional>
 #include<random>
 #include<algorithm>
+#include<cmath>
 #include"Field.h"
 #include"SceneMng.h"
 #include"input/KeyInput.h"
@@ -13,8 +14,15 @@
 #include"PuyoCtl/MunyonMode.h"
 #include"PuyoCtl/PuyonMode.h"
 #include"PuyoCtl/RensaMode.h"
+#include"FieldCtl/WinMode.h"
+#include"FieldCtl/LoseMode.h"
+#include"FieldCtl/DrawMode.h"
+#include"NextPuyoCtl.h"
+#include"EffectCtl.h"
 
-int Field::_plCount = 0;
+int Field::plCount_ = 0;
+bool Field::gameEnd_ = false;
+std::array<int, 2> Field::changeKey_ = { KEY_INPUT_PGUP, KEY_INPUT_PGDN };
 
 Field::Field()
 {
@@ -23,11 +31,11 @@ Field::Field()
 
 Field::Field(Vector2&& offset, Vector2&& size) : stgGridSize_{8, 14}
 {
-	_offset = offset;
-	_fieldSize = size;
-	blockSize_ = 40;
-	_player = _plCount;
-	_plCount++;
+	offset_ = offset;
+	fieldSize_ = size;
+	blockSize_ = 32;
+	player_ = plCount_;
+	plCount_++;
 	Init();
 	InstancePuyo();
 }
@@ -36,10 +44,45 @@ Field::~Field()
 {
 }
 
-void Field::Update(void)
+int Field::Update(int ojamaCnt)
 {
-	(*_controller)();
-	fieldMode_[fieldState_](*this);
+	//(*controller_)();
+	ChangeCont();
+	(*contMap_[contType_])();
+	ojamaCnt_ = 0;
+
+	// Ç®Ç∂Ç·Ç‹Ç’ÇÊÇÃ≤›Ω¿›Ω
+	while (ojamaCnt)
+	{
+		InstanceOjama();
+		ojamaCnt--;
+	}
+
+	if (!gameEnd_)
+	{
+		if (!fieldMode_[fieldState_](*this))
+		{
+			result_ = ResultF::Lose;
+			gameEnd_ = true;
+		}
+	}
+	else
+	{
+		switch (result_)
+		{
+		case ResultF::Win:
+			fieldMode_[FieldState::Win](*this);
+			break;
+		case ResultF::Lose:
+			fieldMode_[FieldState::Lose](*this);
+			break;
+		case ResultF::Draw:
+			fieldMode_[FieldState::Draw](*this);
+			break;
+		default:
+			break;
+		}
+	}
 
 	if (fieldState_ == FieldState::Fall)
 	{
@@ -50,25 +93,40 @@ void Field::Update(void)
 	}
 	
 	Draw();
+
+	return ojamaCnt_;
 }
 
 void Field::Draw()
 {
-	SetDrawScreen(_screenID);
+	SetDrawScreen(screenID_);
 	ClsDrawScreen();
 	for (auto&& puyo : puyoVec_)
 	{
 		puyo->Draw();
 	}
+	int count = 0;
+	for (auto ojama : ojamaList_)
+	{
+		DrawCircle(48 + count % 6 * blockSize_, 16, blockSize_ / 2, 0x888888, true);
+		count++;
+	}
 	DrawBox(0, 0, stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, 0xffffff, false);
+}
+
+void Field::DrawField(void)
+{
+	DrawGraph(offset_.x, offset_.y, screenID_, true);
+	nextCtl_->Draw();
 }
 
 bool Field::Init(void)
 {
-	_screenID = MakeScreen(stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, true);
-	//_controller = std::make_unique<PadInput>();
-	_controller = std::make_unique<KeyInput>();
-	_controller->SetUp(_player);
+	screenID_ = MakeScreen(stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, true);
+	//controller_ = std::make_unique<PadInput>();
+	//controller_ = std::make_unique<Mouse>();
+	//controller_ = std::make_unique<KeyInput>();
+	//controller_->SetUp(player_);
 
 	_dataBase.resize(stgGridSize_.x * stgGridSize_.y);
 	for (int no = 0; no < stgGridSize_.y; no++)
@@ -77,12 +135,12 @@ bool Field::Init(void)
 	}
 	for (int y = 0; y < stgGridSize_.y; y++)
 	{
-		data_[y][0] = std::make_shared<Puyo>(Vector2(blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
-		data_[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * blockSize_ - blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_Type::WALL);
+		data_[y][0] = std::make_shared<Puyo>(Vector2(blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_ID::WALL);
+		data_[y][stgGridSize_.x - 1] = std::make_shared<Puyo>(Vector2(stgGridSize_.x * blockSize_ - blockSize_ / 2, blockSize_ / 2 + y * blockSize_), Puyo_ID::WALL);
 	}
 	for (int x = 0; x < stgGridSize_.x; x++)
 	{
-		data_[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(blockSize_ / 2 + x * blockSize_, stgGridSize_.y * blockSize_ - blockSize_ / 2), Puyo_Type::WALL);
+		data_[stgGridSize_.y - 1][x] = std::make_shared<Puyo>(Vector2(blockSize_ / 2 + x * blockSize_, stgGridSize_.y * blockSize_ - blockSize_ / 2), Puyo_ID::WALL);
 	}
 
 	// çÌèúÇ’ÇÊäiî[îzóÒèâä˙âª
@@ -94,31 +152,58 @@ bool Field::Init(void)
 
 	playerUnit_ = std::make_unique<PlayerUnit>(*this);
 
+	Vector2 nextOffset = { offset_.x + blockSize_ * (stgGridSize_.x + 1), offset_.y + blockSize_ * 2 };
+	nextCtl_ = std::make_unique<NextPuyoCtl>(nextOffset, 3, 2);
+
 	fieldMode_.try_emplace(FieldState::Drop, DropMode());
 	fieldMode_.try_emplace(FieldState::Puyon, PuyonMode());
 	fieldMode_.try_emplace(FieldState::Rensa, RensaMode());
 	fieldMode_.try_emplace(FieldState::Fall, FallMode());
 	fieldMode_.try_emplace(FieldState::Munyon, MunyonMode());
+	fieldMode_.try_emplace(FieldState::Win, WinMode());
+	fieldMode_.try_emplace(FieldState::Lose, LoseMode());
+	fieldMode_.try_emplace(FieldState::Draw, LoseMode());
 	fieldState_ = FieldState::Drop;
+
+	rensaCnt_ = 0;
+	rensaMax_ = 0;
+	ojamaCnt_ = 0;
+	ojamaFlag_ = true;
+	erasePuyoCnt_ = 0;
+	result_ = ResultF::Win;
+
+	changeTrg_ = { 0, 1 };
+	contType_ = ContType::KeyBoard;
+	contMap_.emplace(ContType::KeyBoard, std::make_unique<KeyInput>());
+	contMap_.emplace(ContType::Mouse, std::make_unique<Mouse>());
+	contMap_.emplace(ContType::Pad, std::make_unique<PadInput>());
+	for (auto&& data : contMap_)
+	{
+		data.second->SetUp(player_);
+	}
 
 	return true;
 }
 
 int Field::GetScreenID(void)
 {
-	return _screenID;
+	return screenID_;
 }
 
 Vector2 Field::GetOffset(void)
 {
-	return _offset;
+	return offset_;
 }
 
 bool Field::InstancePuyo(void)
 {
-	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 60)), static_cast<Puyo_Type>(rand() % 5 + 1)));
-	puyoVec_.emplace(puyoVec_.begin(), std::make_shared<Puyo>(std::move(Vector2(stgGridSize_.x / 2 * blockSize_ - 20, 100)), static_cast<Puyo_Type>(rand() % 5 + 1)));
-	return false;
+	auto pairPuyo = nextCtl_->Pickup();
+	pairPuyo.first->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 48));
+	pairPuyo.second->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 80));
+	puyoVec_.emplace(puyoVec_.begin(), pairPuyo.first);
+	puyoVec_.emplace(puyoVec_.begin(), pairPuyo.second);
+
+	return true;
 }
 
 bool Field::SetEraseData(SharedPuyo& puyo)
@@ -126,25 +211,38 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 	auto grid = puyo->Grid(blockSize_);
 	int count = 0;
 
-	std::function<void(Puyo_Type, Vector2)> chPuyo = [&](Puyo_Type type, Vector2 grid) {
-		if (!eraseData_[grid.y][grid.x])
+	std::function<void(Puyo_ID, Vector2)> chPuyo = [&](Puyo_ID type, Vector2 grid) {
+		if (type != Puyo_ID::OJAMA)
 		{
-			if (data_[grid.y][grid.x])
+			if (!eraseData_[grid.y][grid.x])
 			{
-				if (data_[grid.y][grid.x]->Type() == type)
+				if (data_[grid.y][grid.x])
 				{
-					count++;
-					eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
-					chPuyo(type, { grid.x, grid.y + 1 });
-					chPuyo(type, { grid.x, grid.y - 1 });
-					chPuyo(type, { grid.x - 1, grid.y });
-					chPuyo(type, { grid.x + 1, grid.y });
+					if (data_[grid.y][grid.x]->Type() == type)
+					{
+						count++;
+						eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
+						chPuyo(type, { grid.x, grid.y + 1 });
+						chPuyo(type, { grid.x, grid.y - 1 });
+						chPuyo(type, { grid.x - 1, grid.y });
+						chPuyo(type, { grid.x + 1, grid.y });
+					}
 				}
 			}
 		}
 	};
 
 	chPuyo(puyo->Type(), puyo->Grid(blockSize_));
+
+	auto chOjama = [&](Vector2 grid) {
+		if (data_[grid.y][grid.x])
+		{
+			if (data_[grid.y][grid.x]->Type() == Puyo_ID::OJAMA)
+			{
+				eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
+			}
+		}
+	};
 
 	if (count < 4)
 	{
@@ -161,12 +259,35 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 	}
 	else
 	{
+		// Ç®Ç∂Ç·Ç‹Ç’ÇÊÇeraseDataÇ…í«â¡
+		for (int y = 0; y < stgGridSize_.y; y++)
+		{
+			for (int x = 0; x < stgGridSize_.x; x++)
+			{
+				if (eraseData_[y][x])
+				{
+					if (eraseData_[y][x]->Type() < Puyo_ID::OJAMA)
+					{
+						chOjama({ x + 1, y });
+						chOjama({ x - 1, y });
+						chOjama({ x, y + 1 });
+						chOjama({ x, y - 1 });
+					}
+				}
+			}
+		}
+
+		// Ç®é◊ñÇÇ’ÇÊÇÃí«â¡
+		rensaCnt_++;
+		erasePuyoCnt_ += count;
+
 		for (auto&& puyo : puyoVec_)
 		{
 			auto grid = puyo->Grid(blockSize_);
 			if (eraseData_[grid.y][grid.x] == puyo)
 			{
 				puyo->Alive(false);
+				lpEffectCtl.Play("erase", offset_ + puyo->Pos());
 				data_[grid.y][grid.x].reset();
 			}
 		}
@@ -189,10 +310,6 @@ bool Field::SetParmit(SharedPuyo& puyo)
 	{
 		moveChack.bit.right = true;
 	}
-	if (!data_[grid.y - 1][grid.x])
-	{
-		moveChack.bit.up = true;
-	}
 
 	if (!data_[grid.y + 1][grid.x])
 	{
@@ -211,4 +328,33 @@ bool Field::SetParmit(SharedPuyo& puyo)
 		return false;
 	}
 	return true;
+}
+
+void Field::InstanceOjama(void)
+{
+	ojamaList_.emplace_back(std::make_shared<OjamaPuyo>(std::move(Vector2{48, 16}), Puyo_ID::OJAMA));
+}
+
+void Field::SetResult(ResultF result)
+{
+	result_ = result;
+}
+
+const ResultF Field::GetResult(void)
+{
+	return result_;
+}
+
+void Field::ChangeCont(void)
+{
+	changeTrg_.second = changeTrg_.first;
+	changeTrg_.first = CheckHitKey(changeKey_[player_]);
+	if (changeTrg_.first && !changeTrg_.second)
+	{
+		++contType_;
+		if (contType_ >= ContType::Max)
+		{
+			contType_ = ContType::KeyBoard;
+		}
+	}
 }

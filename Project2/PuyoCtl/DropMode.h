@@ -4,10 +4,10 @@
 
 struct DropMode
 {
-	void operator()(Field& field) 
+	bool operator()(Field& field) 
 	{
-		FallMode()(field);
 		field.playerUnit_->Update();
+		return FallMode()(field);
 	}
 };
 

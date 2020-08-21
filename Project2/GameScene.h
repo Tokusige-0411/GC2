@@ -13,6 +13,7 @@ public:
     void Draw(void) override;
 
 private:
-    std::vector<std::unique_ptr<Field>> _playerField;
+    std::vector<std::unique_ptr<Field>> playerField_;
+    int ojamaCnt_;                                           // ‘¼ƒvƒŒƒCƒ„[‚Ì‚¨‚¶‚á‚ÜŠÇ—•Ï”
 };
 

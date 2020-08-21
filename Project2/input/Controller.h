@@ -11,6 +11,11 @@ enum class ContType
 	Max
 };
 
+static ContType begin(ContType) { return ContType::KeyBoard; }
+static ContType end(ContType) { return ContType::Max; }
+static ContType operator*(ContType id) { return id; }
+static ContType operator++(ContType& id) { return id = static_cast<ContType>(std::underlying_type<ContType>::type(id) + 1); }
+
 enum class Trg
 {
 	Now,
