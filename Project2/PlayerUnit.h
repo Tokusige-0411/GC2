@@ -6,7 +6,7 @@ class PlayerUnit
 public:
 	PlayerUnit(Field& field);
 	~PlayerUnit();
-	int Update(void);
+	int Update(int targetID);
 
 private:
 	Field& field_;

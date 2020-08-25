@@ -10,8 +10,9 @@ PlayerUnit::~PlayerUnit()
 {
 }
 
-int PlayerUnit::Update(void)
+int PlayerUnit::Update(int targetID)
 {
+	targetID_ = targetID;
 	auto RotaPuyo = [&](Vector2 puyoPos1, Vector2 puyoPos2, bool rightRota) {
 		auto rotaVec = field_.blockSize_;
 		if (!rightRota)

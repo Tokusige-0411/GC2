@@ -68,6 +68,7 @@ struct MunyonMode
 				field.SetParmit(field.puyoVec_[0]);
 				field.SetParmit(field.puyoVec_[1]);
 				field.ojamaFlag_ = true;
+				field.targetID_ = 0;
 				field.fieldState_ = FieldState::Drop;
 			}
 		}

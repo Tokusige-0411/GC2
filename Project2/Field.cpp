@@ -128,7 +128,8 @@ void Field::GuideDraw(void)
 	}
 	auto pos = puyoVec_[targetID_ ^ 1]->Pos();
 	DrawCircle(pos.x, pos.y, blockSize_ / 2 + 2, 0xffffff, true);
-	//guidePuyo.first->Draw();
+	guidePuyo.first->Draw();
+	guidePuyo.second->Draw();
 }
 
 void Field::DrawField(void)
@@ -221,6 +222,9 @@ bool Field::InstancePuyo(void)
 	auto type = puyoVec_[0]->Type();
 	auto pos = puyoVec_[0]->Pos();
 	guidePuyo.first = std::make_shared<Puyo>(Vector2(pos.x, pos.y), type);
+	type = puyoVec_[1]->Type();
+	pos = puyoVec_[1]->Pos();
+	guidePuyo.second = std::make_shared<Puyo>(Vector2(pos.x, pos.y), type);
 
 	return true;
 }
