@@ -124,6 +124,7 @@ private:
 	int targetID_;
 
 	PairPuyo guidePuyo;													// —Ž‰º’n“_•\Ž¦‚Õ‚æ
-	std::list<SharedPuyo> guidePuyoList_;								// 
+
+	int fieldBG_;											// Ì¨°ÙÄÞ‚Ì”wŒi
 };
 

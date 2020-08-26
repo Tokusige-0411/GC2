@@ -101,13 +101,13 @@ void Field::Draw()
 {
 	SetDrawScreen(screenID_);
 	ClsDrawScreen();
+	DrawRectGraph(0, 0, 0 + (player_ * (blockSize_ * stgGridSize_.x)), 0, blockSize_ * stgGridSize_.x, blockSize_ * stgGridSize_.y, fieldBG_, true, false);
 	OjamaDraw();
 	GuideDraw();
 	for (auto&& puyo : puyoVec_)
 	{
 		puyo->Draw();
 	}
-	DrawBox(0, 0, stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, 0xffffff, false);
 }
 
 void Field::OjamaDraw(void)
@@ -128,8 +128,8 @@ void Field::GuideDraw(void)
 	}
 	auto pos = puyoVec_[targetID_ ^ 1]->Pos();
 	DrawCircle(pos.x, pos.y, blockSize_ / 2 + 2, 0xffffff, true);
-	guidePuyo.first->Draw();
-	guidePuyo.second->Draw();
+	DrawCircle(guidePuyo.first->Pos().x, guidePuyo.first->Pos().y, 5, guidePuyo.first->GetColor(), true);
+	DrawCircle(guidePuyo.second->Pos().x, guidePuyo.second->Pos().y, 5, guidePuyo.second->GetColor(), true);
 }
 
 void Field::DrawField(void)
@@ -140,7 +140,7 @@ void Field::DrawField(void)
 
 bool Field::Init(void)
 {
-	screenID_ = MakeScreen(stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, true);
+	screenID_ = MakeScreen(stgGridSize_.x * blockSize_, stgGridSize_.y * blockSize_, false);
 
 	dataBase_.resize(stgGridSize_.x * stgGridSize_.y);
 	for (int no = 0; no < stgGridSize_.y; no++)
@@ -198,6 +198,9 @@ bool Field::Init(void)
 	}
 
 	targetID_ = 0;
+
+	// ‚È‚ºstatic‚Å‚ÍŽg‚¦‚È‚¢‚Ì‚©
+	fieldBG_ = LoadGraph("image/FieldBG.png");
 
 	return true;
 }

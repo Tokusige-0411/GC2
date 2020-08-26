@@ -87,6 +87,7 @@ void Puyo::Draw(void)
 		puyoSize_.y / 2 - (-abs(puyonCnt_ - 6) + 6) / 3 * (4 - puyonNum_),
 		color_, true
 	);
+
 	if (drawPermit_.bit.up)
 	{
 		DrawBox(pos_.x - puyoSize_.x / 2, pos_.y - puyoSize_.y / 2, pos_.x + puyoSize_.x / 2 + 1, pos_.y + 1, color_, true);
@@ -204,4 +205,9 @@ bool Puyo::CheckMunyon(void)
 void Puyo::ResetMunyon(void)
 {
 	drawPermit_ = { 0, 0, 0, 0 };
+}
+
+int Puyo::GetColor(void)
+{
+	return color_;
 }

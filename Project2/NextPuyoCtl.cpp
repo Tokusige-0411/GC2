@@ -3,7 +3,7 @@
 
 NextPuyoCtl::NextPuyoCtl(Vector2& nextPos, int haveCnt, int drawCnt)
 {
-	screenID_ = MakeScreen(48, 80, true);
+	screenID_ = MakeScreen(48, 80, false);
 	nextPuyoList_.clear();
 	nextPos_ = nextPos;
 	drawCnt_ = drawCnt;

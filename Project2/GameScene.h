@@ -15,5 +15,6 @@ public:
 private:
     std::vector<std::unique_ptr<Field>> playerField_;
     int ojamaCnt_;                                           // ‘¼ƒvƒŒƒCƒ„[‚Ì‚¨‚¶‚á‚ÜŠÇ—•Ï”
+    int gameSceneBG_;                                        // ¹Ş°Ñ¼°İ”wŒi
 };
 

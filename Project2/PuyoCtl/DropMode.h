@@ -22,20 +22,36 @@ struct DropMode
 			}
 		};
 
-		auto grid = field.puyoVec_[field.targetID_]->Grid(field.blockSize_);
-		guideSet(grid, field.guidePuyo.first);
-		grid = field.puyoVec_[field.targetID_ ^ 1]->Grid(field.blockSize_);
-		guideSet(grid, field.guidePuyo.second);
+		//auto grid = field.puyoVec_[field.targetID_]->Grid(field.blockSize_);
+		//guideSet(grid, field.guidePuyo.first);
+		//grid = field.puyoVec_[field.targetID_ ^ 1]->Grid(field.blockSize_);
+		//guideSet(grid, field.guidePuyo.second);
 
-		if (field.puyoVec_[field.targetID_ ^ 1]->Pos().y > field.puyoVec_[field.targetID_]->Pos().y)
-		{
-			grid = field.guidePuyo.first->Grid(field.blockSize_);
-			field.guidePuyo.first->Pos(field.ConvertGrid({ grid.x, grid.y - 1 }));
-		}
-		else
+		//if (field.puyoVec_[field.targetID_ ^ 1]->Pos().y > field.puyoVec_[field.targetID_]->Pos().y)
+		//{
+		//	grid = field.guidePuyo.first->Grid(field.blockSize_);
+		//	field.guidePuyo.first->Pos(field.ConvertGrid({ grid.x, grid.y - 1 }));
+		//}
+
+		auto pos = field.puyoVec_[field.targetID_]->Pos();
+		field.guidePuyo.first->Pos(std::move(pos));
+		pos = field.puyoVec_[field.targetID_ ^ 1]->Pos();
+		field.guidePuyo.second->Pos(std::move(pos));
+
+		guideSet(field.guidePuyo.first->Grid(field.blockSize_), field.guidePuyo.first);
+		guideSet(field.guidePuyo.second->Grid(field.blockSize_), field.guidePuyo.second);
+
+		// â‘Îl‚¦’¼‚·
+		Vector2 grid;
+		if (field.puyoVec_[field.targetID_]->Pos().y > field.puyoVec_[field.targetID_ ^ 1]->Pos().y)
 		{
 			grid = field.guidePuyo.second->Grid(field.blockSize_);
 			field.guidePuyo.second->Pos(field.ConvertGrid({ grid.x, grid.y - 1 }));
+		}
+		else if(field.puyoVec_[field.targetID_]->Pos().y < field.puyoVec_[field.targetID_ ^ 1]->Pos().y)
+		{
+			grid = field.guidePuyo.first->Grid(field.blockSize_);
+			field.guidePuyo.first->Pos(field.ConvertGrid({ grid.x, grid.y - 1 }));
 		}
 
 		return FallMode()(field);

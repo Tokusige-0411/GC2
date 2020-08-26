@@ -152,6 +152,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
+    <ClCompile Include="MenuScene.cpp" />
     <ClCompile Include="NextPuyoCtl.cpp" />
     <ClCompile Include="OjamaPuyo.cpp" />
     <ClCompile Include="PlayerUnit.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="FieldCtl\DrawMode.h" />
     <ClInclude Include="FieldCtl\LoseMode.h" />
     <ClInclude Include="FieldCtl\WinMode.h" />
+    <ClInclude Include="MenuScene.h" />
     <ClInclude Include="NextPuyoCtl.h" />
     <ClInclude Include="OjamaPuyo.h" />
     <ClInclude Include="PuyoCtl\FallMode.h" />

@@ -64,6 +64,8 @@ public:
 	bool CheckMunyon(void);
 	void ResetMunyon(void);
 
+	int GetColor(void);
+
 	virtual void SetStayInterval(int count) {};
 
 private:
