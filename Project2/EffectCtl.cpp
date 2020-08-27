@@ -6,13 +6,19 @@ void EffectCtl::Update(void)
 {
 	UpdateEffekseer2D();
 
-	auto itl = std::remove_if(playList_.begin(), playList_.end(), [](int handle) {return !IsEffekseer2DEffectPlaying(handle); });
+	auto itl = std::remove_if(playList_.begin(), playList_.end(), [](int handle) {return !(IsEffekseer2DEffectPlaying(handle) == 0); });
 	playList_.erase(itl, playList_.end());
 }
 
 void EffectCtl::Draw(void)
 {
-	DrawEffekseer2D();
+	DrawEffekseer2D_Begin();
+	for (auto handle : playList_)
+	{
+		DrawEffekseer2D_Draw(handle);
+	}
+	DrawEffekseer2D_End();
+	//DrawEffekseer2D();
 }
 
 bool EffectCtl::StopAll(void)

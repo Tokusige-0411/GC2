@@ -1,7 +1,7 @@
 #include<Dxlib.h>
 #include"_debug/_DebugDispOut.h"
 #include"SceneMng.h"
-#include"GameScene.h"
+#include"Scene/GameScene.h"
 #include"EffectCtl.h"
 
 void SceneMng::Run()

@@ -53,8 +53,6 @@ public:
 	~Field();
 	int Update(int ojama);						// ｽﾃｰｼﾞのｱｯﾌﾟﾃﾞｰﾄ
 	void Draw(void);							// ｽﾃｰｼﾞ描画
-	void OjamaDraw(void);
-	void GuideDraw(void);
 	void DrawField(void);						// ｽﾃｰｼﾞ描画用関数
 	bool Init(void);							// 初期化
 	int GetScreenID(void);						// ｽｸﾘｰﾝID取得
@@ -79,6 +77,9 @@ private:
 	friend struct DrawMode;
 
 	void ChangeCont(void);												// ｺﾝﾄﾛｰﾗｰを変える
+	void OjamaDraw(void);
+	void GuideDraw(void);
+	void LogoDraw(void);
 
 	const Vector2 stgGridSize_;											// ｽﾃｰｼﾞのﾏｽｻｲｽﾞ
 	Vector2 fieldSize_;													// ｽﾃｰｼﾞの描画ｻｲｽﾞ
@@ -125,6 +126,11 @@ private:
 
 	PairPuyo guidePuyo;													// 落下地点表示ぷよ
 
-	int fieldBG_;											// ﾌｨｰﾙﾄﾞの背景
+	int fieldBG_;														// ﾌｨｰﾙﾄﾞの背景
+
+	std::array<int, 5> rensaLogo_;										// 連鎖のﾛｺﾞ
+	Vector2 rensaLogoPos_;												// 連鎖のﾛｺﾞ表示位置
+
+
 };
 

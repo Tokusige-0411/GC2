@@ -108,6 +108,7 @@ void Field::Draw()
 	{
 		puyo->Draw();
 	}
+	LogoDraw();
 }
 
 void Field::OjamaDraw(void)
@@ -130,6 +131,16 @@ void Field::GuideDraw(void)
 	DrawCircle(pos.x, pos.y, blockSize_ / 2 + 2, 0xffffff, true);
 	DrawCircle(guidePuyo.first->Pos().x, guidePuyo.first->Pos().y, 5, guidePuyo.first->GetColor(), true);
 	DrawCircle(guidePuyo.second->Pos().x, guidePuyo.second->Pos().y, 5, guidePuyo.second->GetColor(), true);
+}
+
+void Field::LogoDraw(void)
+{
+	if (!rensaCnt_)
+	{
+		return;
+	}
+	DrawGraph(rensaLogoPos_.x, rensaLogoPos_.y, rensaLogo_[rensaCnt_ - 1], true);
+	rensaLogoPos_.y--;
 }
 
 void Field::DrawField(void)
@@ -201,6 +212,8 @@ bool Field::Init(void)
 
 	// ‚È‚ºstatic‚Å‚Íg‚¦‚È‚¢‚Ì‚©
 	fieldBG_ = LoadGraph("image/FieldBG.png");
+
+	LoadDivGraph("image/rensa.png", 5, 1, 5, 96, 24, rensaLogo_.data());
 
 	return true;
 }
@@ -315,6 +328,7 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 				puyo->Alive(false);
 				lpEffectCtl.Play("erase", offset_ + puyo->Pos());
 				data_[grid.y][grid.x].reset();
+				rensaLogoPos_ = puyo->Pos();
 			}
 		}
 		return true;

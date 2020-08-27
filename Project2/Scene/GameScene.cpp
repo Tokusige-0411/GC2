@@ -1,5 +1,6 @@
 #include<Dxlib.h>
 #include "GameScene.h"
+#include "MenuScene.h"
 
 GameScene::GameScene()
 {
@@ -31,7 +32,7 @@ unique_Base GameScene::Update(unique_Base own)
 
 	if (CheckHitKey(KEY_INPUT_F2))
 	{
-
+		own = std::make_unique<MenuScene>(std::move(own), true, false);
 	}
 
 	return std::move(own);

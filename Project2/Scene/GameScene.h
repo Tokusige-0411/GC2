@@ -1,7 +1,7 @@
 #pragma once
 #include<vector>
 #include"BaseScene.h"
-#include"Field.h"
+#include"../Field.h"
 
 class GameScene :
     public BaseScene

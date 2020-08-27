@@ -194,7 +194,7 @@ bool Puyo::CheckPuyon(void)
 
 void Puyo::SetMunyon(void)
 {
-	munyonCnt_ = 12;
+	munyonCnt_ = 15;
 }
 
 bool Puyo::CheckMunyon(void)

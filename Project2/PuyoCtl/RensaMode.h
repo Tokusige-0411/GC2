@@ -18,32 +18,60 @@ struct RensaMode
 		}
 		else
 		{
-			for (auto& puyo : field.puyoVec_)
+			// •‰‚¯”»’è
+			if (field.data_[1][4])
 			{
-				puyo->SetMunyon();
-				auto CheckMunyon = [&](Puyo_ID id, Vector2 grid) {
-					if ((grid.x >= 0) && (grid.y >= 0))
-					{
-						if (field.data_[grid.y][grid.x])
-						{
-							if (field.data_[grid.y][grid.x]->Type() == id)
-							{
-								return true;
-							}
-						}
-					}
-					return false;
-				};
-				auto grid = puyo->Grid(field.blockSize_);
-				auto type = puyo->Type();
-				DirPermit tmpPermit;
-				tmpPermit.bit.up = CheckMunyon(type, { grid.x, grid.y - 1 });
-				tmpPermit.bit.right = CheckMunyon(type, { grid.x + 1, grid.y });
-				tmpPermit.bit.down = CheckMunyon(type, { grid.x, grid.y + 1 });
-				tmpPermit.bit.left = CheckMunyon(type, { grid.x - 1, grid.y });
-				puyo->SetDrawPermit(tmpPermit);
+				TRACE("ƒQ[ƒ€ƒI[ƒo[");
+				return false;
 			}
-			field.fieldState_ = FieldState::Munyon;
+			// ‚¨‚¶‚á‚Ü‚ÌŒvŽZ‚¨‚æ‚Ñ˜A½‚È‚Ç‚Ì‰Šú‰»
+			field.ojamaCnt_ = field.rensaCnt_ * std::exp(field.erasePuyoCnt_ / 8);
+			if (field.rensaCnt_ > field.rensaMax_)
+			{
+				field.rensaMax_ = field.rensaCnt_;
+			}
+			field.rensaCnt_ = 0;
+			field.erasePuyoCnt_ = 0;
+
+			// ‚¨‚¶‚á‚Ü‚Ì‘ŠŽE
+			if (field.ojamaCnt_ >= field.ojamaList_.size())
+			{
+				field.ojamaCnt_ -= field.ojamaList_.size();
+				field.ojamaList_.clear();
+			}
+			else
+			{
+				field.ojamaList_.erase(field.ojamaList_.begin(), std::next(field.ojamaList_.begin(), field.ojamaCnt_));
+			}
+
+			// ‚¨‚¶‚á‚ÜØ½Ä‚É—v‘f‚ª‚ ‚è®ŠŽ‚Â‚¨‚¶‚á‚Ü‚ª~‚Á‚Ä‚¢‚¢ó‘Ô‚¾‚Á‚½‚ç
+			if (field.ojamaList_.size() && field.ojamaFlag_)
+			{
+				int count = 0;
+				for (auto ojama : field.ojamaList_)
+				{
+					if (count >= 30)
+					{
+						break;
+					}
+					ojama->SetStayInterval(count);
+					ojama->Pos({ 48 + ((count % 6) * 32), 16 });
+					field.puyoVec_.emplace(field.puyoVec_.begin(), ojama);
+					count++;
+				}
+				field.ojamaList_.erase(field.ojamaList_.begin(), std::next(field.ojamaList_.begin(), count));
+				field.ojamaFlag_ = false;
+				field.fieldState_ = FieldState::Fall;
+			}
+			else
+			{
+				field.InstancePuyo();
+				field.SetParmit(field.puyoVec_[0]);
+				field.SetParmit(field.puyoVec_[1]);
+				field.ojamaFlag_ = true;
+				field.targetID_ = 0;
+				field.fieldState_ = FieldState::Drop;
+			}
 		}
 		return true;
 	}
