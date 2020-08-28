@@ -18,7 +18,6 @@ void EffectCtl::Draw(void)
 		DrawEffekseer2D_Draw(handle);
 	}
 	DrawEffekseer2D_End();
-	//DrawEffekseer2D();
 }
 
 bool EffectCtl::StopAll(void)

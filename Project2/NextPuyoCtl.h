@@ -15,6 +15,7 @@ public:
 	void Add(int no);				// ˆø”•ªnextList‚É’Ç‰Á
  
 private:
+	const Vector2 nextScreenSize_;	// next‚Õ‚æ‚Ì½¸Ø°İ‚Ú‘å‚«‚³
 	NextList nextPuyoList_;			// nest‚Õ‚æ‚ÌØ½Ä
 	int drawCnt_;					// next‚ğ•\¦‚³‚¹‚éŒÂ”
 	Vector2 nextPos_;				// next‚ÌˆÊ’u

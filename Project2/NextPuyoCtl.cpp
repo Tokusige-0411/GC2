@@ -1,9 +1,10 @@
 #include <Dxlib.h>
 #include "NextPuyoCtl.h"
+#include "SceneMng.h"
 
-NextPuyoCtl::NextPuyoCtl(Vector2& nextPos, int haveCnt, int drawCnt)
+NextPuyoCtl::NextPuyoCtl(Vector2& nextPos, int haveCnt, int drawCnt) : nextScreenSize_{48, 80}
 {
-	screenID_ = MakeScreen(48, 80, false);
+	screenID_ = MakeScreen(nextScreenSize_.x, nextScreenSize_.y, false);
 	nextPuyoList_.clear();
 	nextPos_ = nextPos;
 	drawCnt_ = drawCnt;
@@ -33,7 +34,12 @@ void NextPuyoCtl::Draw(void)
 	}
 
 	SetDrawScreen(beforID);
-	DrawGraph(nextPos_.x, nextPos_.y, screenID_, true);
+	//DrawGraph(nextPos_.x, nextPos_.y, screenID_, true);
+	lpSceneMng.AddDrawQue({ screenID_, 
+		nextPos_.x + nextScreenSize_.x / 2,  
+		nextPos_.y + nextScreenSize_.y / 2 , 0.0, 
+		0.0f, Layer::Char, 
+		DX_BLENDMODE_NOBLEND, 255, DrawType::Image});
 }
 
 PairPuyo NextPuyoCtl::Pickup(void)

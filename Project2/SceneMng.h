@@ -11,6 +11,39 @@
 
 #define lpSceneMng SceneMng::GetInstance()
 
+enum class DrawType
+{
+	Image,
+	Effect,
+	Max
+};
+
+enum class Layer
+{
+	Bg,
+	Char,
+	Ui,
+	Ex,
+	Max
+};
+
+enum class DrawQue
+{
+	Handle,				// ‰æ‘œÊİÄŞÙ
+	X,					// À•WX
+	Y,					// À•WY
+	Rad,				// Šp“x
+	ZOrder,				// Zµ°ÀŞ°
+	Layer,				// Ú²Ô°
+	DrawMode,	
+	DrawNum,
+	Type,
+	Max
+};
+
+// •`‰æ‚·‚é‚Æ‚«‚É•K—v‚Èî•ñ<ÊİÄŞÙ, X, Y, rad, Zorder, Layer, image‚©effect‚©>
+using DrawQueT = std::tuple<int, int, int, double, float, Layer, int, int, DrawType>;
+
 class SceneMng
 {
 public:
@@ -23,19 +56,25 @@ public:
 	void Run();
 	void Draw();
 
-	int GetFrameCount();
-	std::mt19937 GetMt();
+	bool AddDrawQue(DrawQueT que);
+
+	const Vector2 GetScreenCenter(void);
 
 private:
 	bool SysInit();
+	void DrawImage(int handle, const Vector2 pos, double rad);
+	void DrawEffect(int handle, const Vector2 pos, double rad);
 	SceneMng();
 	~SceneMng();
 
 	const Vector2 screenSize_;
+	const Vector2 screenCenter_;
 
-	unique_Base _activeScene;									// “®‚¢‚Ä‚¢‚é¼°İ
+	unique_Base activeScene_;											// “®‚¢‚Ä‚¢‚é¼°İ
 
-	int _frame;
+	int frame_;
+	std::vector<DrawQueT> drawList_;									// DrawQue‚ğ’™‚ß‚Æ‚­“z
+	std::map<DrawType, void (SceneMng::*)(int, Vector2)> drawSet_;		// ´Ìª¸Ä‚ğ•`‰æ‚·‚é‚Ì‚©Image‚ğ•`‰æ‚·‚é‚Ì‚©
 
 	std::mt19937 _mt;
 };

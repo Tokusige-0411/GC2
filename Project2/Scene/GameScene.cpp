@@ -1,6 +1,7 @@
 #include<Dxlib.h>
 #include "GameScene.h"
 #include "MenuScene.h"
+#include "../SceneMng.h"
 
 GameScene::GameScene()
 {
@@ -16,6 +17,7 @@ GameScene::~GameScene()
 
 unique_Base GameScene::Update(unique_Base own)
 {
+	lpSceneMng.AddDrawQue({ gameSceneBG_, lpSceneMng.GetScreenCenter().x, lpSceneMng.GetScreenCenter().y, 0.0, 0.0f, Layer::Bg,  DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
 	// ただの参照は書き換えれてしまう
 	// →const参照でする(notおすすめ)
 	// そのまま右辺値参照で受け取る
@@ -40,7 +42,6 @@ unique_Base GameScene::Update(unique_Base own)
 
 void GameScene::Draw(void)
 {
-	DrawGraph(0, 0, gameSceneBG_, true);
 	for (auto&& data : playerField_)
 	{
 		data->DrawField();

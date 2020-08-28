@@ -1,4 +1,5 @@
 #include<Dxlib.h>
+#include<algorithm>
 #include"_debug/_DebugDispOut.h"
 #include"SceneMng.h"
 #include"Scene/GameScene.h"
@@ -6,36 +7,60 @@
 
 void SceneMng::Run()
 {
-	_activeScene = std::make_unique<GameScene>();
+	activeScene_ = std::make_unique<GameScene>();
 	while (!ProcessMessage() || CheckHitKey(KEY_INPUT_ESCAPE))
 	{
 		_DebugDispOut::GetInstance().WaitMode();
-		_activeScene = (*_activeScene).Update(std::move(_activeScene));
+		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
+		activeScene_->Draw();
 		lpEffectCtl.Update();
 		Draw();
-		_frame++;
+		drawList_.clear();
+		frame_++;
 	}
 }
 
 void SceneMng::Draw()
 {
+	std::sort(drawList_.begin(), drawList_.end(), [](const DrawQueT& x, const DrawQueT& y) {
+		return std::tie(std::get<static_cast<int>(DrawQue::Layer)>(x), std::get<static_cast<int>(DrawQue::ZOrder)>(x))
+			< std::tie(std::get<static_cast<int>(DrawQue::Layer)>(y), std::get<static_cast<int>(DrawQue::ZOrder)>(y));
+		});
+
+
 	SetDrawScreen(DX_SCREEN_BACK);
 	ClsDrawScreen();
 
-	_activeScene->Draw();
-	lpEffectCtl.Draw();
+	int blendMode = DX_BLENDMODE_NOBLEND;
+	int blendModeNum = 255;
+	SetDrawBlendMode(blendMode, blendModeNum);
+	for (auto dque : drawList_)
+	{
+		int x, y, handle;
+		double rad;
+		DrawType type;
+
+		std::tie(handle, x, y, rad, std::ignore, std::ignore, blendMode, blendModeNum, type) = dque;
+
+		// image‚©Effect‚©”»’f‚µ‚Ä‚»‚ê‚¼‚êŒÄ‚ÔDraw‚ð•Ï‚¦‚é
+		// ‚Ð‚Æ‚Ü‚¸image‚¾‚¯
+		SetDrawBlendMode(blendMode, blendModeNum);
+		DrawRotaGraph(x, y, 1.0, rad, handle, true, false);
+	}
+	//lpEffectCtl.Draw();
 
 	ScreenFlip();
 }
 
-int SceneMng::GetFrameCount()
+bool SceneMng::AddDrawQue(DrawQueT que)
 {
-	return _frame;
+	drawList_.emplace_back(que);
+	return true;
 }
 
-std::mt19937 SceneMng::GetMt()
+const Vector2 SceneMng::GetScreenCenter(void)
 {
-	return _mt;
+	return screenCenter_;
 }
 
 bool SceneMng::SysInit()
@@ -55,10 +80,20 @@ bool SceneMng::SysInit()
 	return true;
 }
 
-SceneMng::SceneMng() : screenSize_{800, 600}
+void SceneMng::DrawImage(int handle, const Vector2 pos, double rad)
+{
+	DrawRotaGraph(pos.x, pos.y, 1.0, rad, handle, true, false);
+}
+
+void SceneMng::DrawEffect(int handle, const Vector2 pos, double rad)
+{
+}
+
+SceneMng::SceneMng() : screenSize_{ 800, 600 }, screenCenter_{ screenSize_.x / 2, screenSize_.y / 2 }
 {
 	SysInit();
-	_frame = 0;
+	//drawSet_.try_emplace(DrawType::Image, DrawImage());
+	frame_ = 0;
 }
 
 SceneMng::~SceneMng()

@@ -126,7 +126,7 @@ private:
 
 	PairPuyo guidePuyo;													// 落下地点表示ぷよ
 
-	int fieldBG_;														// ﾌｨｰﾙﾄﾞの背景
+	std::array<int, 2> fieldBG_;										// ﾌｨｰﾙﾄﾞの背景
 
 	std::array<int, 5> rensaLogo_;										// 連鎖のﾛｺﾞ
 	Vector2 rensaLogoPos_;												// 連鎖のﾛｺﾞ表示位置

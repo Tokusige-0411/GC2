@@ -99,16 +99,17 @@ int Field::Update(int ojamaCnt)
 
 void Field::Draw()
 {
+	//lpSceneMng.AddDrawQue({fieldBG_[player_], offset_.x, offset_.y, 0.0, 0.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Image});
 	SetDrawScreen(screenID_);
 	ClsDrawScreen();
-	DrawRectGraph(0, 0, 0 + (player_ * (blockSize_ * stgGridSize_.x)), 0, blockSize_ * stgGridSize_.x, blockSize_ * stgGridSize_.y, fieldBG_, true, false);
+	DrawGraph(0, 0, fieldBG_[player_], true);
 	OjamaDraw();
 	GuideDraw();
 	for (auto&& puyo : puyoVec_)
 	{
 		puyo->Draw();
 	}
-	LogoDraw();
+	//LogoDraw();
 }
 
 void Field::OjamaDraw(void)
@@ -135,17 +136,18 @@ void Field::GuideDraw(void)
 
 void Field::LogoDraw(void)
 {
-	if (!rensaCnt_)
-	{
-		return;
-	}
-	DrawGraph(rensaLogoPos_.x, rensaLogoPos_.y, rensaLogo_[rensaCnt_ - 1], true);
-	rensaLogoPos_.y--;
+	//if (!rensaCnt_)
+	//{
+	//	return;
+	//}
+	//DrawGraph(rensaLogoPos_.x, rensaLogoPos_.y, rensaLogo_[rensaCnt_ - 1], true);
+	//rensaLogoPos_.y--;
 }
 
 void Field::DrawField(void)
 {
-	DrawGraph(offset_.x, offset_.y, screenID_, true);
+	//DrawGraph(offset_.x, offset_.y, screenID_, true);
+	lpSceneMng.AddDrawQue({ screenID_, offset_.x + fieldSize_.x / 2 + blockSize_, offset_.y + fieldSize_.y / 2 + blockSize_, 0.0, 0.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
 	nextCtl_->Draw();
 }
 
@@ -211,7 +213,7 @@ bool Field::Init(void)
 	targetID_ = 0;
 
 	// ‚È‚ºstatic‚Å‚ÍŽg‚¦‚È‚¢‚Ì‚©
-	fieldBG_ = LoadGraph("image/FieldBG.png");
+	LoadDivGraph("image/FieldBG.png", 2, 2, 1, 256, 448, fieldBG_.data());
 
 	LoadDivGraph("image/rensa.png", 5, 1, 5, 96, 24, rensaLogo_.data());
 
