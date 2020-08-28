@@ -16,9 +16,9 @@ public:
 	}
 
 	void Update(void);
-	void Draw(void);
+	void Draw(int handle, const Vector2 pos);
 	bool StopAll(void);
-	bool Play(std::string name, const Vector2& pos);
+	int Play(std::string name);
 	bool Init(Vector2&& size);
 
 private:

@@ -74,7 +74,7 @@ private:
 
 	int frame_;
 	std::vector<DrawQueT> drawList_;									// DrawQue‚ð’™‚ß‚Æ‚­“z
-	std::map<DrawType, void (SceneMng::*)(int, Vector2)> drawSet_;		// ´Ìª¸Ä‚ð•`‰æ‚·‚é‚Ì‚©Image‚ð•`‰æ‚·‚é‚Ì‚©
+	std::map<DrawType, void (SceneMng::*)(int, const Vector2, double)> drawSet_;		// ´Ìª¸Ä‚ð•`‰æ‚·‚é‚Ì‚©Image‚ð•`‰æ‚·‚é‚Ì‚©
 
 	std::mt19937 _mt;
 };

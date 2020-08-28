@@ -15,6 +15,15 @@ void SceneMng::Run()
 		activeScene_->Draw();
 		lpEffectCtl.Update();
 		Draw();
+		// drawListÇÃèâä˙âª
+		for (auto dque : drawList_)
+		{
+			DrawType type = std::get<static_cast<int>(DrawQue::Type)>(dque);
+			if (DrawType::Effect == type)
+			{
+
+			}
+		}
 		drawList_.clear();
 		frame_++;
 	}
@@ -45,7 +54,8 @@ void SceneMng::Draw()
 		// imageÇ©EffectÇ©îªífÇµÇƒÇªÇÍÇºÇÍåƒÇ‘DrawÇïœÇ¶ÇÈ
 		// Ç–Ç∆Ç‹Ç∏imageÇæÇØ
 		SetDrawBlendMode(blendMode, blendModeNum);
-		DrawRotaGraph(x, y, 1.0, rad, handle, true, false);
+		//DrawRotaGraph(x, y, 1.0, rad, handle, true, false);
+		(this->*drawSet_[type])(handle, {x, y}, rad);
 	}
 	//lpEffectCtl.Draw();
 
@@ -87,12 +97,14 @@ void SceneMng::DrawImage(int handle, const Vector2 pos, double rad)
 
 void SceneMng::DrawEffect(int handle, const Vector2 pos, double rad)
 {
+	lpEffectCtl.Draw(handle, pos);
 }
 
 SceneMng::SceneMng() : screenSize_{ 800, 600 }, screenCenter_{ screenSize_.x / 2, screenSize_.y / 2 }
 {
 	SysInit();
-	//drawSet_.try_emplace(DrawType::Image, DrawImage());
+	drawSet_.try_emplace(DrawType::Image, &SceneMng::DrawImage);
+	drawSet_.try_emplace(DrawType::Effect, &SceneMng::DrawEffect);
 	frame_ = 0;
 }
 

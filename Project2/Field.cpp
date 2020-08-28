@@ -328,7 +328,15 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 			if (eraseData_[grid.y][grid.x] == puyo)
 			{
 				puyo->Alive(false);
-				lpEffectCtl.Play("erase", offset_ + puyo->Pos());
+				//lpEffectCtl.Play("erase", offset_ + puyo->Pos());
+
+				int effectHndle = lpEffectCtl.Play("erase");
+				lpSceneMng.AddDrawQue({ 
+					effectHndle, 
+					offset_.x + puyo->Pos().x, 
+					offset_.y + puyo->Pos().y, 
+					0.0, 1.0, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Effect});
+
 				data_[grid.y][grid.x].reset();
 				rensaLogoPos_ = puyo->Pos();
 			}

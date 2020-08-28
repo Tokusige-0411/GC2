@@ -10,13 +10,11 @@ void EffectCtl::Update(void)
 	playList_.erase(itl, playList_.end());
 }
 
-void EffectCtl::Draw(void)
+void EffectCtl::Draw(int handle, const Vector2 pos)
 {
+	SetPosPlayingEffekseer2DEffect(handle, pos.x, pos.y, 0.0f);
 	DrawEffekseer2D_Begin();
-	for (auto handle : playList_)
-	{
-		DrawEffekseer2D_Draw(handle);
-	}
+	DrawEffekseer2D_Draw(handle);
 	DrawEffekseer2D_End();
 }
 
@@ -29,11 +27,10 @@ bool EffectCtl::StopAll(void)
 	return false;
 }
 
-bool EffectCtl::Play(std::string name, const Vector2& pos)
+int EffectCtl::Play(std::string name)
 {
 	playList_.push_front(PlayEffekseer2DEffect(GetHandles(name)));
-	SetPosPlayingEffekseer2DEffect(*(playList_.begin()), static_cast<float>(pos.x), static_cast<float>(pos.y), 0.0f);
-	return true;
+	return *(playList_.begin());
 }
 
 bool EffectCtl::Init(Vector2&& size)
