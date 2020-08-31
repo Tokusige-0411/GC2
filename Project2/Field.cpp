@@ -46,7 +46,6 @@ Field::~Field()
 
 int Field::Update(int ojamaCnt)
 {
-	//(*controller_)();
 	ChangeCont();
 	(*contMap_[contType_])();
 	ojamaCnt_ = 0;
@@ -71,13 +70,13 @@ int Field::Update(int ojamaCnt)
 		switch (result_)
 		{
 		case ResultF::Win:
-			fieldMode_[FieldState::Win](*this);
+			ojamaCnt_ = fieldMode_[FieldState::Win](*this);
 			break;
 		case ResultF::Lose:
-			fieldMode_[FieldState::Lose](*this);
+			ojamaCnt_ = fieldMode_[FieldState::Lose](*this);
 			break;
 		case ResultF::Draw:
-			fieldMode_[FieldState::Draw](*this);
+			ojamaCnt_ = fieldMode_[FieldState::Draw](*this);
 			break;
 		default:
 			break;
@@ -99,7 +98,6 @@ int Field::Update(int ojamaCnt)
 
 void Field::Draw()
 {
-	//lpSceneMng.AddDrawQue({fieldBG_[player_], offset_.x, offset_.y, 0.0, 0.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Image});
 	SetDrawScreen(screenID_);
 	ClsDrawScreen();
 	DrawGraph(0, 0, fieldBG_[player_], true);
@@ -146,7 +144,6 @@ void Field::LogoDraw(void)
 
 void Field::DrawField(void)
 {
-	//DrawGraph(offset_.x, offset_.y, screenID_, true);
 	lpSceneMng.AddDrawQue({ screenID_, offset_.x + fieldSize_.x / 2 + blockSize_, offset_.y + fieldSize_.y / 2 + blockSize_, 0.0, 0.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
 	nextCtl_->Draw();
 }
@@ -233,8 +230,8 @@ Vector2 Field::GetOffset(void)
 bool Field::InstancePuyo(void)
 {
 	auto pairPuyo = nextCtl_->Pickup();
-	pairPuyo.first->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 48));
-	pairPuyo.second->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 80));
+	pairPuyo.first->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 0));
+	pairPuyo.second->Pos(Vector2((stgGridSize_.x / 2 + 1) * blockSize_ - 16, 32));
 	puyoVec_.emplace(puyoVec_.begin(), pairPuyo.first);
 	puyoVec_.emplace(puyoVec_.begin(), pairPuyo.second);
 	auto type = puyoVec_[0]->Type();
@@ -255,18 +252,24 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 	std::function<void(Puyo_ID, Vector2)> chPuyo = [&](Puyo_ID type, Vector2 grid) {
 		if (type != Puyo_ID::OJAMA)
 		{
-			if (!eraseData_[grid.y][grid.x])
+			if ((grid.y >= 0) &&
+				(grid.y < stgGridSize_.y) &&
+				(grid.x >= 0) &&
+				(grid.x < stgGridSize_.x))
 			{
-				if (data_[grid.y][grid.x])
+				if (!eraseData_[grid.y][grid.x])
 				{
-					if (data_[grid.y][grid.x]->Type() == type)
+					if (data_[grid.y][grid.x])
 					{
-						count++;
-						eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
-						chPuyo(type, { grid.x, grid.y + 1 });
-						chPuyo(type, { grid.x, grid.y - 1 });
-						chPuyo(type, { grid.x - 1, grid.y });
-						chPuyo(type, { grid.x + 1, grid.y });
+						if (data_[grid.y][grid.x]->Type() == type)
+						{
+							count++;
+							eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
+							chPuyo(type, { grid.x, grid.y + 1 });
+							chPuyo(type, { grid.x, grid.y - 1 });
+							chPuyo(type, { grid.x - 1, grid.y });
+							chPuyo(type, { grid.x + 1, grid.y });
+						}
 					}
 				}
 			}
@@ -334,7 +337,7 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 				lpSceneMng.AddDrawQue({ 
 					effectHndle, 
 					offset_.x + puyo->Pos().x, 
-					offset_.y + puyo->Pos().y, 
+					offset_.y + puyo->Pos().y + blockSize_ / 2, 
 					0.0, 1.0, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Effect});
 
 				data_[grid.y][grid.x].reset();
@@ -349,26 +352,31 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 bool Field::SetParmit(SharedPuyo& puyo)
 {
 	// _dataBase‚Ì’†g‚Æ½Ã°¼Þ“à‚©Œ©‚ÄˆÚ“®‚Å‚«‚é‚©‚Ç‚¤‚©
-	DirPermit moveChack = { 0, 0, 0, 0 };
+	DirPermit moveChack = { 1, 1, 1, 1 };
 	Vector2 grid = puyo->Grid(blockSize_);
 
-	if (!data_[grid.y][grid.x - 1])
+	if ((grid.y >= 0) &&
+		(grid.y < stgGridSize_.y) &&
+		(grid.x >= 0) &&
+		(grid.x < stgGridSize_.x))
 	{
-		moveChack.bit.left = true;
-	}
-	if (!data_[grid.y][grid.x + 1])
-	{
-		moveChack.bit.right = true;
-	}
-
-	if (!data_[grid.y + 1][grid.x])
-	{
-		moveChack.bit.down = true;
-		data_[grid.y][grid.x].reset();
-	}
-	else
-	{
-		data_[grid.y][grid.x] = puyo;
+		if (data_[grid.y][grid.x - 1])
+		{
+			moveChack.bit.left = false;
+		}
+		if (data_[grid.y][grid.x + 1])
+		{
+			moveChack.bit.right = false;
+		}
+		if (data_[grid.y + 1][grid.x])
+		{
+			moveChack.bit.down = false;
+			data_[grid.y][grid.x] = puyo;
+		}
+		else
+		{
+			data_[grid.y][grid.x].reset();
+		}
 	}
 
 	puyo->SetDirPermit(moveChack);

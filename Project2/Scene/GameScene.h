@@ -11,10 +11,13 @@ public:
     ~GameScene();
     unique_Base Update(unique_Base own) override;
     void Draw(void) override;
+    void SetGameEnd(bool flag);
+    const bool GetGameEnd(void);
 
 private:
-    std::vector<std::unique_ptr<Field>> playerField_;
-    int ojamaCnt_;                                           // 懠僾儗僀儎乕偺偍偠傖傑娗棟曄悢
-    int gameSceneBG_;                                        // 罐把及輸w宨
+    std::vector<std::unique_ptr<Field>> playerField_;           // 踢诓园忣曬
+    int ojamaCnt_;                                              // 懠僾儗僀儎乕偺偍偠傖傑娗棟曄悢
+    int gameSceneBG_;                                           // 罐把及輸w宨
+    bool gameEnd_;                                              // 罐把廔椆敾掕
 };
 

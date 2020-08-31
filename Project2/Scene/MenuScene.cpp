@@ -21,11 +21,11 @@ unique_Base MenuScene::Update(unique_Base own)
 	{
 		childScene_ = childScene_->Update(std::move(childScene_));
 	}
-	Draw();
 	if (CheckHitKey(KEY_INPUT_F2))
 	{
 		return std::move(childScene_);
 	}
+	Draw();
 	return std::move(own);
 }
 

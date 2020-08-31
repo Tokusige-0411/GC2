@@ -11,14 +11,21 @@ struct DropMode
 		// ¶Ş²ÄŞ‚Õ‚æ‚Ìİ’è
 		std::function<void(Vector2, SharedPuyo&)> guideSet = [&](Vector2 grid, SharedPuyo& guidePuyo) {
 		
-			if (field.data_[grid.y][grid.x])
+			if ((grid.y >= 0) && 
+				(grid.y < field.stgGridSize_.y) &&
+				(grid.x >= 0) &&
+				(grid.x < field.stgGridSize_.x)
+				)
 			{
-				auto pos = field.ConvertGrid({grid.x, grid.y - 1});
-				guidePuyo->Pos({pos.x, pos.y});
-			}
-			else
-			{
-				guideSet({grid.x, grid.y + 1}, guidePuyo);
+				if (field.data_[grid.y][grid.x])
+				{
+					auto pos = field.ConvertGrid({ grid.x, grid.y - 1 });
+					guidePuyo->Pos({ pos.x, pos.y });
+				}
+				else
+				{
+					guideSet({ grid.x, grid.y + 1 }, guidePuyo);
+				}
 			}
 		};
 

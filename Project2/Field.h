@@ -77,7 +77,7 @@ private:
 	friend struct DrawMode;
 
 	void ChangeCont(void);												// ｺﾝﾄﾛｰﾗｰを変える
-	void OjamaDraw(void);
+	void OjamaDraw(void);												// おじゃまの描画部分
 	void GuideDraw(void);
 	void LogoDraw(void);
 
@@ -85,6 +85,7 @@ private:
 	Vector2 fieldSize_;													// ｽﾃｰｼﾞの描画ｻｲｽﾞ
 	Vector2 offset_;													// 描画位置補正座標
 	int blockSize_;														// 1ﾏｽのｻｲｽﾞ
+	double rad_;														// ｽﾃｰｼﾞの角度
 
 	std::unique_ptr<Controller> controller_;							// 入力情報
 
@@ -122,7 +123,7 @@ private:
 	ContType contType_;													// 何で操作するか
 	std::map<ContType, std::unique_ptr<Controller>> contMap_;			// ｺﾝﾄﾛｰﾗｰのﾏｯﾌﾟ
 
-	int targetID_;
+	int targetID_;														// 操作ぷよ強調
 
 	PairPuyo guidePuyo;													// 落下地点表示ぷよ
 
@@ -131,6 +132,7 @@ private:
 	std::array<int, 5> rensaLogo_;										// 連鎖のﾛｺﾞ
 	Vector2 rensaLogoPos_;												// 連鎖のﾛｺﾞ表示位置
 
-
+	std::map<ResultF, int> resultLogo_;									// 勝ち負けﾛｺﾞﾊﾝﾄﾞﾙ
+	Vector2 resultLogoPos_;												// 勝ち負けﾛｺﾞ表示位置
 };
 

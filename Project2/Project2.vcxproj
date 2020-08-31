@@ -144,6 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\BaseScene.cpp" />
     <ClCompile Include="EffectCtl.cpp" />
     <ClCompile Include="Field.cpp" />
@@ -158,11 +159,14 @@
     <ClCompile Include="PlayerUnit.cpp" />
     <ClCompile Include="Puyo.cpp" />
     <ClCompile Include="SceneMng.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="Scene\Transition.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="_debug\_DebugConOut.cpp" />
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\BaseScene.h" />
     <ClInclude Include="common\detail\Vector2.h" />
     <ClInclude Include="common\Vector2.h" />
@@ -189,6 +193,8 @@
     <ClInclude Include="PuyoCtl\PuyonMode.h" />
     <ClInclude Include="PuyoCtl\RensaMode.h" />
     <ClInclude Include="SceneMng.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="Scene\Transition.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="_debug\_DebugConOut.h" />
     <ClInclude Include="_debug\_DebugDispOut.h" />

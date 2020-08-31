@@ -1,5 +1,6 @@
 #include<Dxlib.h>
 #include<algorithm>
+#include"EffekseerForDXLib.h"
 #include"_debug/_DebugDispOut.h"
 #include"SceneMng.h"
 #include"Scene/GameScene.h"
@@ -16,15 +17,19 @@ void SceneMng::Run()
 		lpEffectCtl.Update();
 		Draw();
 		// drawListÇÃèâä˙âª
-		for (auto dque : drawList_)
-		{
+		auto itl = std::remove_if(drawList_.begin(), drawList_.end(), [&](auto dque) {
 			DrawType type = std::get<static_cast<int>(DrawQue::Type)>(dque);
-			if (DrawType::Effect == type)
+			if (type == DrawType::Effect)
 			{
-
+				int handle = std::get<static_cast<int>(DrawQue::Handle)>(dque);
+				if (IsEffekseer2DEffectPlaying(handle) == 0)
+				{
+					return false;
+				}
 			}
-		}
-		drawList_.clear();
+			return true;
+		});
+		drawList_.erase(itl, drawList_.end());
 		frame_++;
 	}
 }
