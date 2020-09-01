@@ -1,6 +1,7 @@
 #include <Dxlib.h>
 #include"../_debug/_DebugConOut.h"
 #include "MenuScene.h"
+#include "../SceneMng.h"
 
 MenuScene::MenuScene(unique_Base scene, bool draw, bool update)
 {
@@ -35,7 +36,9 @@ void MenuScene::Draw(void)
 	{
 		childScene_->Draw();
 	}
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-	DrawGraph(0, 0, black_, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+	lpSceneMng.AddDrawQue({
+		black_, 
+		lpSceneMng.GetScreenCenter().x, lpSceneMng.GetScreenCenter().y, 
+		0.0, 0.0f, Layer::Ui, 
+		DX_BLENDMODE_ALPHA, 96, DrawType::Image});
 }

@@ -79,13 +79,15 @@ private:
 	void ChangeCont(void);												// ｺﾝﾄﾛｰﾗｰを変える
 	void OjamaDraw(void);												// おじゃまの描画部分
 	void GuideDraw(void);
-	void LogoDraw(void);
+	void LogoDraw(int handle, Vector2 pos, double rad);
 
 	const Vector2 stgGridSize_;											// ｽﾃｰｼﾞのﾏｽｻｲｽﾞ
 	Vector2 fieldSize_;													// ｽﾃｰｼﾞの描画ｻｲｽﾞ
 	Vector2 offset_;													// 描画位置補正座標
 	int blockSize_;														// 1ﾏｽのｻｲｽﾞ
 	double rad_;														// ｽﾃｰｼﾞの角度
+	int fallSpeed_;														// ｽﾃｰｼﾞの落ちるｽﾋﾟｰﾄﾞ
+	int resultEndCnt_;													// 勝ち負け表示時間
 
 	std::unique_ptr<Controller> controller_;							// 入力情報
 
@@ -128,11 +130,12 @@ private:
 	PairPuyo guidePuyo;													// 落下地点表示ぷよ
 
 	std::array<int, 2> fieldBG_;										// ﾌｨｰﾙﾄﾞの背景
+	int fieldFrame_;													// ﾌｨｰﾙﾄﾞのﾌﾚｰﾑ
 
 	std::array<int, 5> rensaLogo_;										// 連鎖のﾛｺﾞ
 	Vector2 rensaLogoPos_;												// 連鎖のﾛｺﾞ表示位置
 
-	std::map<ResultF, int> resultLogo_;									// 勝ち負けﾛｺﾞﾊﾝﾄﾞﾙ
-	Vector2 resultLogoPos_;												// 勝ち負けﾛｺﾞ表示位置
+	//std::map<ResultF, int> resultLogo_;									// 勝ち負けﾛｺﾞﾊﾝﾄﾞﾙ
+	//Vector2 resultLogoPos_;												// 勝ち負けﾛｺﾞ表示位置
 };
 

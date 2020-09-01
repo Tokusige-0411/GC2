@@ -5,8 +5,13 @@ struct LoseMode
 {
 	bool operator()(Field& field)
 	{
-		field.offset_.y += 10;
-		if (field.offset_.y > 900)
+		if (field.offset_.y < 900)
+		{
+			field.offset_.y += field.fallSpeed_;
+			field.fallSpeed_ += 1;
+			field.rad_ += 0.05;
+		}
+		else
 		{
 			return true;
 		}

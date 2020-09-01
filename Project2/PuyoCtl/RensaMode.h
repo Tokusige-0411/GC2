@@ -25,7 +25,7 @@ struct RensaMode
 				return false;
 			}
 			// ‚¨‚¶‚á‚Ü‚ÌŒvŽZ‚¨‚æ‚Ñ˜A½‚È‚Ç‚Ì‰Šú‰»
-			field.ojamaCnt_ = field.rensaCnt_ * std::exp(field.erasePuyoCnt_ / 8);
+			field.ojamaCnt_ = field.rensaMax_ / 2 * field.rensaCnt_ * std::exp(field.erasePuyoCnt_ / 8);
 			if (field.rensaCnt_ > field.rensaMax_)
 			{
 				field.rensaMax_ = field.rensaCnt_;

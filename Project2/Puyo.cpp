@@ -15,7 +15,7 @@ Puyo::Puyo(Vector2&& pos, Puyo_ID id) :puyoSize_{32, 32}
 	colorMap_.try_emplace(Puyo_ID::BRUE, 0x0000ff);
 	colorMap_.try_emplace(Puyo_ID::GREEN, 0x00ff00);
 	colorMap_.try_emplace(Puyo_ID::YELLOW, 0xffff00);
-	colorMap_.try_emplace(Puyo_ID::PURPLE, 0x800080);
+	colorMap_.try_emplace(Puyo_ID::PURPLE, 0xA222A2);
 	color_ = colorMap_[id];
 	Init();
 }
