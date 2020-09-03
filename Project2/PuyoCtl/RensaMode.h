@@ -56,6 +56,7 @@ struct RensaMode
 					}
 					ojama->SetStayInterval(count);
 					ojama->Pos({ 48 + ((count % 6) * 32), 16 });
+					ojama->SetDropSpeed(8, 1);
 					field.puyoVec_.emplace(field.puyoVec_.begin(), ojama);
 					count++;
 				}

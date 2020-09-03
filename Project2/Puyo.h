@@ -51,6 +51,7 @@ public:
 	const DirPermit& GetDirPermit(void);
 	const DirPermit& GetOldDirPermit(void);
 	void SetDrawPermit(DirPermit drawPermit);
+	void SetDropSpeed(int speed, int interval);
 
 	void SoftDrop(void);
 

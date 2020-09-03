@@ -33,6 +33,7 @@ enum class DrawQue
 	X,					// À•WX
 	Y,					// À•WY
 	Rad,				// Šp“x
+	Ex,
 	ZOrder,				// Zµ°ÀŞ°
 	Layer,				// Ú²Ô°
 	DrawMode,	
@@ -41,8 +42,8 @@ enum class DrawQue
 	Max
 };
 
-// •`‰æ‚·‚é‚Æ‚«‚É•K—v‚Èî•ñ<ÊİÄŞÙ, X, Y, rad, Zorder, Layer, image‚©effect‚©>
-using DrawQueT = std::tuple<int, int, int, double, float, Layer, int, int, DrawType>;
+// •`‰æ‚·‚é‚Æ‚«‚É•K—v‚Èî•ñ<ÊİÄŞÙ, X, Y, rad, ex, Zorder, Layer, image‚©effect‚©>
+using DrawQueT = std::tuple<int, int, int, double, double, float, Layer, int, int, DrawType>;
 
 class SceneMng
 {
@@ -59,11 +60,13 @@ public:
 	bool AddDrawQue(DrawQueT que);
 
 	const Vector2 GetScreenCenter(void);
+	void SetGameExit(void);
+	int GetFrameCnt(void);
 
 private:
 	bool SysInit();
-	void DrawImage(int handle, const Vector2 pos, double rad);
-	void DrawEffect(int handle, const Vector2 pos, double rad);
+	void DrawImage(int handle, const Vector2 pos, double rad, double ex);
+	void DrawEffect(int handle, const Vector2 pos, double rad, double ex);
 	SceneMng();
 	~SceneMng();
 
@@ -74,7 +77,8 @@ private:
 
 	int frame_;
 	std::vector<DrawQueT> drawList_;									// DrawQue‚ğ’™‚ß‚Æ‚­“z
-	std::map<DrawType, void (SceneMng::*)(int, const Vector2, double)> drawSet_;		// ´Ìª¸Ä‚ğ•`‰æ‚·‚é‚Ì‚©Image‚ğ•`‰æ‚·‚é‚Ì‚©
+	std::map<DrawType, void (SceneMng::*)(int, const Vector2, double, double)> drawSet_;		// ´Ìª¸Ä‚ğ•`‰æ‚·‚é‚Ì‚©Image‚ğ•`‰æ‚·‚é‚Ì‚©
+	int gameExit_;
 
 	std::mt19937 _mt;
 };

@@ -34,14 +34,17 @@ Field::Field(Vector2&& offset, Vector2&& size) : stgGridSize_{8, 14}
 	offset_ = offset;
 	fieldSize_ = size;
 	blockSize_ = 32;
-	player_ = plCount_;
+	player_ = plCount_ % 2;
 	plCount_++;
+	gameEnd_ = false;
 	Init();
 	InstancePuyo();
 }
 
 Field::~Field()
 {
+	plCount_ = 0;
+	gameEnd_ = false;
 }
 
 int Field::Update(int ojamaCnt)
@@ -90,8 +93,6 @@ int Field::Update(int ojamaCnt)
 			puyo->SoftDrop();
 		}
 	}
-	
-	Draw();
 
 	return ojamaCnt_;
 }
@@ -108,7 +109,7 @@ void Field::Draw()
 	}
 	DrawGraph(0, 0, fieldFrame_, true);
 	OjamaDraw();
-
+	SetLogo();
 	//LogoDraw();
 }
 
@@ -136,12 +137,27 @@ void Field::GuideDraw(void)
 
 void Field::LogoDraw(int handle, Vector2 pos, double rad)
 {
-	lpSceneMng.AddDrawQue({ handle, pos.x, pos.y, rad, 0.0f, Layer::Ui, DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
+	lpSceneMng.AddDrawQue({ handle, pos.x, pos.y, rad, 1.0, 0.0f, Layer::Ui, DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
+}
+
+void Field::SetLogo(void)
+{
+	if (rensaLogoDrawCnt_ > 0)
+	{
+		LogoDraw(rensaLogo_[rensaDrawCnt_], rensaLogoPos_, 0.0);
+		rensaLogoPos_.y--;
+		rensaLogoDrawCnt_--;
+	}
+	else
+	{
+		rensaDrawCnt_ = 0;
+	}
 }
 
 void Field::DrawField(void)
 {
-	lpSceneMng.AddDrawQue({ screenID_, offset_.x + fieldSize_.x / 2 + blockSize_, offset_.y + fieldSize_.y / 2 + blockSize_, rad_, 0.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
+	Draw();
+	lpSceneMng.AddDrawQue({ screenID_, offset_.x + fieldSize_.x / 2 + blockSize_, offset_.y + fieldSize_.y / 2 + blockSize_, rad_, 1.0, 0.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Image });
 	nextCtl_->Draw();
 }
 
@@ -195,7 +211,7 @@ bool Field::Init(void)
 
 	changeTrg_ = { 0, 1 };
 	contMap_.clear();
-	contType_ = ContType::KeyBoard;
+	contType_ = ContType::Pad;
 	contMap_.emplace(ContType::KeyBoard, std::make_unique<KeyInput>());
 	contMap_.emplace(ContType::Mouse, std::make_unique<Mouse>());
 	contMap_.emplace(ContType::Pad, std::make_unique<PadInput>());
@@ -207,18 +223,19 @@ bool Field::Init(void)
 	targetID_ = 0;
 	rad_ = 0.0;
 	fallSpeed_ = 5;
-	resultEndCnt_ = 480;
-
+	resultEndCnt_ = 360;
+	rensaDrawCnt_ = 0;
 	rensaLogoPos_ = { 0, 0 };
-	//resultLogoPos_ = {offset_.x + 128, offset_.y + 150};
+	rensaLogoDrawCnt_ = 0;
+	resultLogoPos_ = {offset_.x + 128, offset_.y + 150};
 
 	// •`‰æÊÝÄÞÙ
 	LoadDivGraph("image/FieldBG.png", 2, 2, 1, 256, 448, fieldBG_.data());
 	fieldFrame_ = LoadGraph("image/FieldFrame.png");
 	LoadDivGraph("image/rensa.png", 5, 1, 5, 96, 24, rensaLogo_.data());
-	//resultLogo_.try_emplace(ResultF::Win, LoadGraph("image/Win.png"));
-	//resultLogo_.try_emplace(ResultF::Lose, LoadGraph("image/Lose.png"));
-	//resultLogo_.try_emplace(ResultF::Draw, LoadGraph("image/Lose.png"));
+	resultLogo_.try_emplace(ResultF::Win, LoadGraph("image/Win.png"));
+	resultLogo_.try_emplace(ResultF::Lose, LoadGraph("image/Lose.png"));
+	resultLogo_.try_emplace(ResultF::Draw, LoadGraph("image/Lose.png"));
 
 	return true;
 }
@@ -328,6 +345,7 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 		}
 
 		// ‚¨Ž×–‚‚Õ‚æ‚Ì’Ç‰Á
+		rensaDrawCnt_ = rensaCnt_;
 		rensaCnt_++;
 		erasePuyoCnt_ += count;
 
@@ -343,8 +361,9 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 						effectHndle,
 						offset_.x + puyo->Pos().x,
 						offset_.y + puyo->Pos().y + blockSize_ / 2,
-						0.0, 1.0, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Effect });
+						0.0, 1.0, 1.0f, Layer::Char, DX_BLENDMODE_NOBLEND, 255, DrawType::Effect });
 					rensaLogoPos_ = puyo->Pos();
+					rensaLogoDrawCnt_ = 60;
 				}
 				puyo->Alive(false);
 				data_[grid.y][grid.x].reset();

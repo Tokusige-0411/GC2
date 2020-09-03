@@ -4,13 +4,15 @@
 #include"_debug/_DebugDispOut.h"
 #include"SceneMng.h"
 #include"Scene/GameScene.h"
+#include"Scene/TitleScene.h"
 #include"EffectCtl.h"
 
 void SceneMng::Run()
 {
-	activeScene_ = std::make_unique<GameScene>();
-	while (!ProcessMessage() || CheckHitKey(KEY_INPUT_ESCAPE))
+	activeScene_ = std::make_unique<TitleScene>();
+	while ((!ProcessMessage()) && !(gameExit_))
 	{
+		gameExit_ = CheckHitKey(KEY_INPUT_ESCAPE);
 		_DebugDispOut::GetInstance().WaitMode();
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
 		activeScene_->Draw();
@@ -48,22 +50,20 @@ void SceneMng::Draw()
 	int blendMode = DX_BLENDMODE_NOBLEND;
 	int blendModeNum = 255;
 	SetDrawBlendMode(blendMode, blendModeNum);
-	for (auto dque : drawList_)
+	for (auto& dque : drawList_)
 	{
 		int x, y, handle;
-		double rad;
+		double rad ,ex;
 		DrawType type;
 
-		std::tie(handle, x, y, rad, std::ignore, std::ignore, blendMode, blendModeNum, type) = dque;
+		std::tie(handle, x, y, rad, ex, std::ignore, std::ignore, blendMode, blendModeNum, type) = dque;
 
 		// image‚©Effect‚©”»’f‚µ‚Ä‚»‚ê‚¼‚êŒÄ‚ÔDraw‚ð•Ï‚¦‚é
 		// ‚Ð‚Æ‚Ü‚¸image‚¾‚¯
 		SetDrawBlendMode(blendMode, blendModeNum);
-		//DrawRotaGraph(x, y, 1.0, rad, handle, true, false);
-		(this->*drawSet_[type])(handle, {x, y}, rad);
+		(this->*drawSet_[type])(handle, {x, y}, rad, ex);
 	}
-	//lpEffectCtl.Draw();
-
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 	ScreenFlip();
 }
 
@@ -76,6 +76,16 @@ bool SceneMng::AddDrawQue(DrawQueT que)
 const Vector2 SceneMng::GetScreenCenter(void)
 {
 	return screenCenter_;
+}
+
+void SceneMng::SetGameExit(void)
+{
+	gameExit_ = true;
+}
+
+int SceneMng::GetFrameCnt(void)
+{
+	return frame_;
 }
 
 bool SceneMng::SysInit()
@@ -95,12 +105,12 @@ bool SceneMng::SysInit()
 	return true;
 }
 
-void SceneMng::DrawImage(int handle, const Vector2 pos, double rad)
+void SceneMng::DrawImage(int handle, const Vector2 pos, double rad, double ex)
 {
-	DrawRotaGraph(pos.x, pos.y, 1.0, rad, handle, true, false);
+	DrawRotaGraph(pos.x, pos.y, ex, rad, handle, true, false);
 }
 
-void SceneMng::DrawEffect(int handle, const Vector2 pos, double rad)
+void SceneMng::DrawEffect(int handle, const Vector2 pos, double rad, double ex)
 {
 	lpEffectCtl.Draw(handle, pos);
 }
@@ -111,6 +121,7 @@ SceneMng::SceneMng() : screenSize_{ 800, 600 }, screenCenter_{ screenSize_.x / 2
 	drawSet_.try_emplace(DrawType::Image, &SceneMng::DrawImage);
 	drawSet_.try_emplace(DrawType::Effect, &SceneMng::DrawEffect);
 	frame_ = 0;
+	gameExit_ = 0;
 }
 
 SceneMng::~SceneMng()

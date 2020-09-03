@@ -166,6 +166,12 @@ void Puyo::SetDrawPermit(DirPermit drawPermit)
 	drawPermit_ = drawPermit;
 }
 
+void Puyo::SetDropSpeed(int speed, int interval)
+{
+	dropSpeed_ = speed;
+	dropInt_ = interval;
+}
+
 void Puyo::SoftDrop(void)
 {
 	dropCnt_ = dropInt_;

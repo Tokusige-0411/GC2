@@ -54,7 +54,6 @@ public:
 	int Update(int ojama);						// ｽﾃｰｼﾞのｱｯﾌﾟﾃﾞｰﾄ
 	void Draw(void);							// ｽﾃｰｼﾞ描画
 	void DrawField(void);						// ｽﾃｰｼﾞ描画用関数
-	bool Init(void);							// 初期化
 	int GetScreenID(void);						// ｽｸﾘｰﾝID取得
 	Vector2 GetOffset(void);					// ｵﾌｾｯﾄ位置取得
 	bool InstancePuyo(void);					// ぷよをｲﾝｽﾀﾝｽする
@@ -76,10 +75,12 @@ private:
 	friend struct LoseMode;
 	friend struct DrawMode;
 
+	bool Init(void);													// 初期化
 	void ChangeCont(void);												// ｺﾝﾄﾛｰﾗｰを変える
 	void OjamaDraw(void);												// おじゃまの描画部分
-	void GuideDraw(void);
-	void LogoDraw(int handle, Vector2 pos, double rad);
+	void GuideDraw(void);												// ｶﾞｲﾄﾞ表示
+	void LogoDraw(int handle, Vector2 pos, double rad);					// ﾛｺﾞの表示
+	void SetLogo(void);
 
 	const Vector2 stgGridSize_;											// ｽﾃｰｼﾞのﾏｽｻｲｽﾞ
 	Vector2 fieldSize_;													// ｽﾃｰｼﾞの描画ｻｲｽﾞ
@@ -88,8 +89,6 @@ private:
 	double rad_;														// ｽﾃｰｼﾞの角度
 	int fallSpeed_;														// ｽﾃｰｼﾞの落ちるｽﾋﾟｰﾄﾞ
 	int resultEndCnt_;													// 勝ち負け表示時間
-
-	std::unique_ptr<Controller> controller_;							// 入力情報
 
 	std::unique_ptr<NextPuyoCtl> nextCtl_;								// ﾈｸｽﾄぷよ管理用
 	std::vector<SharedPuyo> puyoVec_;									// ぷよの情報(後々vectorに)
@@ -134,8 +133,10 @@ private:
 
 	std::array<int, 5> rensaLogo_;										// 連鎖のﾛｺﾞ
 	Vector2 rensaLogoPos_;												// 連鎖のﾛｺﾞ表示位置
+	int rensaLogoDrawCnt_;
+	int rensaDrawCnt_;
 
-	//std::map<ResultF, int> resultLogo_;									// 勝ち負けﾛｺﾞﾊﾝﾄﾞﾙ
-	//Vector2 resultLogoPos_;												// 勝ち負けﾛｺﾞ表示位置
+	std::map<ResultF, int> resultLogo_;									// 勝ち負けﾛｺﾞﾊﾝﾄﾞﾙ
+	Vector2 resultLogoPos_;												// 勝ち負けﾛｺﾞ表示位置
 };
 

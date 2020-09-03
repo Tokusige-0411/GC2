@@ -37,7 +37,7 @@ void NextPuyoCtl::Draw(void)
 	//DrawGraph(nextPos_.x, nextPos_.y, screenID_, true);
 	lpSceneMng.AddDrawQue({ screenID_, 
 		nextPos_.x + nextScreenSize_.x / 2,  
-		nextPos_.y + nextScreenSize_.y / 2 , 0.0, 
+		nextPos_.y + nextScreenSize_.y / 2 , 0.0, 1.0,
 		0.0f, Layer::Char, 
 		DX_BLENDMODE_NOBLEND, 255, DrawType::Image});
 }

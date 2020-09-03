@@ -1,5 +1,9 @@
 #pragma once
+#include <vector>
 #include "BaseScene.h"
+#include "../Vector2.h"
+#include "../input/Controller.h"
+
 class MenuScene :
 	public BaseScene
 {
@@ -14,5 +18,10 @@ private:
 	bool draw_;
 	bool update_;
 	int black_;
+	int poseMenu_;
+	int menuCursor_;
+	int menuCount_;
+	std::vector<Vector2> cursorPos_;
+	std::vector<std::unique_ptr<Controller>> contVec_;
 };
 
