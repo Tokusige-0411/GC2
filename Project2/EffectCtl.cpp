@@ -12,7 +12,7 @@ void EffectCtl::Update(void)
 
 void EffectCtl::Draw(int handle, const Vector2 pos)
 {
-	SetPosPlayingEffekseer2DEffect(handle, pos.x, pos.y, 0.0f);
+	SetPosPlayingEffekseer2DEffect(handle, static_cast<float>(pos.x), static_cast<float>(pos.y), 0.0f);
 	DrawEffekseer2D_Begin();
 	DrawEffekseer2D_Draw(handle);
 	DrawEffekseer2D_End();

@@ -92,6 +92,7 @@ bool SceneMng::SysInit()
 {
 	ChangeWindowMode(true);
 	SetGraphMode(screenSize_.x, screenSize_.y, 16);
+	SetWindowText("1916027_“¿dŒÕ‘å˜N");
 
 	if (DxLib_Init() == -1)
 	{
