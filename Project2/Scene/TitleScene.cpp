@@ -88,8 +88,8 @@ bool TitleScene::Init(void)
 	menuCursor_ = LoadGraph("image/MenuCursor.png");
 	titleMenu_ = LoadGraph("image/TitleMenu.png");
 	menuCount_ = 0;
-	cursorPos_.emplace_back(Vector2{ 320, 410 });
-	cursorPos_.emplace_back(Vector2{ 320, 530 });
+	cursorPos_.emplace_back(Vector2{ 280, 410 });
+	cursorPos_.emplace_back(Vector2{ 280, 530 });
 	contVec_.emplace_back(std::make_unique<KeyInput>());
 	contVec_.emplace_back(std::make_unique<PadInput>());
 	contVec_.emplace_back(std::make_unique<Mouse>());

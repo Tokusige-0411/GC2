@@ -25,7 +25,7 @@ struct RensaMode
 				return false;
 			}
 			// ‚¨‚¶‚á‚Ü‚ÌŒvZ‚¨‚æ‚Ñ˜A½‚È‚Ç‚Ì‰Šú‰»
-			field.ojamaCnt_ = field.rensaMax_ / 2 * field.rensaCnt_ * std::exp(field.erasePuyoCnt_ / 8);
+			field.ojamaCnt_ = static_cast<int>(field.rensaMax_ / 2 * field.rensaCnt_ * std::exp(field.erasePuyoCnt_ / 8));
 			if (field.rensaCnt_ > field.rensaMax_)
 			{
 				field.rensaMax_ = field.rensaCnt_;
@@ -34,7 +34,7 @@ struct RensaMode
 			field.erasePuyoCnt_ = 0;
 
 			// ‚¨‚¶‚á‚Ü‚Ì‘ŠE
-			if (field.ojamaCnt_ >= field.ojamaList_.size())
+			if (field.ojamaCnt_ >= static_cast<int>(field.ojamaList_.size()))
 			{
 				field.ojamaCnt_ -= field.ojamaList_.size();
 				field.ojamaList_.clear();
@@ -45,6 +45,7 @@ struct RensaMode
 			}
 
 			// ‚¨‚¶‚á‚ÜØ½Ä‚É—v‘f‚ª‚ ‚è®Š‚Â‚¨‚¶‚á‚Ü‚ª~‚Á‚Ä‚¢‚¢ó‘Ô‚¾‚Á‚½‚ç
+			int ojamaBeginPos = -1;
 			if (field.ojamaList_.size() && field.ojamaFlag_)
 			{
 				int count = 0;
@@ -55,7 +56,20 @@ struct RensaMode
 						break;
 					}
 					ojama->SetStayInterval(count);
-					ojama->Pos({ 48 + ((count % 6) * 32), 16 });
+					if (field.ojamaList_.size() >= 6)	
+					{
+						ojama->Pos({ 48 + ((count % 6) * 32), 16 });
+					}
+					else
+					{
+						if (ojamaBeginPos == -1)
+						{
+							ojamaBeginPos = rand() % 6;
+						}
+						ojama->Pos({ 48 + ((ojamaBeginPos % 6) * 32), 16 });
+						ojamaBeginPos++;
+					}
+					//ojama->Pos({ 48 + ((count % 6) * 32), 16 });
 					ojama->SetDropSpeed(8, 1);
 					field.puyoVec_.emplace(field.puyoVec_.begin(), ojama);
 					count++;

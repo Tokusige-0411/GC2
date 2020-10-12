@@ -114,7 +114,7 @@ void Puyo::Init(void)
 	alive_ = true;
 	dropCnt_ = 0;
 	dropInt_ = 15;
-	dropSpeed_ = 4;
+	dropSpeed_ = 8;
 	puyonCnt_ = 0;
 	puyonNum_ = 1;
 	munyonCnt_ = 0;

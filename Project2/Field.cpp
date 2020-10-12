@@ -144,7 +144,7 @@ void Field::SetLogo(void)
 {
 	if (rensaLogoDrawCnt_ > 0)
 	{
-		LogoDraw(rensaLogo_[rensaDrawCnt_], rensaLogoPos_, 0.0);
+		LogoDraw(rensaLogo_[rensaDrawCnt_], rensaLogoPos_ + offset_, 0.0);
 		rensaLogoPos_.y--;
 		rensaLogoDrawCnt_--;
 	}
@@ -203,7 +203,7 @@ bool Field::Init(void)
 	fieldState_ = FieldState::Drop;
 
 	rensaCnt_ = 0;
-	rensaMax_ = 2;
+	rensaMax_ = 1;
 	ojamaCnt_ = 0;
 	ojamaFlag_ = true;
 	erasePuyoCnt_ = 0;
@@ -232,7 +232,7 @@ bool Field::Init(void)
 	// •`‰æÊÝÄÞÙ
 	LoadDivGraph("image/FieldBG.png", 2, 2, 1, 256, 448, fieldBG_.data());
 	fieldFrame_ = LoadGraph("image/FieldFrame.png");
-	LoadDivGraph("image/rensa.png", 5, 1, 5, 96, 24, rensaLogo_.data());
+	LoadDivGraph("image/rensa.png", 10, 1, 10, 128, 32, rensaLogo_.data());
 	resultLogo_.try_emplace(ResultF::Win, LoadGraph("image/Win.png"));
 	resultLogo_.try_emplace(ResultF::Lose, LoadGraph("image/Lose.png"));
 	resultLogo_.try_emplace(ResultF::Draw, LoadGraph("image/Lose.png"));
@@ -302,11 +302,18 @@ bool Field::SetEraseData(SharedPuyo& puyo)
 	chPuyo(puyo->Type(), puyo->Grid(blockSize_));
 
 	auto chOjama = [&](Vector2 grid) {
-		if (data_[grid.y][grid.x])
+		
+		if ((grid.y >= 0) &&
+			(grid.y < stgGridSize_.y) &&
+			(grid.x >= 0) &&
+			(grid.x < stgGridSize_.x))
 		{
-			if (data_[grid.y][grid.x]->Type() == Puyo_ID::OJAMA)
+			if (data_[grid.y][grid.x])
 			{
-				eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
+				if (data_[grid.y][grid.x]->Type() == Puyo_ID::OJAMA)
+				{
+					eraseData_[grid.y][grid.x] = data_[grid.y][grid.x];
+				}
 			}
 		}
 	};
@@ -396,6 +403,7 @@ bool Field::SetParmit(SharedPuyo& puyo)
 		if (data_[grid.y + 1][grid.x])
 		{
 			moveChack.bit.down = false;
+			puyo->Pos({grid.x * blockSize_ + blockSize_ / 2, grid.y * blockSize_ + blockSize_ / 2 });
 			data_[grid.y][grid.x] = puyo;
 		}
 		else

@@ -131,7 +131,7 @@ private:
 	std::array<int, 2> fieldBG_;										// ﾌｨｰﾙﾄﾞの背景
 	int fieldFrame_;													// ﾌｨｰﾙﾄﾞのﾌﾚｰﾑ
 
-	std::array<int, 5> rensaLogo_;										// 連鎖のﾛｺﾞ
+	std::array<int, 10> rensaLogo_;										// 連鎖のﾛｺﾞ
 	Vector2 rensaLogoPos_;												// 連鎖のﾛｺﾞ表示位置
 	int rensaLogoDrawCnt_;
 	int rensaDrawCnt_;

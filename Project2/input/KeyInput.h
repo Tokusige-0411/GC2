@@ -10,7 +10,7 @@ struct KeyInput :
     void Update(void) override;
 
 private:
-    std::array<char, 256> _keyData;
+    std::array<char, 256> _keyData{};
     std::map<INPUT_ID, int> _inputTbl;
 };
 

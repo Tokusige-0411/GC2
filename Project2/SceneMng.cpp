@@ -12,8 +12,12 @@ void SceneMng::Run()
 	activeScene_ = std::make_unique<TitleScene>();
 	while ((!ProcessMessage()) && !(gameExit_))
 	{
-		gameExit_ = CheckHitKey(KEY_INPUT_ESCAPE);
 		_DebugDispOut::GetInstance().WaitMode();
+		gameExit_ = CheckHitKey(KEY_INPUT_ESCAPE);
+		if (!(frame_ % 90))
+		{
+			ReSetupJoypad();
+		}
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
 		activeScene_->Draw();
 		lpEffectCtl.Update();

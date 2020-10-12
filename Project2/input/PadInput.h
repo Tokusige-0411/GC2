@@ -9,7 +9,7 @@ struct PadInput :
 	void Update(void) override;
 
 private:
-	int _padID;
+	int _padID{};
 	std::map<INPUT_ID, int> _inputTbl;
 };
 

@@ -9,7 +9,7 @@ class Mouse :
     void Update(void) override;
 
 private:
-    int _keyData;
+    int _keyData{};
     std::map<INPUT_ID, int> _inputTbl;
 };
 
