@@ -1,5 +1,6 @@
 #pragma once
 #include<DxLib.h>
+#include<memory>
 
 #define lpNetWork NetWark::GetInstance()
 
@@ -8,13 +9,20 @@ class NetWark
 public:
 	static NetWark& GetInstance()
 	{
-		static NetWark s_Instance;
-		return s_Instance;
+		return *s_Instance;
 	}
+	IPDATA GetIP(void);
 
+private:
+	struct NetWorkDeleter
+	{
+		void operator() (NetWark* netWork) const
+		{
+			delete netWork;
+		}
+	};
 	NetWark();
 	~NetWark();
-
-	IPDATA GetIP(void);
+	static std::unique_ptr<NetWark, NetWorkDeleter> s_Instance;
 };
 

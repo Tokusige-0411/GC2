@@ -3,5 +3,9 @@
 class HostState :
 	public NetWorkState
 {
+public:
+	HostState();
+	~HostState() override;
+	NetWorkMode GetMode(void) override { return NetWorkMode::Host; };
 };
 

@@ -7,6 +7,7 @@ enum class NetWorkMode
 	Gest,
 	Max
 };
+
 class NetWorkState
 {
 public:

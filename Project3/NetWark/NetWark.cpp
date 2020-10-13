@@ -1,5 +1,7 @@
 #include "NetWark.h"
 
+std::unique_ptr<NetWark, NetWark::NetWorkDeleter> NetWark::s_Instance(new NetWark());
+
 NetWark::NetWark()
 {
 }
