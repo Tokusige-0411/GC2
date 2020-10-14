@@ -7,5 +7,6 @@ public:
 	GestState();
 	~GestState() override;
 	NetWorkMode GetMode(void) override { return NetWorkMode::Gest; };
+	bool ConnectHost(IPDATA hostIP) override;
 };
 

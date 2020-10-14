@@ -2,6 +2,7 @@
 #include <memory>
 #include "BaseScene.h"
 #include "../NetWark/NetWorkState.h"
+
 class TitleScene :
 	public BaseScene
 {
@@ -15,6 +16,5 @@ public:
 private:
 	int screen_size_x_;
 	int screen_size_y_;
-	std::unique_ptr<NetWorkState> netState_;
 };
 
