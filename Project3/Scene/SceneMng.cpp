@@ -9,7 +9,7 @@ void SceneMng::Run()
 	activeScene_ = std::make_unique<TitleScene>();
 	while ((!ProcessMessage()) && !(gameExit_))
 	{
-		activeScene_ = (*activeScene_).Update(std::move(activeScene_));		
+		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
 		Draw();
 		frame_++;
 	}
@@ -19,6 +19,8 @@ void SceneMng::Draw()
 {
 	SetDrawScreen(DX_SCREEN_BACK);
 	ClsDrawScreen();
+
+	activeScene_->Draw();
 
 	ScreenFlip();
 }

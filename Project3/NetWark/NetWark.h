@@ -13,8 +13,14 @@ public:
 		return *s_Instance;
 	}
 
+	void Update(void);
+
 	bool SetNetWorkMode(NetWorkMode mode);
 	NetWorkMode GetNetWorkMode(void);
+
+	bool GetActive(void);
+
+	int GetNetHandle(void);
 
 	bool ConnectHost(IPDATA hostIP);
 

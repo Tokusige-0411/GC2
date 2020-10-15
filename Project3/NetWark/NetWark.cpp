@@ -13,6 +13,11 @@ NetWark::~NetWark()
 {
 }
 
+void NetWark::Update(void)
+{
+	netState_->Update();
+}
+
 bool NetWark::SetNetWorkMode(NetWorkMode mode)
 {
 	switch (mode)
@@ -37,6 +42,16 @@ bool NetWark::SetNetWorkMode(NetWorkMode mode)
 NetWorkMode NetWark::GetNetWorkMode(void)
 {
 	return (*netState_).GetMode();
+}
+
+bool NetWark::GetActive(void)
+{
+	return (*netState_).GetActive();;
+}
+
+int NetWark::GetNetHandle(void)
+{
+	return netState_->GetNetHandle();
 }
 
 bool NetWark::ConnectHost(IPDATA hostIP)

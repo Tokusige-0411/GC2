@@ -7,5 +7,8 @@ public:
 	HostState();
 	~HostState() override;
 	NetWorkMode GetMode(void) override { return NetWorkMode::Host; };
+
+private:
+	bool CheckNetWork(void) override;
 };
 

@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="input\KeyInput.cpp" />
+    <ClCompile Include="input\Mouse.cpp" />
+    <ClCompile Include="input\PadInput.cpp" />
     <ClCompile Include="NetWark\GestState.cpp" />
     <ClCompile Include="NetWark\HostState.cpp" />
     <ClCompile Include="NetWark\NetWark.cpp" />
@@ -31,6 +34,11 @@
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="input\Controller.h" />
+    <ClInclude Include="input\INPUT_ID.h" />
+    <ClInclude Include="input\KeyInput.h" />
+    <ClInclude Include="input\Mouse.h" />
+    <ClInclude Include="input\PadInput.h" />
     <ClInclude Include="NetWark\GestState.h" />
     <ClInclude Include="NetWark\HostState.h" />
     <ClInclude Include="NetWark\NetWark.h" />

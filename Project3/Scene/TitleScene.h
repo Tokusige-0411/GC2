@@ -2,6 +2,9 @@
 #include <memory>
 #include "BaseScene.h"
 #include "../NetWark/NetWorkState.h"
+#include "../common/Vector2.h"
+#include "SceneMng.h"
+#include "../input/Controller.h"
 
 class TitleScene :
 	public BaseScene
@@ -14,7 +17,11 @@ public:
 	void Draw(void) override;
 
 private:
+	std::unique_ptr<Controller> input_;
 	int screen_size_x_;
 	int screen_size_y_;
+	Vector2 pos_;
+	int data_;
+	int imgHandle_;
 };
 

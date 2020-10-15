@@ -8,5 +8,8 @@ public:
 	~GestState() override;
 	NetWorkMode GetMode(void) override { return NetWorkMode::Gest; };
 	bool ConnectHost(IPDATA hostIP) override;
+
+private:
+	bool CheckNetWork(void) override;
 };
 

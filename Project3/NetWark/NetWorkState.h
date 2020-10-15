@@ -14,8 +14,13 @@ public:
 	NetWorkState();
 	virtual ~NetWorkState();
 	virtual NetWorkMode GetMode(void) { return NetWorkMode::Offline; };
-	bool GetActiv(void);
+	bool Update(void);
+	bool GetActive(void);
+	int GetNetHandle(void);
 	virtual bool ConnectHost(IPDATA hostIP);
+
+private:
+	virtual bool CheckNetWork(void) { return false; };
 
 protected:
 	const int portNum_ = 8086;
