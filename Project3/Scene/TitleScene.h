@@ -6,6 +6,10 @@
 #include "SceneMng.h"
 #include "../input/Controller.h"
 
+struct PlayerData {
+	int x, y;
+};
+
 class TitleScene :
 	public BaseScene
 {
@@ -21,7 +25,7 @@ private:
 	int screen_size_x_;
 	int screen_size_y_;
 	Vector2 pos_;
-	int data_;
+	PlayerData data_;
 	int imgHandle_;
 };
 

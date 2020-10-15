@@ -72,9 +72,9 @@ TitleScene::TitleScene()
 	}
 	TRACE("アクティブ状態:%d\n", lpNetWork.GetActive());
 
-	data_ = 0;
 	imgHandle_ = LoadGraph("image/mario.png");
-	pos_ = lpSceneMng.GetScreenCenter();
+	data_.x = lpSceneMng.GetScreenCenter().x;
+	data_.y = lpSceneMng.GetScreenCenter().y;
 	input_ = std::make_unique<PadInput>();
 	input_->SetUp(0);
 }
@@ -97,27 +97,27 @@ unique_Base TitleScene::Update(unique_Base own)
 	auto contData = input_->GetContData();
 	if (contData[INPUT_ID::UP][static_cast<int>(Trg::Now)] && contData[INPUT_ID::UP][static_cast<int>(Trg::Old)])
 	{
-		pos_.y -= 3;
+		data_.y -= 3;
 	}
 	if (contData[INPUT_ID::RIGHT][static_cast<int>(Trg::Now)] && contData[INPUT_ID::RIGHT][static_cast<int>(Trg::Old)])
 	{
-		pos_.x += 3;
+		data_.x += 3;
 	}
 	if (contData[INPUT_ID::DOWN][static_cast<int>(Trg::Now)] && contData[INPUT_ID::DOWN][static_cast<int>(Trg::Old)])
 	{
-		pos_.y += 3;
+		data_.y += 3;
 	}
 	if (contData[INPUT_ID::LEFT][static_cast<int>(Trg::Now)] && contData[INPUT_ID::LEFT][static_cast<int>(Trg::Old)])
 	{
-		pos_.x -= 3;
+		data_.x -= 3;
 	}
 
 	int handle = lpNetWork.GetNetHandle();
-	NetWorkSend(handle, &pos_, sizeof(int));
+	NetWorkSend(handle, &data_, sizeof(PlayerData));
 
-	if (GetNetWorkDataLength(handle) >= sizeof(int))
+	if (GetNetWorkDataLength(handle) >= sizeof(PlayerData))
 	{
-		NetWorkRecv(handle, &data_, sizeof(int));
+		NetWorkRecv(handle, &data_, sizeof(PlayerData));
 	}
 
 	return own;
@@ -125,5 +125,5 @@ unique_Base TitleScene::Update(unique_Base own)
 
 void TitleScene::Draw(void)
 {
-	DrawGraph(pos_.x, pos_.y, imgHandle_, true);
+	DrawGraph(data_.x, data_.y, imgHandle_, true);
 }

@@ -19,7 +19,7 @@ bool GestState::ConnectHost(IPDATA hostIP)
 
 bool GestState::CheckNetWork(void)
 {
-	if (GetLostNetWork() == -1)
+	if (GetLostNetWork() != -1)
 	{
 		CloseNetWork(netHandle_);
 		return false;
