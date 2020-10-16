@@ -3,14 +3,14 @@
 
 NetWorkState::NetWorkState()
 {
-	active_ = false;
+	active_ = ActiveState::Offline;
 }
 
 NetWorkState::~NetWorkState()
 {
 }
 
-bool NetWorkState::GetActive(void)
+ActiveState NetWorkState::GetActiveState(void)
 {
 	return active_;
 }

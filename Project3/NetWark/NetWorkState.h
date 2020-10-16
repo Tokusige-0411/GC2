@@ -7,6 +7,15 @@ enum class NetWorkMode
 	Gest,
 	Max
 };
+enum class ActiveState
+{
+	Non,
+	Wait,
+	Init,
+	Stanby,
+	Play,
+	Offline,
+};
 
 class NetWorkState
 {
@@ -15,7 +24,7 @@ public:
 	virtual ~NetWorkState();
 	virtual NetWorkMode GetMode(void) { return NetWorkMode::Offline; };
 	bool Update(void);
-	bool GetActive(void);
+	ActiveState GetActiveState(void);
 	int GetNetHandle(void);
 	virtual bool ConnectHost(IPDATA hostIP);
 
@@ -24,7 +33,7 @@ private:
 
 protected:
 	const int portNum_ = 8086;
-	bool active_;
+	ActiveState active_;
 	int netHandle_ = 0;
 };
 

@@ -1,9 +1,11 @@
 #include <DxLib.h>
 #include "HostState.h"
+#include "../_debug/_DebugConOut.h"
 
 HostState::HostState()
 {
-	active_ = !(PreparationListenNetWork(portNum_));
+	auto flag = !(PreparationListenNetWork(portNum_));
+	active_ = ActiveState::Wait;
 }
 
 HostState::~HostState()
@@ -13,12 +15,14 @@ HostState::~HostState()
 
 bool HostState::CheckNetWork(void)
 {
-	auto data = GetNewAcceptNetWork();
+	auto handle = GetNewAcceptNetWork();
 
-	if (data != -1)
+	if (handle != -1)
 	{
-		netHandle_ = data;
+		netHandle_ = handle;
+		active_ = ActiveState::Init;
 		StopListenNetWork();
+		TRACE("ê⁄ë±ämîF\n");
 	}
 
 	if (GetLostNetWork() == -1)

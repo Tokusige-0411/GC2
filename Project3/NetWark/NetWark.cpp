@@ -13,9 +13,35 @@ NetWark::~NetWark()
 {
 }
 
-void NetWark::Update(void)
+bool NetWark::Update(void)
 {
-	netState_->Update();
+	if (netState_->Update())
+	{
+		if (netState_->GetMode() == NetWorkMode::Host)
+		{
+			if (netState_->GetActiveState() == ActiveState::Init)
+			{
+
+			}
+		}
+	}
+}
+
+bool NetWark::SendMes(MesData& data)
+{
+	if (!netState_)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void NetWark::SendStanby(void)
+{
+	MesData sendData;
+	sendData.type = MesType::Stanby;
+	NetWorkSend(netState_->GetNetHandle(), &sendData, sizeof(MesData));
 }
 
 bool NetWark::SetNetWorkMode(NetWorkMode mode)
@@ -44,9 +70,9 @@ NetWorkMode NetWark::GetNetWorkMode(void)
 	return (*netState_).GetMode();
 }
 
-bool NetWark::GetActive(void)
+ActiveState NetWark::GetActive(void)
 {
-	return (*netState_).GetActive();;
+	return (*netState_).GetActiveState();;
 }
 
 int NetWark::GetNetHandle(void)

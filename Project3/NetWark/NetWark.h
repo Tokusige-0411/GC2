@@ -5,6 +5,20 @@
 
 #define lpNetWork NetWark::GetInstance()
 
+enum class MesType
+{
+	Stanby,
+	Game_Start,
+	Pos,
+};
+
+// ±◊≤“›ƒÇ…íçà”
+struct MesData 
+{
+	MesType type;
+	int data[2];
+};
+
 class NetWark
 {
 public:
@@ -13,12 +27,15 @@ public:
 		return *s_Instance;
 	}
 
-	void Update(void);
+	bool Update(void);
+
+	bool SendMes(MesData& data);
+	void SendStanby(void);
 
 	bool SetNetWorkMode(NetWorkMode mode);
 	NetWorkMode GetNetWorkMode(void);
 
-	bool GetActive(void);
+	ActiveState GetActive(void);
 
 	int GetNetHandle(void);
 
@@ -36,6 +53,7 @@ private:
 	};
 
 	std::unique_ptr<NetWorkState> netState_;
+	bool revStanby;
 
 	NetWark();
 	~NetWark();
