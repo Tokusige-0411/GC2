@@ -25,6 +25,7 @@ public:
 	virtual NetWorkMode GetMode(void) { return NetWorkMode::Offline; };
 	bool Update(void);
 	ActiveState GetActiveState(void);
+	void SetActiveState(ActiveState state);
 	int GetNetHandle(void);
 	virtual bool ConnectHost(IPDATA hostIP);
 

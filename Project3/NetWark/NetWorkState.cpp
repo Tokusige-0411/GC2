@@ -15,6 +15,11 @@ ActiveState NetWorkState::GetActiveState(void)
 	return active_;
 }
 
+void NetWorkState::SetActiveState(ActiveState state)
+{
+	active_ = state;
+}
+
 bool NetWorkState::Update(void)
 {
 	if (!CheckNetWork())

@@ -31,6 +31,7 @@ public:
 
 	bool SendMes(MesData& data);
 	void SendStanby(void);
+	void SendStart(void);
 
 	bool SetNetWorkMode(NetWorkMode mode);
 	NetWorkMode GetNetWorkMode(void);

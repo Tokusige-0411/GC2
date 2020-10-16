@@ -16,10 +16,6 @@ enum class UpdateMode
 	SethostIP,
 };
 
-struct PlayerData {
-	int x, y;
-};
-
 class TitleScene :
 	public BaseScene
 {
@@ -40,8 +36,6 @@ private:
 	std::unique_ptr<Controller> input_;
 	int screen_size_x_;
 	int screen_size_y_;
-	Vector2 pos_;
-	PlayerData sendData_;
 	int imgHandle_;
 
 	UpdateMode updateMode_;

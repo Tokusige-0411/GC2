@@ -13,14 +13,7 @@
 
 TitleScene::TitleScene()
 {
-	screen_size_x_ = 0;
-	screen_size_y_ = 0;
-
-	imgHandle_ = LoadGraph("image/mario.png");
-	sendData_.x = lpSceneMng.GetScreenCenter().x;
-	sendData_.y = lpSceneMng.GetScreenCenter().y;
-	input_ = std::make_unique<PadInput>();
-	input_->SetUp(0);
+	Init();
 
 	func_.try_emplace(UpdateMode::SetNetworkMode, std::bind(&TitleScene::SetNetWorkMode, this));
 	func_.try_emplace(UpdateMode::SethostIP, std::bind(&TitleScene::SetHostIP, this));
@@ -37,29 +30,27 @@ TitleScene::~TitleScene()
 bool TitleScene::Init()
 {
 	GetDrawScreenSize(&screen_size_x_, &screen_size_y_);
+	imgHandle_ = LoadGraph("image/mario.png");
+	input_ = std::make_unique<PadInput>();
+	input_->SetUp(0);
 	return true;
 }
 
 unique_Base TitleScene::Update(unique_Base own)
 {
 	(*input_)();
+	if (!lpNetWork.Update())
+	{
+		updateMode_ = UpdateMode::SetNetworkMode;
+	}
 	(func_[updateMode_])();
-	lpNetWork.Update();
-
-	//int handle = lpNetWork.GetNetHandle();
-	//NetWorkSend(handle, &sendData_, sizeof(PlayerData));
-
-	//if (GetNetWorkDataLength(handle) >= sizeof(PlayerData))
-	//{
-	//	NetWorkRecv(handle, &sendData_, sizeof(PlayerData));
-	//}
 
 	return own;
 }
 
 void TitleScene::Draw(void)
 {
-	DrawGraph(sendData_.x, sendData_.y, imgHandle_, true);
+
 }
 
 void TitleScene::SetNetWorkMode(void)
@@ -102,23 +93,35 @@ void TitleScene::SetNetWorkMode(void)
 		AST();
 		break;
 	}
-	TRACE("アクティブ状態:%d\n", lpNetWork.GetActive());
+	//TRACE("アクティブ状態:%d\n", lpNetWork.GetActive());
 }
 
 void TitleScene::StartInit(void)
 {
+	// ﾎｽﾄ側の処理
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
 		// 初期化が完了したらstanbyを送信
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
 			lpNetWork.SendStanby();
+			TRACE("初期化情報を送信、開始合図待ち\n");
+		}
+		if (lpNetWork.GetActive() == ActiveState::Play)
+		{
+			updateMode_ = UpdateMode::PlayerUpdate;
+			TRACE("ゲームスタート\n");
 		}
 	}
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Gest)
 	{
-
+		if (lpNetWork.GetActive() == ActiveState::Play)
+		{
+			updateMode_ = UpdateMode::PlayerUpdate;
+			lpNetWork.SendStart();
+			TRACE("ゲームスタート情報送信\n");
+		}
 	}
 }
 
@@ -147,6 +150,10 @@ void TitleScene::SetHostIP(void)
 	{
 		updateMode_ = UpdateMode::StartInit;
 		TRACE("接続成功\n");
+	}
+	else
+	{
+		TRACE("接続失敗\n");
 	}
 }
 

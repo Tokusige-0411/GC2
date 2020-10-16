@@ -25,9 +25,11 @@ bool HostState::CheckNetWork(void)
 		TRACE("接続確認\n");
 	}
 
-	if (GetLostNetWork() == -1)
+	if (GetLostNetWork() != -1)
 	{
-		PreparationListenNetWork(portNum_);
+		//PreparationListenNetWork(portNum_);
+		CloseNetWork(netHandle_);
+		TRACE("ゲストが切断しました\n");
 		return false;
 	}
 

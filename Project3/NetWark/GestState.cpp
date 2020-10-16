@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "GestState.h"
+#include "../_debug/_DebugConOut.h"
 
 GestState::GestState()
 {
@@ -27,6 +28,7 @@ bool GestState::CheckNetWork(void)
 	if (GetLostNetWork() != -1)
 	{
 		CloseNetWork(netHandle_);
+		TRACE("ƒzƒXƒg‚ªØ’f‚µ‚Ü‚µ‚½\n");
 		return false;
 	}
 	return true;
