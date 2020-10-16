@@ -22,11 +22,7 @@ void NetWorkState::SetActiveState(ActiveState state)
 
 bool NetWorkState::Update(void)
 {
-	if (!CheckNetWork())
-	{
-		return false;
-	}
-	return true;
+	return CheckNetWork();
 }
 
 int NetWorkState::GetNetHandle(void)
