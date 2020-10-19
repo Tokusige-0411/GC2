@@ -70,25 +70,41 @@ void TitleScene::SetNetWorkMode(void)
 			TRACE("自分のローカルIPアドレス:%d.%d.%d.%d\n", ipdata[i].d1, ipdata[i].d2, ipdata[i].d3, ipdata[i].d4);
 		}
 	}
-	TRACE("数字を入力してください。\n");
-	TRACE("0:ホストになる、1:ゲストになる、2:オフライン\n");
+
+	// 前回接続したIPｱﾄﾞﾚｽ
+	TRACE("接続方法を選択してください\n");
+	std::ifstream ifs("hostIP.txt");
+	if (!ifs)
+	{
+		TRACE("0:ホストになる\n1:ゲストになる\n\n3:オフライン\n");
+	}
+	else
+	{
+		std::string ip;
+		ifs >> ip;
+		TRACE("0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)%s\n3:オフライン\n", ip.c_str());
+	}
+
 	int mode;
-	std::cin >> mode;
-	if (mode == 0)
+	do 
 	{
-		lpNetWork.SetNetWorkMode(NetWorkMode::Host);
-		updateMode_ = UpdateMode::StartInit;
-	}
-	else if (mode == 1)
-	{
-		lpNetWork.SetNetWorkMode(NetWorkMode::Gest);
-		updateMode_ = UpdateMode::SethostIP;
-	}
-	else if (mode == 2)
-	{
-		lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
-		updateMode_ = UpdateMode::PlayerUpdate;
-	}
+		std::cin >> mode;
+		if (mode == 0)
+		{
+			lpNetWork.SetNetWorkMode(NetWorkMode::Host);
+			updateMode_ = UpdateMode::StartInit;
+		}
+		else if (mode == 1 || mode == 2)
+		{
+			lpNetWork.SetNetWorkMode(NetWorkMode::Gest);
+			updateMode_ = UpdateMode::SethostIP;
+		}
+		else if (mode == 3)
+		{
+			lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
+			updateMode_ = UpdateMode::PlayerUpdate;
+		}
+	} while (0 > mode || mode > 3);
 
 	switch (lpNetWork.GetNetWorkMode())
 	{
@@ -105,7 +121,6 @@ void TitleScene::SetNetWorkMode(void)
 		AST();
 		break;
 	}
-	//TRACE("アクティブ状態:%d\n", lpNetWork.GetActive());
 }
 
 void TitleScene::StartInit(void)
@@ -142,12 +157,21 @@ void TitleScene::SetHostIP(void)
 {
 	IPDATA hostIP;
 	std::string ip;
-	TRACE("接続先のIPアドレスを入力\n");
-	std::cin >> ip;
-	// ﾌｧｲﾙへの書き出し
+	std::ifstream ifs("hostIP.txt");
+	if (!ifs)
+	{
+		TRACE("接続先のIPアドレスを入力\n");
+		std::cin >> ip;
 
-	std::ofstream ofs("hostIP.txt");
-	ofs << ip;
+		// ﾌｧｲﾙへの書き出し
+		TRACE("IPアドレスをファイル出力\n");
+		std::ofstream ofs("hostIP.txt");
+		ofs << ip;
+	}
+	else
+	{
+		ifs >> ip;
+	}
 
 	// IPDATAに変換したipをhostIPに入れる
 	std::istringstream iss(ip);

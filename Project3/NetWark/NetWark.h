@@ -20,7 +20,7 @@ struct MesData
 	int data[2];
 };
 
-using ArrayIP = std::array<IPDATA, 3>;
+using ArrayIP = std::array<IPDATA, 2>;
 
 class NetWark
 {
