@@ -81,22 +81,22 @@ bool NetWark::SendMes(MesData& data)
 		return false;
 	}
 
+	NetWorkSend(netState_->GetNetHandle(), &data, sizeof(MesData));
+
 	return true;
 }
 
 void NetWark::SendStanby(void)
 {
-	MesData sendData;
-	sendData.type = MesType::Stanby;
-	NetWorkSend(netState_->GetNetHandle(), &sendData, sizeof(MesData));
+	MesData sendData = {MesType::Stanby, 0, 0};
+	SendMes(sendData);
 	netState_->SetActiveState(ActiveState::Stanby);
 }
 
 void NetWark::SendStart(void)
 {
-	MesData sendData;
-	sendData.type = MesType::Game_Start;
-	NetWorkSend(netState_->GetNetHandle(), &sendData, sizeof(MesData));
+	MesData sendData = { MesType::Game_Start, 0, 0 };
+	SendMes(sendData);
 }
 
 bool NetWark::SetNetWorkMode(NetWorkMode mode)
@@ -122,12 +122,12 @@ bool NetWark::SetNetWorkMode(NetWorkMode mode)
 
 NetWorkMode NetWark::GetNetWorkMode(void)
 {
-	return (*netState_).GetMode();
+	return netState_->GetMode();
 }
 
 ActiveState NetWark::GetActive(void)
 {
-	return (*netState_).GetActiveState();;
+	return netState_->GetActiveState();;
 }
 
 int NetWark::GetNetHandle(void)
@@ -135,14 +135,13 @@ int NetWark::GetNetHandle(void)
 	return netState_->GetNetHandle();
 }
 
-bool NetWark::ConnectHost(IPDATA hostIP)
+ActiveState NetWark::ConnectHost(IPDATA hostIP)
 {
-	return (*netState_).ConnectHost(hostIP);
+	return netState_->ConnectHost(hostIP);
 }
 
-IPDATA NetWark::GetIP(void)
+ArrayIP NetWark::GetIP(void)
 {
-	IPDATA data;
-	GetMyIPAddress(&data);
-	return data;
+	GetMyIPAddress(&ipData_[0], 5);
+	return ipData_;
 }

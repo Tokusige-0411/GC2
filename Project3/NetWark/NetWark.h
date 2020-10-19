@@ -1,6 +1,7 @@
 #pragma once
 #include<DxLib.h>
 #include<memory>
+#include<array>
 #include"NetWorkState.h"
 
 #define lpNetWork NetWark::GetInstance()
@@ -18,6 +19,8 @@ struct MesData
 	MesType type;
 	int data[2];
 };
+
+using ArrayIP = std::array<IPDATA, 3>;
 
 class NetWark
 {
@@ -40,9 +43,9 @@ public:
 
 	int GetNetHandle(void);
 
-	bool ConnectHost(IPDATA hostIP);
+	ActiveState ConnectHost(IPDATA hostIP);
 
-	IPDATA GetIP(void);
+	ArrayIP GetIP(void);
 
 private:
 	struct NetWorkDeleter
@@ -55,6 +58,7 @@ private:
 
 	std::unique_ptr<NetWorkState> netState_;
 	bool revStanby;
+	ArrayIP ipData_;
 
 	NetWark();
 	~NetWark();

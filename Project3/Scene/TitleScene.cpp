@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <fstream>
 #include "../_debug/_DebugConOut.h"
 #include "TitleScene.h"
 #include "../NetWark/NetWark.h"
@@ -57,7 +58,18 @@ void TitleScene::SetNetWorkMode(void)
 {
 	auto ipdata = lpNetWork.GetIP();
 
-	TRACE("自分のIPアドレス:%d.%d.%d.%d\n", ipdata.d1, ipdata.d2, ipdata.d3, ipdata.d4);
+	//TRACE("自分のIPアドレス:%d.%d.%d.%d\n", ipdata.d1, ipdata.d2, ipdata.d3, ipdata.d4);
+	for (int i = 0; i < ipdata.size(); i++)
+	{
+		if (ipdata[i].d1 == 192)
+		{
+			TRACE("自分のグローバルIPアドレス:%d.%d.%d.%d\n", ipdata[i].d1, ipdata[i].d2, ipdata[i].d3, ipdata[i].d4);
+		}
+		else
+		{
+			TRACE("自分のローカルIPアドレス:%d.%d.%d.%d\n", ipdata[i].d1, ipdata[i].d2, ipdata[i].d3, ipdata[i].d4);
+		}
+	}
 	TRACE("数字を入力してください。\n");
 	TRACE("0:ホストになる、1:ゲストになる、2:オフライン\n");
 	int mode;
@@ -102,6 +114,7 @@ void TitleScene::StartInit(void)
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
 		// 初期化が完了したらstanbyを送信
+		// この前に変数もろもろ初期化
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
 			lpNetWork.SendStanby();
@@ -131,6 +144,11 @@ void TitleScene::SetHostIP(void)
 	std::string ip;
 	TRACE("接続先のIPアドレスを入力\n");
 	std::cin >> ip;
+	// ﾌｧｲﾙへの書き出し
+
+	std::ofstream ofs("hostIP.txt");
+	ofs << ip;
+
 	// IPDATAに変換したipをhostIPに入れる
 	std::istringstream iss(ip);
 	std::string str;

@@ -10,17 +10,17 @@ GestState::~GestState()
 {
 }
 
-bool GestState::ConnectHost(IPDATA hostIP)
+ActiveState GestState::ConnectHost(IPDATA hostIP)
 {
 	netHandle_ = ConnectNetWork(hostIP, portNum_);
 
 	if (netHandle_ != -1)
 	{
 		active_ = ActiveState::Init;
-		return true;
+		return active_;
 	}
 
-	return false;
+	return ActiveState::Non;
 }
 
 bool GestState::CheckNetWork(void)

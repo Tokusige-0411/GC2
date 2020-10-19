@@ -30,7 +30,7 @@ int NetWorkState::GetNetHandle(void)
 	return netHandle_;
 }
 
-bool NetWorkState::ConnectHost(IPDATA hostIP)
+ActiveState NetWorkState::ConnectHost(IPDATA hostIP)
 {
-	return false;
+	return ActiveState::Non;
 }

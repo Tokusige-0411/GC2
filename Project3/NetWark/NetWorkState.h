@@ -27,7 +27,7 @@ public:
 	ActiveState GetActiveState(void);
 	void SetActiveState(ActiveState state);
 	int GetNetHandle(void);
-	virtual bool ConnectHost(IPDATA hostIP);
+	virtual ActiveState ConnectHost(IPDATA hostIP);
 
 private:
 	virtual bool CheckNetWork(void) { return false; };
