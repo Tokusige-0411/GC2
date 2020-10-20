@@ -34,6 +34,7 @@ bool TitleScene::Init()
 	imgHandle_ = LoadGraph("image/mario.png");
 	input_ = std::make_unique<PadInput>();
 	input_->SetUp(0);
+
 	return true;
 }
 
@@ -162,11 +163,6 @@ void TitleScene::SetHostIP(void)
 	{
 		TRACE("接続先のIPアドレスを入力\n");
 		std::cin >> ip;
-
-		// ﾌｧｲﾙへの書き出し
-		TRACE("IPアドレスをファイル出力\n");
-		std::ofstream ofs("hostIP.txt");
-		ofs << ip;
 	}
 	else
 	{
@@ -190,8 +186,12 @@ void TitleScene::SetHostIP(void)
 
 	if (lpNetWork.GetNetHandle() != -1)
 	{
+		// ﾌｧｲﾙへの書き出し
+		std::ofstream ofs("hostIP.txt");
+		ofs << ip;
 		updateMode_ = UpdateMode::StartInit;
 		TRACE("接続成功\n");
+		TRACE("IPアドレスをファイル出力\n");
 	}
 	else
 	{
