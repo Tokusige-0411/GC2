@@ -1,5 +1,9 @@
 #pragma once
 #include <memory>
+#include <string>
+
+
+#define lpTileLoader TileLoader::GetInstance()
 
 class TileLoader
 {
