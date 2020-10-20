@@ -4,15 +4,22 @@
 class TileLoader
 {
 public:
-	TileLoader();
-	~TileLoader();
+	static TileLoader& GetInstance()
+	{
+		return *s_Instance;
+	}
 
 private:
-	static struct TileLoderDereter
+	struct TileLoderDeleter
 	{
-
+		void operator() (TileLoader* tileLoader) const
+		{
+			delete tileLoader;
+		}
 	};
 
-	std::unique_ptr<TileLoader, TileLoaderDereter>
+	TileLoader();
+	~TileLoader();
+	static std::unique_ptr<TileLoader, TileLoderDeleter> s_Instance;
 };
 
