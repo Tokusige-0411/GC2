@@ -1,8 +1,17 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <map>
 
 #define lpTileLoader TileLoader::GetInstance()
+
+enum class TileLayer
+{
+	Char,
+	Obj,
+	Item,
+	Bg
+};
 
 class TileLoader
 {
@@ -21,8 +30,15 @@ private:
 		}
 	};
 
-	bool Init(void);
+	// Ï¯ÌßŠÖ˜A
+	int width_;					// ‰¡Ï½”
+	int height_;				// cÏ½”
+	int tileWidth_;				// À²Ù‰¡•
+	int tileHeight_;			// À²Ùc•
 
+	std::map<TileLayer, std::vector<int>> mapData_;
+
+	bool Init(void);
 	TileLoader();
 	~TileLoader();
 	static std::unique_ptr<TileLoader, TileLoderDeleter> s_Instance;

@@ -46,12 +46,6 @@ bool TitleScene::Init()
 	//{
 	//	std::cout << tmp->value();
 	//}
-	rapidxml::xml_node<>* node = doc.first_node("map");
-	for (rapidxml::xml_node<>* child = node->first_node();
-		child != nullptr;
-		child = child->next_sibling()) {
-		std::cout << child->name() << " : [" << child->value() << "]\n";
-	}
 	return true;
 }
 
