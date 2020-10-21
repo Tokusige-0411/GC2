@@ -5,11 +5,14 @@
 
 std::unique_ptr<TileLoader, TileLoader::TileLoderDeleter> TileLoader::s_Instance(new TileLoader());
 
+bool TileLoader::Init(void)
+{
+	return true;
+}
+
 TileLoader::TileLoader()
 {
-	std::ifstream ifs("MapData.tmx");
-	std::string tmp;
-	ifs >> tmp;
+	Init();
 }
 
 TileLoader::~TileLoader()

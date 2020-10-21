@@ -2,7 +2,6 @@
 #include <memory>
 #include <string>
 
-
 #define lpTileLoader TileLoader::GetInstance()
 
 class TileLoader
@@ -21,6 +20,8 @@ private:
 			delete tileLoader;
 		}
 	};
+
+	bool Init(void);
 
 	TileLoader();
 	~TileLoader();
