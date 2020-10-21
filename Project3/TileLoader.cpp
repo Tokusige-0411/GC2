@@ -14,12 +14,6 @@ bool TileLoader::Init(void)
 	rapidxml::xml_document<> doc;
 	rapidxml::file<> file("MapData.tmx");
 	doc.parse<0>(file.data());
-
-	//rapidxml::xml_node<>* node = doc.first_node("map");
-	//for (rapidxml::xml_attribute<>* tmp = node->first_attribute(); tmp != nullptr; tmp = tmp->next_attribute())
-	//{
-	//	std::cout << tmp->value();
-	//}
 	rapidxml::xml_node<>* map = doc.first_node("map");
 
 	width_ = std::atoi(map->first_attribute("width")->value());

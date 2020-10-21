@@ -7,10 +7,10 @@
 
 enum class TileLayer
 {
-	Char,
-	Obj,
+	Bg,
 	Item,
-	Bg
+	Obj,
+	Char,
 };
 
 class TileLoader
