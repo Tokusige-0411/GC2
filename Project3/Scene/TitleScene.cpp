@@ -44,7 +44,7 @@ bool TitleScene::Init()
 	
 	// œØÃﬂ¡ØÃﬂì«Ç›çûÇ›
 	auto chipData = lpTileLoader.GetTsxInfo();
-	lpImageMng.GetID("map", chipData.fileName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
+	lpImageMng.GetID("map", "image/" + chipData.fileName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
 
 	return true;
 }
@@ -88,7 +88,7 @@ void TitleScene::SetNetWorkMode(void)
 	auto ipdata = lpNetWork.GetIP();
 
 	//TRACE("é©ï™ÇÃIPÉAÉhÉåÉX:%d.%d.%d.%d\n", ipdata.d1, ipdata.d2, ipdata.d3, ipdata.d4);
-	for (int i = 0; i < ipdata.size(); i++)
+	for (int i = 0; i < static_cast<int>(ipdata.size()); i++)
 	{
 		if (ipdata[i].d1 == 192)
 		{

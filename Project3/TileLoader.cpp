@@ -1,6 +1,6 @@
-#include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
 #include "TileLoader.h"
@@ -11,10 +11,9 @@ std::unique_ptr<TileLoader, TileLoader::TileLoderDeleter> TileLoader::s_Instance
 
 bool TileLoader::TMXLoader(void)
 {
-	rapidxml::xml_document<> doc;
 	rapidxml::file<> file("MapData.tmx");
-	doc.parse<0>(file.data());
-	rapidxml::xml_node<>* map = doc.first_node("map");
+	doc_.parse<0>(file.data());
+	rapidxml::xml_node<>* map = doc_.first_node("map");
 
 	//  ﬁ∞ºﬁÆ›¡™Ø∏
 	auto version = map->first_attribute("version")->value();
@@ -48,10 +47,9 @@ bool TileLoader::TMXLoader(void)
 
 bool TileLoader::TSXLoader(void)
 {
-	rapidxml::xml_document<> doc;
 	rapidxml::file<> file("MapTile.tsx");
-	doc.parse<0>(file.data());
-	rapidxml::xml_node<>* tileset = doc.first_node("tileset");
+	doc_.parse<0>(file.data());
+	rapidxml::xml_node<>* tileset = doc_.first_node("tileset");
 
 	//  ﬁ∞ºﬁÆ›¡™Ø∏
 	auto version = tileset->first_attribute("version")->value();
@@ -70,7 +68,8 @@ bool TileLoader::TSXLoader(void)
 
 	// Ãß≤ŸÇÃèÍèäéÊìæ
 	rapidxml::xml_node<>* image = tileset->first_node("image");
-	tsxInfo_.fileName = image->first_attribute("source")->value();
+	std::string fileName = image->first_attribute("source")->value();
+	tsxInfo_.fileName = fileName.substr(fileName.length() - 7);
 
 	return true;
 }

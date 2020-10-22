@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include <string>
 #include "BaseScene.h"
 #include "../NetWark/NetWorkState.h"
 #include "../common/Vector2.h"

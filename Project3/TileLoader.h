@@ -7,21 +7,20 @@
 
 struct TMXInfo
 {
-	int width;					// ‰¡Ï½”
-	int height;					// cÏ½”
-	int tileWidth;				// À²Ù‰¡•
-	int tileHeight;				// À²Ùc•
+	int width{};					// ‰¡Ï½”
+	int height{};					// cÏ½”
+	int tileWidth{};				// À²Ù‰¡•
+	int tileHeight{};				// À²Ùc•
 };
 
 struct TSXInfo
 {
-	int width;					// ‰¡Ï½”
-	int height;					// cÏ½”
-	int tileWidth;				// À²Ù‰¡•
-	int tileHeight;				// À²Ùc•
-	int chipNum;				// À²Ù‘”
-	std::string fileName;
-
+	int width{};					// ‰¡Ï½”
+	int height{};					// cÏ½”
+	int tileWidth{};				// À²Ù‰¡•
+	int tileHeight{};				// À²Ùc•
+	int chipNum{};					// À²Ù‘”
+	std::string fileName{};
 };
 
 using MapData = std::map<std::string, std::vector<int>>;
@@ -51,10 +50,11 @@ private:
 	};
 
 	// Ï¯ÌßŠÖ˜A
-	TMXInfo tmxInfo_;
-	TSXInfo tsxInfo_;
-
+	TMXInfo tmxInfo_{};
+	TSXInfo tsxInfo_{};
 	MapData mapData_;
+
+	rapidxml::xml_document<> doc_;
 
 	std::map<std::string, bool> version_;
 
