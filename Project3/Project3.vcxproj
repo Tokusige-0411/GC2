@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common\imageMng.cpp" />
     <ClCompile Include="input\KeyInput.cpp" />
     <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\imageMng.h" />
     <ClInclude Include="input\Controller.h" />
     <ClInclude Include="input\INPUT_ID.h" />
     <ClInclude Include="input\KeyInput.h" />

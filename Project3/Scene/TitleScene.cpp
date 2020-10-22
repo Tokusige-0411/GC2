@@ -13,6 +13,8 @@
 #include "../NetWark/HostState.h"
 #include "../NetWark/GestState.h"
 #include "../input/PadInput.h"
+#include "../TileLoader.h"
+#include "../common/imageMng.h"
 
 TitleScene::TitleScene()
 {
@@ -37,15 +39,13 @@ bool TitleScene::Init()
 	input_ = std::make_unique<PadInput>();
 	input_->SetUp(0);
 
-	rapidxml::xml_document<> doc;
-	rapidxml::file<> file("MapData.tmx");
-	doc.parse<0>(file.data());
+	lpTileLoader.TMXLoader();
+	lpTileLoader.TSXLoader();
+	
+	// œØÃﬂ¡ØÃﬂì«Ç›çûÇ›
+	auto chipData = lpTileLoader.GetTsxInfo();
+	lpImageMng.GetID("map", chipData.fileName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
 
-	//rapidxml::xml_node<>* node = doc.first_node("map");
-	//for (rapidxml::xml_attribute<>* tmp = node->first_attribute(); tmp != nullptr; tmp = tmp->next_attribute())
-	//{
-	//	std::cout << tmp->value();
-	//}
 	return true;
 }
 
@@ -57,13 +57,30 @@ unique_Base TitleScene::Update(unique_Base own)
 		updateMode_ = UpdateMode::SetNetworkMode;
 	}
 	(func_[updateMode_])();
-
 	return own;
 }
 
 void TitleScene::Draw(void)
 {
+	auto mapData = lpTileLoader.GetMapData();
+	auto mapInfo = lpTileLoader.GetTmxInfo();
 
+	auto draw = [&](std::string key) {
+		for (int y = 0; y < mapInfo.height; y++)
+		{
+			for (int x = 0; x < mapInfo.width; x++)
+			{
+				if (mapData[key][y * mapInfo.width + x])
+				{
+					DrawGraph(x * mapInfo.tileWidth, y * mapInfo.tileHeight, lpImageMng.GetID("map")[mapData[key][y * mapInfo.width + x] - 1], true);
+				}
+			}
+		}
+	};
+	draw("Bg");
+	draw("Item");
+	draw("Obj");
+	draw("Char");
 }
 
 void TitleScene::SetNetWorkMode(void)

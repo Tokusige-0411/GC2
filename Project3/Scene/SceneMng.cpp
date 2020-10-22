@@ -7,7 +7,7 @@
 void SceneMng::Run()
 {
 	activeScene_ = std::make_unique<TitleScene>();
-	while ((!ProcessMessage()) && !(gameExit_))
+	while (!ProcessMessage())
 	{
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
 		Draw();
@@ -30,14 +30,14 @@ const Vector2 SceneMng::GetScreenCenter(void)
 	return screenCenter_;
 }
 
-void SceneMng::SetGameExit(void)
-{
-	gameExit_ = true;
-}
-
 int SceneMng::GetFrameCnt(void)
 {
 	return frame_;
+}
+
+void SceneMng::AddDrawQue(DrawQueT dQue)
+{
+	drawList_.emplace_back(dQue);
 }
 
 bool SceneMng::SysInit()
@@ -54,11 +54,10 @@ bool SceneMng::SysInit()
 	return true;
 }
 
-SceneMng::SceneMng() : screenSize_{ 800, 600 }, screenCenter_{ screenSize_.x / 2, screenSize_.y / 2 }
+SceneMng::SceneMng() : screenSize_{ 672, 544 }, screenCenter_{ screenSize_.x / 2, screenSize_.y / 2 }
 {
 	SysInit();
 	frame_ = 0;
-	gameExit_ = 0;
 }
 
 SceneMng::~SceneMng()

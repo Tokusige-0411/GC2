@@ -30,7 +30,7 @@ public:
 	virtual ActiveState ConnectHost(IPDATA hostIP);
 
 private:
-	virtual bool CheckNetWork(void) { return false; };
+	virtual bool CheckNetWork(void) { return true; };
 
 protected:
 	const int portNum_ = 8086;

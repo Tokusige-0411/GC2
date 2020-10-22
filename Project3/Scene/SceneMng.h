@@ -2,7 +2,6 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <random>
 #include "BaseScene.h"
 #include "../common/Vector2.h"
 
@@ -18,10 +17,9 @@ enum class DrawType
 enum class Layer
 {
 	Bg,
+	Item,
+	Obj,
 	Char,
-	Ui,
-	Ex,
-	Max
 };
 
 enum class DrawQue
@@ -33,14 +31,11 @@ enum class DrawQue
 	Ex,
 	ZOrder,				// Zµ°ÀŞ°
 	Layer,				// Ú²Ô°
-	DrawMode,	
-	DrawNum,
-	Type,
 	Max
 };
 
-// •`‰æ‚·‚é‚Æ‚«‚É•K—v‚Èî•ñ<ÊİÄŞÙ, X, Y, rad, ex, Zorder, Layer, image‚©effect‚©>
-using DrawQueT = std::tuple<int, int, int, double, double, float, Layer, int, int, DrawType>;
+// •`‰æ‚·‚é‚Æ‚«‚É•K—v‚Èî•ñ<ÊİÄŞÙ, X, Y, rad, ex, Zorder, Layer>
+using DrawQueT = std::tuple<int, int, int, double, double, float, Layer>;
 
 class SceneMng
 {
@@ -52,25 +47,27 @@ public:
 	}
 
 	void Run();
-	void Draw();
 
 	const Vector2 GetScreenCenter(void);
-	void SetGameExit(void);
 	int GetFrameCnt(void);
+
+	void AddDrawQue(DrawQueT dQue);
 
 private:
 	bool SysInit();
+
+	void Draw();
+
 	SceneMng();
 	~SceneMng();
 
 	const Vector2 screenSize_;
 	const Vector2 screenCenter_;
 
-	unique_Base activeScene_;											// “®‚¢‚Ä‚¢‚é¼°İ
+	unique_Base activeScene_;					// “®‚¢‚Ä‚¢‚é¼°İ
+
+	std::vector<DrawQueT> drawList_;			// •`‰æ‚·‚é‚à‚Ì
 
 	int frame_;
-
-	std::mt19937 _mt;
-	int gameExit_;
 };
 

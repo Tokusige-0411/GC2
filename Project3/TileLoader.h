@@ -5,13 +5,26 @@
 
 #define lpTileLoader TileLoader::GetInstance()
 
-enum class TileLayer
+struct TMXInfo
 {
-	Bg,
-	Item,
-	Obj,
-	Char,
+	int width;					// ‰¡Ï½”
+	int height;					// cÏ½”
+	int tileWidth;				// À²Ù‰¡•
+	int tileHeight;				// À²Ùc•
 };
+
+struct TSXInfo
+{
+	int width;					// ‰¡Ï½”
+	int height;					// cÏ½”
+	int tileWidth;				// À²Ù‰¡•
+	int tileHeight;				// À²Ùc•
+	int chipNum;				// À²Ù‘”
+	std::string fileName;
+
+};
+
+using MapData = std::map<std::string, std::vector<int>>;
 
 class TileLoader
 {
@@ -20,6 +33,13 @@ public:
 	{
 		return *s_Instance;
 	}
+
+	bool TMXLoader(void);
+	bool TSXLoader(void);
+	void Draw(void);
+	const TMXInfo& GetTmxInfo(void);
+	const TSXInfo& GetTsxInfo(void);
+	const MapData& GetMapData(void);
 
 private:
 	struct TileLoderDeleter
@@ -31,12 +51,12 @@ private:
 	};
 
 	// Ï¯ÌßŠÖ˜A
-	int width_;					// ‰¡Ï½”
-	int height_;				// cÏ½”
-	int tileWidth_;				// À²Ù‰¡•
-	int tileHeight_;			// À²Ùc•
+	TMXInfo tmxInfo_;
+	TSXInfo tsxInfo_;
 
-	std::map<TileLayer, std::vector<int>> mapData_;
+	MapData mapData_;
+
+	std::map<std::string, bool> version_;
 
 	bool Init(void);
 	TileLoader();
