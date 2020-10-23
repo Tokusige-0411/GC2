@@ -35,6 +35,8 @@ public:
 
 	bool TMXLoader(void);
 	bool TSXLoader(void);
+	void SendTmxSizeData(void);
+	void SendTmxData(void);
 	void Draw(void);
 	const TMXInfo& GetTmxInfo(void);
 	const TSXInfo& GetTsxInfo(void);

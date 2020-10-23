@@ -2,6 +2,7 @@
 #include<DxLib.h>
 #include<memory>
 #include<array>
+#include<vector>
 #include"NetWorkState.h"
 
 #define lpNetWork NetWark::GetInstance()
@@ -10,6 +11,8 @@ enum class MesType
 {
 	Stanby,
 	Game_Start,
+	TMX_Size,
+	TMX_Data,
 	Pos,
 };
 
@@ -21,6 +24,7 @@ struct MesData
 };
 
 using ArrayIP = std::array<IPDATA, 2>;
+using RevBox = std::vector<char>;
 
 class NetWark
 {
@@ -31,6 +35,7 @@ public:
 	}
 
 	bool Update(void);
+	void CloseNetWork(void);
 
 	bool SendMes(MesData& data);
 	void SendStanby(void);
@@ -59,6 +64,7 @@ private:
 	std::unique_ptr<NetWorkState> netState_;
 	bool revStanby;
 	ArrayIP ipData_;
+	RevBox revBox_;
 
 	NetWark();
 	~NetWark();

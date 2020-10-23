@@ -55,10 +55,20 @@ bool NetWark::Update(void)
 				if (GetNetWorkDataLength(handle) >= sizeof(MesData))
 				{
 					NetWorkRecv(handle, &recvData, sizeof(MesData));
+					if (recvData.type == MesType::TMX_Size)
+					{
+						revBox_.resize(recvData.data[0]);
+						TRACE("TMXƒtƒ@ƒCƒ‹‚Ì‘å‚«‚³:%d\n", revBox_.size());
+					}
 					if (recvData.type == MesType::Stanby)
 					{
 						revStanby = true;
 						TRACE("‰Šú‰»î•ñæ“¾\n");
+					}
+					if (recvData.type == MesType::TMX_Data)
+					{
+						revBox_[recvData.data[0]] = static_cast<char>(recvData.data[1]);
+						TRACE("%c", revBox_[recvData.data[0]]);
 					}
 				}
 			}
@@ -67,11 +77,16 @@ bool NetWark::Update(void)
 	else
 	{
 		// Ø’f‚³‚ê‚½ê‡
-		netState_.reset();
-		revStanby = false;
+		CloseNetWork();
 		return false;
 	}
 	return true;
+}
+
+void NetWark::CloseNetWork(void)
+{
+	netState_.reset();
+	revStanby = false;
 }
 
 bool NetWark::SendMes(MesData& data)

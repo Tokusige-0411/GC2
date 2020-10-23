@@ -38,6 +38,7 @@ private:
 	int screen_size_x_;
 	int screen_size_y_;
 	int imgHandle_;
+	bool reConnect_;
 	std::array<int, 12> mapImage_;
 
 	std::map<std::string, Layer> layerCnv_;			// stringŒ^‚ÌÏ¯ÌßÃŞ°À‚ğLayer‚É‡‚í‚¹‚é‚¾‚¯‚Ì‚â‚Â

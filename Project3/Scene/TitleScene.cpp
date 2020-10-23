@@ -38,6 +38,7 @@ bool TitleScene::Init()
 	imgHandle_ = LoadGraph("image/mario.png");
 	input_ = std::make_unique<PadInput>();
 	input_->SetUp(0);
+	reConnect_ = false;
 
 	lpTileLoader.TMXLoader();
 	lpTileLoader.TSXLoader();
@@ -123,8 +124,14 @@ void TitleScene::SetNetWorkMode(void)
 			lpNetWork.SetNetWorkMode(NetWorkMode::Host);
 			updateMode_ = UpdateMode::StartInit;
 		}
-		else if (mode == 1 || mode == 2)
+		else if (mode == 1)
 		{
+			lpNetWork.SetNetWorkMode(NetWorkMode::Gest);
+			updateMode_ = UpdateMode::SethostIP;
+		}
+		else if (mode == 2)
+		{
+			reConnect_ = true;
 			lpNetWork.SetNetWorkMode(NetWorkMode::Gest);
 			updateMode_ = UpdateMode::SethostIP;
 		}
@@ -161,6 +168,10 @@ void TitleScene::StartInit(void)
 		// この前に変数もろもろ初期化
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
+			// TMXﾃﾞｰﾀのｻｲｽﾞ送信
+			lpTileLoader.SendTmxSizeData();
+			lpTileLoader.SendTmxData();
+			TRACE("TMXファイルのサイズ送信\n");
 			lpNetWork.SendStanby();
 			TRACE("初期化情報を送信、開始合図待ち\n");
 		}
@@ -186,15 +197,24 @@ void TitleScene::SetHostIP(void)
 {
 	IPDATA hostIP;
 	std::string ip;
-	std::ifstream ifs("hostIP.txt");
-	if (!ifs)
+	if (reConnect_)
 	{
-		TRACE("接続先のIPアドレスを入力\n");
-		std::cin >> ip;
+		std::ifstream ifs("hostIP.txt");
+		if (ifs)
+		{
+			ifs >> ip;
+		}
+		else
+		{
+			TRACE("前回接続したIPアドレスがありません\n");
+			TRACE("接続先のIPアドレスを入力\n");
+			std::cin >> ip;
+		}
 	}
 	else
 	{
-		ifs >> ip;
+		TRACE("接続先のIPアドレスを入力\n");
+		std::cin >> ip;
 	}
 
 	// IPDATAに変換したipをhostIPに入れる

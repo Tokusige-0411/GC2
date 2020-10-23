@@ -1,9 +1,11 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <fstream>
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
 #include "TileLoader.h"
+#include "NetWark/NetWark.h"
 
 #include "_debug/_DebugConOut.h"
 
@@ -25,9 +27,9 @@ bool TileLoader::TMXLoader(void)
 
 	// ﾏｯﾌﾟﾃﾞｰﾀ読み込み
 	tmxInfo_.width = std::atoi(map->first_attribute("width")->value());
-	tmxInfo_.height = atoi(map->first_attribute("height")->value());
-	tmxInfo_.tileWidth = atoi(map->first_attribute("tilewidth")->value());
-	tmxInfo_.tileHeight = atoi(map->first_attribute("tileheight")->value());
+	tmxInfo_.height = std::atoi(map->first_attribute("height")->value());
+	tmxInfo_.tileWidth = std::atoi(map->first_attribute("tilewidth")->value());
+	tmxInfo_.tileHeight = std::atoi(map->first_attribute("tileheight")->value());
 
 	for (rapidxml::xml_node<>* layer = map->first_node("layer");
 		layer != nullptr;
@@ -42,6 +44,7 @@ bool TileLoader::TMXLoader(void)
 			mapData_[name].emplace_back(std::atoi(str.c_str()));
 		}
 	}
+
 	return true;
 }
 
@@ -72,6 +75,28 @@ bool TileLoader::TSXLoader(void)
 	tsxInfo_.fileName = fileName.substr(fileName.length() - 7);
 
 	return true;
+}
+
+void TileLoader::SendTmxSizeData(void)
+{
+	std::ifstream ifp("MapData.tmx");
+	ifp.seekg(0, ifp.end);
+	MesData sData = {MesType::TMX_Size, static_cast<int>(ifp.tellg()), 0};
+	lpNetWork.SendMes(sData);
+}
+
+void TileLoader::SendTmxData(void)
+{
+	std::ifstream ifp("MapData.tmx");
+	int count = 0;
+	while(!ifp.eof())
+	{
+		int ch = ifp.get();
+		MesData sData = { MesType::TMX_Data, count, ch };
+		lpNetWork.SendMes(sData);
+		count++;
+	}
+	TRACE("送信したバイト数:%d\n", count);
 }
 
 void TileLoader::Draw(void)
