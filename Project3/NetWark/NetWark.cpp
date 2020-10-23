@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include "../_debug/_DebugConOut.h"
 #include "NetWark.h"
 #include "HostState.h"
@@ -8,6 +10,7 @@ std::unique_ptr<NetWark, NetWark::NetWorkDeleter> NetWark::s_Instance(new NetWar
 NetWark::NetWark()
 {
 	revStanby = false;
+	revCnt_ = 0;
 }
 
 NetWark::~NetWark()
@@ -60,15 +63,55 @@ bool NetWark::Update(void)
 						revBox_.resize(recvData.data[0]);
 						TRACE("TMXファイルの大きさ:%d\n", revBox_.size());
 					}
-					if (recvData.type == MesType::Stanby)
-					{
-						revStanby = true;
-						TRACE("初期化情報取得\n");
-					}
 					if (recvData.type == MesType::TMX_Data)
 					{
 						revBox_[recvData.data[0]] = static_cast<char>(recvData.data[1]);
 						TRACE("%c", revBox_[recvData.data[0]]);
+						//if (recvData.data[1] == '\n')
+						//{
+						//	revBox_[recvData.data[0] + revCnt_] = ' ';
+						//	revCnt_++;
+						//}
+						//revBox_[recvData.data[0] + revCnt_] = static_cast<char>(recvData.data[1]);
+						//TRACE("%c", revBox_[recvData.data[0] + revCnt_]);
+						//if (recvData.data[0] + revCnt_ + 1 == revBox_.size())
+						//{
+						//	TRACE("マップ情報書き出し\n");
+						//	std::ofstream ofp("cash/MapData.tmx");
+						//	for (auto& data : revBox_)
+						//	{
+						//		
+						//		if (data=='\n')
+						//		{
+						//			ofp << std::endl;
+						//		}
+						//		else
+						//		{
+						//			ofp << data;
+						//		}
+						//		//ofp.write();
+						//	}
+						//}
+					}
+					if (recvData.type == MesType::Stanby)
+					{
+						std::ofstream ofp("cash/MapData.tmx");
+						for (auto& data : revBox_)
+						{
+							if (data != 0)
+							{
+								if (data == '\n')
+								{
+									ofp << std::endl;
+								}
+								else
+								{
+									ofp << data;
+								}
+							}
+						}
+						revStanby = true;
+						TRACE("初期化情報取得\n");
 					}
 				}
 			}

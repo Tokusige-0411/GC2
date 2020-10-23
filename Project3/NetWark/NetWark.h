@@ -65,7 +65,7 @@ private:
 	bool revStanby;
 	ArrayIP ipData_;
 	RevBox revBox_;
-
+	int revCnt_;
 	NetWark();
 	~NetWark();
 	static std::unique_ptr<NetWark, NetWorkDeleter> s_Instance;

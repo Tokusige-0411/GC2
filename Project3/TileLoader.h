@@ -20,7 +20,7 @@ struct TSXInfo
 	int tileWidth{};				// À²Ù‰¡•
 	int tileHeight{};				// À²Ùc•
 	int chipNum{};					// À²Ù‘”
-	std::string fileName{};
+	std::string imageName{};
 };
 
 using MapData = std::map<std::string, std::vector<int>>;
@@ -33,8 +33,8 @@ public:
 		return *s_Instance;
 	}
 
-	bool TMXLoader(void);
-	bool TSXLoader(void);
+	bool TMXLoader(std::string fileName);
+	bool TSXLoader(std::string fileName);
 	void SendTmxSizeData(void);
 	void SendTmxData(void);
 	void Draw(void);

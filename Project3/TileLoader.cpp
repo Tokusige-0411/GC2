@@ -11,9 +11,9 @@
 
 std::unique_ptr<TileLoader, TileLoader::TileLoderDeleter> TileLoader::s_Instance(new TileLoader());
 
-bool TileLoader::TMXLoader(void)
+bool TileLoader::TMXLoader(std::string fileName)
 {
-	rapidxml::file<> file("MapData.tmx");
+	rapidxml::file<> file(fileName.c_str());
 	doc_.parse<0>(file.data());
 	rapidxml::xml_node<>* map = doc_.first_node("map");
 
@@ -45,12 +45,17 @@ bool TileLoader::TMXLoader(void)
 		}
 	}
 
+	rapidxml::xml_node<>* tileSet = map->first_node("tileset");
+	std::string tsxData = tileSet->first_attribute("source")->value();
+	std::string pass = fileName.substr(0, fileName.find_last_of("/") + 1);
+	TSXLoader(pass + tsxData);
+
 	return true;
 }
 
-bool TileLoader::TSXLoader(void)
+bool TileLoader::TSXLoader(std::string fileName)
 {
-	rapidxml::file<> file("MapTile.tsx");
+	rapidxml::file<> file(fileName.c_str());
 	doc_.parse<0>(file.data());
 	rapidxml::xml_node<>* tileset = doc_.first_node("tileset");
 
@@ -71,8 +76,8 @@ bool TileLoader::TSXLoader(void)
 
 	// ̧�ق̏ꏊ�擾
 	rapidxml::xml_node<>* image = tileset->first_node("image");
-	std::string fileName = image->first_attribute("source")->value();
-	tsxInfo_.fileName = fileName.substr(fileName.length() - 7);
+	std::string imageName = image->first_attribute("source")->value();
+	tsxInfo_.imageName = imageName.substr(imageName.find_last_of("i"), imageName.length());
 
 	return true;
 }

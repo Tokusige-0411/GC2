@@ -40,12 +40,11 @@ bool TitleScene::Init()
 	input_->SetUp(0);
 	reConnect_ = false;
 
-	lpTileLoader.TMXLoader();
-	lpTileLoader.TSXLoader();
+	lpTileLoader.TMXLoader("MapData.tmx");
 	
 	// œØÃﬂ¡ØÃﬂì«Ç›çûÇ›
 	auto chipData = lpTileLoader.GetTsxInfo();
-	lpImageMng.GetID("map", "image/" + chipData.fileName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
+	lpImageMng.GetID("map", chipData.imageName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
 
 	return true;
 }
