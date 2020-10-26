@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <rapidxml.hpp>
+#include <rapidxml_utils.hpp>
 
 #define lpTileLoader TileLoader::GetInstance()
 
@@ -21,6 +23,20 @@ struct TSXInfo
 	int tileHeight{};				// À²Ùc•
 	int chipNum{};					// À²Ù‘”
 	std::string imageName{};
+};
+
+struct charBit
+{
+	unsigned char ch1;
+	unsigned char ch2;
+	unsigned char ch3;
+	unsigned char ch4;
+};
+
+union revInt
+{
+	charBit charB;
+	unsigned int string;
 };
 
 using MapData = std::map<std::string, std::vector<int>>;

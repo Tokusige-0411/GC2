@@ -24,7 +24,7 @@ struct MesData
 };
 
 using ArrayIP = std::array<IPDATA, 2>;
-using RevBox = std::vector<char>;
+using RevBox = std::vector<int>;
 
 class NetWark
 {

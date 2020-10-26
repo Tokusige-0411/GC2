@@ -4,6 +4,7 @@
 #include "NetWark.h"
 #include "HostState.h"
 #include "GestState.h"
+#include "../TileLoader.h"
 
 std::unique_ptr<NetWark, NetWark::NetWorkDeleter> NetWark::s_Instance(new NetWark());
 
@@ -65,7 +66,7 @@ bool NetWark::Update(void)
 					}
 					if (recvData.type == MesType::TMX_Data)
 					{
-						revBox_[recvData.data[0]] = static_cast<char>(recvData.data[1]);
+						revBox_[recvData.data[0]] = recvData.data[1];
 						TRACE("%c", revBox_[recvData.data[0]]);
 						//if (recvData.data[1] == '\n')
 						//{
@@ -100,13 +101,10 @@ bool NetWark::Update(void)
 						{
 							if (data != 0)
 							{
-								if (data == '\n')
+								char* string = reinterpret_cast<char*>(&data);
+								for (int i = 0; i < sizeof(data); i++)
 								{
-									ofp << std::endl;
-								}
-								else
-								{
-									ofp << data;
+									ofp << string[i];
 								}
 							}
 						}

@@ -2,8 +2,6 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-#include <rapidxml.hpp>
-#include <rapidxml_utils.hpp>
 #include "TileLoader.h"
 #include "NetWark/NetWark.h"
 
@@ -96,7 +94,12 @@ void TileLoader::SendTmxData(void)
 	int count = 0;
 	while(!ifp.eof())
 	{
-		int ch = ifp.get();
+		int ch;
+		char* string = reinterpret_cast<char*>(&ch);
+		for (int i = 0; i < sizeof(int); i++)
+		{
+			string[i] = ifp.get();
+		}
 		MesData sData = { MesType::TMX_Data, count, ch };
 		lpNetWork.SendMes(sData);
 		count++;
