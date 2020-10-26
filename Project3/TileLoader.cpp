@@ -94,11 +94,14 @@ void TileLoader::SendTmxData(void)
 	int count = 0;
 	while(!ifp.eof())
 	{
-		int ch;
+		int ch = 0;
 		char* string = reinterpret_cast<char*>(&ch);
-		for (int i = 0; i < sizeof(int); i++)
+		for (int i = 0; i < sizeof(ch); i++)
 		{
-			string[i] = ifp.get();
+			if (!ifp.eof())
+			{
+				string[i] = ifp.get();
+			}
 		}
 		MesData sData = { MesType::TMX_Data, count, ch };
 		lpNetWork.SendMes(sData);

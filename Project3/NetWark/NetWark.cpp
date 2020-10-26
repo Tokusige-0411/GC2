@@ -61,7 +61,7 @@ bool NetWark::Update(void)
 					NetWorkRecv(handle, &recvData, sizeof(MesData));
 					if (recvData.type == MesType::TMX_Size)
 					{
-						revBox_.resize(recvData.data[0]);
+						revBox_.resize(recvData.data[0] / sizeof(int) + 1);
 						TRACE("TMXƒtƒ@ƒCƒ‹‚Ì‘å‚«‚³:%d\n", revBox_.size());
 					}
 					if (recvData.type == MesType::TMX_Data)
@@ -99,10 +99,10 @@ bool NetWark::Update(void)
 						std::ofstream ofp("cash/MapData.tmx");
 						for (auto& data : revBox_)
 						{
-							if (data != 0)
+							char* string = reinterpret_cast<char*>(&data);
+							for (int i = 0; i < sizeof(data); i++)
 							{
-								char* string = reinterpret_cast<char*>(&data);
-								for (int i = 0; i < sizeof(data); i++)
+								if (string[i])
 								{
 									ofp << string[i];
 								}
