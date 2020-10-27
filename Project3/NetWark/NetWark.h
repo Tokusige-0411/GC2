@@ -3,6 +3,7 @@
 #include<memory>
 #include<array>
 #include<vector>
+#include <chrono>
 #include"NetWorkState.h"
 
 #define lpNetWork NetWark::GetInstance()
@@ -66,6 +67,11 @@ private:
 	ArrayIP ipData_;
 	RevBox revBox_;
 	int revCnt_;
+
+	MesType revState_;
+	std::chrono::system_clock::time_point start;
+	std::chrono::system_clock::time_point end;
+
 	NetWark();
 	~NetWark();
 	static std::unique_ptr<NetWark, NetWorkDeleter> s_Instance;

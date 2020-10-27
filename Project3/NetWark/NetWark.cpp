@@ -10,6 +10,7 @@ std::unique_ptr<NetWark, NetWark::NetWorkDeleter> NetWark::s_Instance(new NetWar
 
 NetWark::NetWark()
 {
+	revState_ = MesType::TMX_Size;
 	revStanby = false;
 	revCnt_ = 0;
 }
@@ -61,13 +62,28 @@ bool NetWark::Update(void)
 					NetWorkRecv(handle, &recvData, sizeof(MesData));
 					if (recvData.type == MesType::TMX_Size)
 					{
-						revBox_.resize(recvData.data[0] / sizeof(int) + 1);
+						//revBox_.resize(recvData.data[0]);
 						TRACE("TMXƒtƒ@ƒCƒ‹‚Ì‘å‚«‚³:%d\n", revBox_.size());
 					}
+					// ‚»‚Ì‚ ‚Æ‚Í‚·‚×‚ÄTMX‚ÌÃŞ°À‚É‚È‚é
+					if (recvData.type != MesType::Stanby)
+					{
+						if (revState_ == MesType::TMX_Data)
+						{
+							revBox_.emplace_back(static_cast<int>(recvData.type));
+							revBox_.emplace_back(recvData.data[0]);
+							revBox_.emplace_back(recvData.data[1]);
+						}
+					}
+					// ˆê‰ñ‚¾‚¯MesType::TMX_Data‚ª‘—‚ç‚ê‚Ä‚­‚é
 					if (recvData.type == MesType::TMX_Data)
 					{
-						revBox_[recvData.data[0]] = recvData.data[1];
-						TRACE("%c", revBox_[recvData.data[0]]);
+						//revBox_[recvData.data[0]] = recvData.data[1];
+						revState_ = recvData.type;
+						revBox_.emplace_back(recvData.data[0]);
+						revBox_.emplace_back(recvData.data[1]);
+						start = std::chrono::system_clock::now();
+						//TRACE("%c", revBox_[recvData.data[0]]);
 						//if (recvData.data[1] == '\n')
 						//{
 						//	revBox_[recvData.data[0] + revCnt_] = ' ';
@@ -105,9 +121,13 @@ bool NetWark::Update(void)
 								if (string[i])
 								{
 									ofp << string[i];
+									TRACE("%c", string[i]);
 								}
 							}
 						}
+						end = std::chrono::system_clock::now();
+						double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+						TRACE("‚©‚©‚Á‚½ŠÔ:%f•b\n", elapsed);
 						revStanby = true;
 						TRACE("‰Šú‰»î•ñæ“¾\n");
 					}
