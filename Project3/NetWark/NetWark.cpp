@@ -66,14 +66,11 @@ bool NetWark::Update(void)
 						TRACE("TMXƒtƒ@ƒCƒ‹‚Ì‘å‚«‚³:%d\n", revBox_.size());
 					}
 					// ‚»‚Ì‚ ‚Æ‚Í‚·‚×‚ÄTMX‚ÌÃÞ°À‚É‚È‚é
-					if (recvData.type != MesType::Stanby)
+					if (revState_ == MesType::TMX_Data)
 					{
-						if (revState_ == MesType::TMX_Data)
-						{
-							revBox_.emplace_back(static_cast<int>(recvData.type));
-							revBox_.emplace_back(recvData.data[0]);
-							revBox_.emplace_back(recvData.data[1]);
-						}
+						revBox_.emplace_back(static_cast<int>(recvData.type));
+						revBox_.emplace_back(recvData.data[0]);
+						revBox_.emplace_back(recvData.data[1]);
 					}
 					// ˆê‰ñ‚¾‚¯MesType::TMX_Data‚ª‘—‚ç‚ê‚Ä‚­‚é
 					if (recvData.type == MesType::TMX_Data)

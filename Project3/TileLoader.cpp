@@ -91,23 +91,29 @@ void TileLoader::SendTmxSizeData(void)
 void TileLoader::SendTmxData(void)
 {
 	std::ifstream ifp("MapData.tmx");
-	int count = 0;
+	unsigned short count = 0;
 	while(!ifp.eof())
 	{
-		int ch = 0;
-		char* string = reinterpret_cast<char*>(&ch);
-		for (int i = 0; i < sizeof(ch); i++)
-		{
-			if (!ifp.eof())
-			{
-				string[i] = ifp.get();
-			}
-		}
-		MesData sData = { MesType::TMX_Data, count, ch };
-		lpNetWork.SendMes(sData);
+		MesData data;
+		unsigned char* charData = reinterpret_cast<unsigned char*>(&data);
+		unsigned short* shortData = reinterpret_cast<unsigned short*>(&data);
+		charData[0] = static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data);
+		shortData[1] = count;
+		// 数字の部分だけ抜き取って
 		count++;
+		//int ch = 0;
+		//char* string = reinterpret_cast<char*>(&ch);
+		//for (int i = 0; i < sizeof(ch); i++)
+		//{
+		//	if (!ifp.eof())
+		//	{
+		//		string[i] = ifp.get();
+		//	}
+		//}
+		//MesData sData = { MesType::TMX_Data, count, ch };
+		//lpNetWork.SendMes(sData);
 	}
-	TRACE("送信したバイト数:%d\n", count);
+	TRACE("送信した回数:%d\n", count);
 }
 
 void TileLoader::Draw(void)
