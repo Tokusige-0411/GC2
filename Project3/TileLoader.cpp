@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <list>
 #include "TileLoader.h"
 #include "NetWark/NetWark.h"
 
@@ -90,30 +91,55 @@ void TileLoader::SendTmxSizeData(void)
 
 void TileLoader::SendTmxData(void)
 {
-	std::ifstream ifp("MapData.tmx");
-	unsigned short count = 0;
-	while(!ifp.eof())
+	// ”š‚Ì•”•ª‚¾‚¯”²‚«æ‚é
+	std::list<int> chipData;
+	for (auto& vecData : mapData_)
+	{
+		for (auto& data : vecData.second)
+		{
+			chipData.emplace_back(data);
+		}
+	}
+
+	unsigned short sendCnt = 0;
+	while(chipData.begin() != chipData.end())
 	{
 		MesData data;
 		unsigned char* charData = reinterpret_cast<unsigned char*>(&data);
 		unsigned short* shortData = reinterpret_cast<unsigned short*>(&data);
 		charData[0] = static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data);
-		shortData[1] = count;
-		// ”š‚Ì•”•ª‚¾‚¯”²‚«æ‚Á‚Ä
-		count++;
-		//int ch = 0;
-		//char* string = reinterpret_cast<char*>(&ch);
-		//for (int i = 0; i < sizeof(ch); i++)
-		//{
-		//	if (!ifp.eof())
-		//	{
-		//		string[i] = ifp.get();
-		//	}
-		//}
-		//MesData sData = { MesType::TMX_Data, count, ch };
-		//lpNetWork.SendMes(sData);
+		for (int i = 4; i < sizeof(MesData); i++)
+		{
+			charData[i] = chipData.front();
+			chipData.pop_front();
+			if (chipData.begin() == chipData.end())
+			{
+				break;
+			}
+			charData[i] <<= 4;
+			//charData[i] = chipData.front();
+			//chipData.pop_front();
+			//if (chipData.begin() == chipData.end())
+			//{
+			//	break;
+			//}
+		}
+		shortData[1] = sendCnt;
+		lpNetWork.SendMes(data);
+		sendCnt++;
 	}
-	TRACE("‘—M‚µ‚½‰ñ”:%d\n", count);
+	TRACE("‘—M‚µ‚½‰ñ”:%d\n", sendCnt);
+	//int ch = 0;
+	//char* string = reinterpret_cast<char*>(&ch);
+	//for (int i = 0; i < sizeof(ch); i++)
+	//{
+	//	if (!ifp.eof())
+	//	{
+	//		string[i] = ifp.get();
+	//	}
+	//}
+	//MesData sData = { MesType::TMX_Data, count, ch };
+	//lpNetWork.SendMes(sData);
 }
 
 void TileLoader::Draw(void)

@@ -57,6 +57,8 @@ bool NetWark::Update(void)
 			{
 				auto handle = netState_->GetNetHandle();
 				MesData recvData;
+				unsigned char* charData = reinterpret_cast<unsigned char*>(&recvData);
+				unsigned short* shortData = reinterpret_cast<unsigned short*>(&recvData);
 				if (GetNetWorkDataLength(handle) >= sizeof(MesData))
 				{
 					NetWorkRecv(handle, &recvData, sizeof(MesData));
@@ -65,20 +67,15 @@ bool NetWark::Update(void)
 						//revBox_.resize(recvData.data[0]);
 						TRACE("TMXƒtƒ@ƒCƒ‹‚Ì‘å‚«‚³:%d\n", revBox_.size());
 					}
-					// ‚»‚Ì‚ ‚Æ‚Í‚·‚×‚ÄTMX‚ÌÃŞ°À‚É‚È‚é
-					if (revState_ == MesType::TMX_Data)
-					{
-						revBox_.emplace_back(static_cast<int>(recvData.type));
-						revBox_.emplace_back(recvData.data[0]);
-						revBox_.emplace_back(recvData.data[1]);
-					}
 					// ˆê‰ñ‚¾‚¯MesType::TMX_Data‚ª‘—‚ç‚ê‚Ä‚­‚é
-					if (recvData.type == MesType::TMX_Data)
+					if (charData[0] == static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data))
 					{
-						//revBox_[recvData.data[0]] = recvData.data[1];
-						revState_ = recvData.type;
-						revBox_.emplace_back(recvData.data[0]);
-						revBox_.emplace_back(recvData.data[1]);
+						TRACE("‘—‚ç‚ê‚Ä‚«‚½ÃŞ°À‚Ì‰ñ”:%d\n", shortData[1]);
+						for(int i = 4; i < sizeof(MesData); i++)
+						{
+							auto a = charData[i];
+							TRACE("%d\n", a);
+						}
 						start = std::chrono::system_clock::now();
 						//TRACE("%c", revBox_[recvData.data[0]]);
 						//if (recvData.data[1] == '\n')
