@@ -114,9 +114,12 @@ void TileLoader::SendTmxData(void)
 		// csvの部分を読み込む
 		if (!ifp.eof())
 		{
-			while (str.find("/data") == std::string::npos)
+			while (std::getline(ifp, str))
 			{
-				std::getline(ifp, str);
+				if (str.find("/data") != std::string::npos)
+				{
+					break;
+				}
 
 				std::istringstream iss(str);
 				std::string csvStr;
@@ -142,12 +145,14 @@ void TileLoader::SendTmxData(void)
 			}
 		}
 	}
-
-
-
-
-
-
+	if ((charCnt % 16))
+	{
+		sendData.data[0] = csvData.iData[0];
+		sendData.data[1] = csvData.iData[1];
+		lpNetWork.SendMes(sendData);
+		sendData.sData++;
+		TRACE("送信回数:%d\n", sendData.sData);
+	}
 
 	// 数字の部分だけ抜き取る
 	//std::list<int> chipData;
@@ -158,7 +163,7 @@ void TileLoader::SendTmxData(void)
 	//		chipData.emplace_back(data);
 	//	}
 	//}
-
+	// 送信データに変換
 	//unsigned short sendCnt = 0;
 	//while(chipData.begin() != chipData.end())
 	//{

@@ -57,25 +57,23 @@ bool NetWark::Update(void)
 			{
 				auto handle = netState_->GetNetHandle();
 				MesData recvData;
-				unsigned char* charData = reinterpret_cast<unsigned char*>(&recvData);
-				unsigned short* shortData = reinterpret_cast<unsigned short*>(&recvData);
 				if (GetNetWorkDataLength(handle) >= sizeof(MesData))
 				{
 					NetWorkRecv(handle, &recvData, sizeof(MesData));
 					if (recvData.type == MesType::TMX_Size)
 					{
-						//revBox_.resize(recvData.data[0]);
+						revBox_.resize(recvData.data[0]);
 						TRACE("TMXƒtƒ@ƒCƒ‹‚Ì‘å‚«‚³:%d\n", revBox_.size());
 					}
 					// ˆê‰ñ‚¾‚¯MesType::TMX_Data‚ª‘—‚ç‚ê‚Ä‚­‚é
-					if (charData[0] == static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data))
+					if (recvData.type == MesType::TMX_Data)
 					{
-						TRACE("‘—‚ç‚ê‚Ä‚«‚½ÃŞ°À‚Ì‰ñ”:%d\n", shortData[1]);
-						for(int i = 4; i < sizeof(MesData); i++)
-						{
-							auto a = charData[i];
-							TRACE("%d\n", a);
-						}
+						// ‘—‚ç‚ê‚Ä‚«‚½ƒf[ƒ^‚ğŠi”[‚µ‚â‚·‚¢‚æ‚¤‚É
+						unionData csvData;
+						csvData.iData[0] = recvData.data[0];
+						csvData.iData[1] = recvData.data[1];
+						revBox_[recvData.sData] = csvData;
+						std::ostringstream oss();
 						start = std::chrono::system_clock::now();
 						//TRACE("%c", revBox_[recvData.data[0]]);
 						//if (recvData.data[1] == '\n')
@@ -106,22 +104,28 @@ bool NetWark::Update(void)
 					}
 					if (recvData.type == MesType::Stanby)
 					{
-						std::ofstream ofp("cash/MapData.tmx");
-						for (auto& data : revBox_)
-						{
-							char* string = reinterpret_cast<char*>(&data);
-							for (int i = 0; i < sizeof(data); i++)
-							{
-								if (string[i])
-								{
-									ofp << string[i];
-									TRACE("%c", string[i]);
-								}
-							}
-						}
+						// ‘—MŠÔ
 						end = std::chrono::system_clock::now();
 						double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 						TRACE("‚©‚©‚Á‚½ŠÔ:%f•b\n", elapsed);
+
+						std::ofstream ofp("cash/MapDataHeader.tmx");
+						std::string str;
+						// ‰½•¶š“ü‚ê‚½‚©
+						int strCnt = 0;
+
+						// revBox_‚É“ü‚Á‚Ä‚éÃŞ°À‚ğŠi”[‚·‚é‚æ
+						for (auto& data : revBox_)
+						{
+							int charCnt = 0;
+
+							data.cData[];
+
+						}
+
+
+
+
 						revStanby = true;
 						TRACE("‰Šú‰»î•ñæ“¾\n");
 					}
