@@ -21,11 +21,20 @@ enum class MesType : unsigned char
 struct MesData 
 {
 	MesType type;
+	unsigned short sData;
+	unsigned char cData;
 	int data[2];
 };
 
+union unionData
+{
+	char cData[8];
+	int iData[2];
+	long long lData;
+};
+
 using ArrayIP = std::array<IPDATA, 2>;
-using RevBox = std::vector<int>;
+using RevBox = std::vector<unionData>;
 
 class NetWark
 {

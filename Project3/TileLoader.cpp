@@ -85,50 +85,108 @@ void TileLoader::SendTmxSizeData(void)
 {
 	std::ifstream ifp("MapData.tmx");
 	ifp.seekg(0, ifp.end);
-	MesData sData = {MesType::TMX_Size, static_cast<int>(ifp.tellg()), 0};
+	MesData sData = { MesType::TMX_Size, 0, 0, 90, 0 };
+	TRACE("サイズを送ったよ\n");
 	lpNetWork.SendMes(sData);
 }
 
 void TileLoader::SendTmxData(void)
 {
-	// 数字の部分だけ抜き取る
-	std::list<int> chipData;
-	for (auto& vecData : mapData_)
-	{
-		for (auto& data : vecData.second)
-		{
-			chipData.emplace_back(data);
-		}
-	}
+	// ﾌｧｲﾙ操作でする方法
+	std::ifstream ifp("MapData.tmx");
+	std::string str;
+	int charCnt = 0;											// 何個データを取り出したかカウントする(0～15までをカウントする)
+	unionData csvData = { 0 };									// csv読み込みで使う共用体
+	MesData sendData = { MesType::TMX_Data, 0, 0, 0, 0 };			// データ送信で使う構造体
 
-	unsigned short sendCnt = 0;
-	while(chipData.begin() != chipData.end())
+	while (!ifp.eof())
 	{
-		MesData data;
-		unsigned char* charData = reinterpret_cast<unsigned char*>(&data);
-		unsigned short* shortData = reinterpret_cast<unsigned short*>(&data);
-		charData[0] = static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data);
-		for (int i = 4; i < sizeof(MesData); i++)
+		// csvのところまで行を飛ばす
+		while (str.find("data encoding") == std::string::npos)
 		{
-			charData[i] = chipData.front();
-			chipData.pop_front();
-			if (chipData.begin() == chipData.end())
+			std::getline(ifp, str);
+			if (ifp.eof())
 			{
 				break;
 			}
-			charData[i] <<= 4;
-			//charData[i] = chipData.front();
-			//chipData.pop_front();
-			//if (chipData.begin() == chipData.end())
-			//{
-			//	break;
-			//}
 		}
-		shortData[1] = sendCnt;
-		lpNetWork.SendMes(data);
-		sendCnt++;
+
+		// csvの部分を読み込む
+		if (!ifp.eof())
+		{
+			while (str.find("/data") == std::string::npos)
+			{
+				std::getline(ifp, str);
+
+				std::istringstream iss(str);
+				std::string csvStr;
+				while (std::getline(iss, csvStr, ','))
+				{
+					// 行から数字を取り出した
+					auto csvNum = std::atoi(csvStr.c_str());
+
+					// 共用体にアクセスしてシフトしながらデータを入れていく
+					csvData.cData[(charCnt % 16) / 2] |= (csvNum << (4 * ((charCnt % 16) % 2)));
+					if ((charCnt % 16) == 15)
+					{
+						// 16個取り出したのでﾃﾞｰﾀを送るよ
+						sendData.data[0] = csvData.iData[0];
+						sendData.data[1] = csvData.iData[1];
+						lpNetWork.SendMes(sendData);
+						sendData.sData++;
+						TRACE("送信回数:%d\n", sendData.sData);
+						csvData = { 0 };
+					}
+					charCnt++;
+				}
+			}
+		}
 	}
-	TRACE("送信した回数:%d\n", sendCnt);
+
+
+
+
+
+
+
+	// 数字の部分だけ抜き取る
+	//std::list<int> chipData;
+	//for (auto& vecData : mapData_)
+	//{
+	//	for (auto& data : vecData.second)
+	//	{
+	//		chipData.emplace_back(data);
+	//	}
+	//}
+
+	//unsigned short sendCnt = 0;
+	//while(chipData.begin() != chipData.end())
+	//{
+	//	MesData data;
+	//	unsigned char* charData = reinterpret_cast<unsigned char*>(&data);
+	//	unsigned short* shortData = reinterpret_cast<unsigned short*>(&data);
+	//	charData[0] = static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data);
+	//	for (int i = 4; i < sizeof(MesData); i++)
+	//	{
+	//		charData[i] = chipData.front();
+	//		chipData.pop_front();
+	//		if (chipData.begin() == chipData.end())
+	//		{
+	//			break;
+	//		}
+	//		charData[i] <<= 4;
+	//		//charData[i] = chipData.front();
+	//		//chipData.pop_front();
+	//		//if (chipData.begin() == chipData.end())
+	//		//{
+	//		//	break;
+	//		//}
+	//	}
+	//	shortData[1] = sendCnt;
+	//	lpNetWork.SendMes(data);
+	//	sendCnt++;
+	//}
+	//TRACE("送信した回数:%d\n", sendCnt);
 	//int ch = 0;
 	//char* string = reinterpret_cast<char*>(&ch);
 	//for (int i = 0; i < sizeof(ch); i++)
