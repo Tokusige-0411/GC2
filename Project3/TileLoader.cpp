@@ -130,6 +130,7 @@ void TileLoader::SendTmxData(void)
 
 					// 共用体にアクセスしてシフトしながらデータを入れていく
 					csvData.cData[(charCnt % 16) / 2] |= (csvNum << (4 * ((charCnt % 16) % 2)));
+
 					if ((charCnt % 16) == 15)
 					{
 						// 16個取り出したのでﾃﾞｰﾀを送るよ

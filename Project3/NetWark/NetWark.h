@@ -3,7 +3,9 @@
 #include<memory>
 #include<array>
 #include<vector>
-#include <chrono>
+#include<chrono>
+#include<thread>
+#include<mutex>
 #include"NetWorkState.h"
 
 #define lpNetWork NetWark::GetInstance()
@@ -44,6 +46,7 @@ public:
 		return *s_Instance;
 	}
 
+	void RunUpdata(void);
 	bool Update(void);
 	void CloseNetWork(void);
 
@@ -76,6 +79,9 @@ private:
 	ArrayIP ipData_;
 	RevBox revBox_;
 	int revCnt_;
+
+	std::thread updata_;
+	std::mutex mtx_;
 
 	MesType revState_;
 	std::chrono::system_clock::time_point start;
