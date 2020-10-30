@@ -31,13 +31,13 @@ void NetWark::RunUpdata(void)
 	updata_.detach();
 }
 
-bool NetWark::Update(void)
+void NetWark::Update(void)
 {
 	while(!ProcessMessage())
 	{
 		if (!netState_)
 		{
-			return false;
+			continue;
 		}
 
 		if (netState_->Update())
@@ -56,6 +56,7 @@ bool NetWark::Update(void)
 						{
 							netState_->SetActiveState(ActiveState::Play);
 							TRACE("ゲームスタート情報受信\n");
+							continue;
 						}
 					}
 				}
@@ -66,6 +67,7 @@ bool NetWark::Update(void)
 				if (revStanby)
 				{
 					netState_->SetActiveState(ActiveState::Play);
+					continue;
 				}
 				else
 				{
@@ -78,6 +80,7 @@ bool NetWark::Update(void)
 						{
 							revBox_.resize(recvData.data[0]);
 							TRACE("TMXファイルの大きさ:%d\n", revBox_.size());
+							continue;
 						}
 						if (recvData.type == MesType::TMX_Data)
 						{
@@ -87,13 +90,14 @@ bool NetWark::Update(void)
 							csvData.iData[1] = recvData.data[1];
 							revBox_[recvData.sData] = csvData;
 							start = std::chrono::system_clock::now();
+							continue;
 						}
 						if (recvData.type == MesType::Stanby)
 						{
 							// 送信時間
 							end = std::chrono::system_clock::now();
 							double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-							TRACE("かかった時間:%f秒\n", elapsed);
+							TRACE("かかった時間:%d秒\n", elapsed);
 
 							revStanby = true;
 
@@ -143,7 +147,7 @@ bool NetWark::Update(void)
 												if (ifp.eof())
 												{
 													TRACE("初期化情報取得\n");
-													return true;
+													break;
 												}
 												ofp << stringLine << std::endl;
 											} while (stringLine.find("data encoding") == std::string::npos);
@@ -163,11 +167,8 @@ bool NetWark::Update(void)
 		{
 			// 切断された場合
 			CloseNetWork();
-			return false;
 		}
-		return true;
 	}
-	return true;
 }
 
 void NetWark::CloseNetWork(void)

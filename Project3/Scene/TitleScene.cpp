@@ -52,10 +52,10 @@ bool TitleScene::Init()
 unique_Base TitleScene::Update(unique_Base own)
 {
 	(*input_)();
-	if (!lpNetWork.Update())
-	{
-		updateMode_ = UpdateMode::SetNetworkMode;
-	}
+	//if (!lpNetWork.Update())
+	//{
+	//	updateMode_ = UpdateMode::SetNetworkMode;
+	//}
 	(func_[updateMode_])();
 	return own;
 }

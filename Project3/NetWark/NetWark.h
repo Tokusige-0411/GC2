@@ -47,7 +47,7 @@ public:
 	}
 
 	void RunUpdata(void);
-	bool Update(void);
+	void Update(void);
 	void CloseNetWork(void);
 
 	bool SendMes(MesData& data);
