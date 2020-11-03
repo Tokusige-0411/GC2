@@ -8,82 +8,53 @@
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
 #include "../_debug/_DebugConOut.h"
-#include "TitleScene.h"
+#include "LoginScene.h"
+#include "CrossOver.h"
+#include "GameScene.h"
 #include "../NetWark/NetWark.h"
 #include "../NetWark/HostState.h"
 #include "../NetWark/GestState.h"
-#include "../input/PadInput.h"
 #include "../TileLoader.h"
 #include "../common/imageMng.h"
 
-TitleScene::TitleScene()
+LoginScene::LoginScene()
 {
 	Init();
 
-	func_.try_emplace(UpdateMode::SetNetworkMode, std::bind(&TitleScene::SetNetWorkMode, this));
-	func_.try_emplace(UpdateMode::SethostIP, std::bind(&TitleScene::SetHostIP, this));
-	func_.try_emplace(UpdateMode::PlayerUpdate, std::bind(&TitleScene::PlayerUpdate, this));
-	func_.try_emplace(UpdateMode::StartInit, std::bind(&TitleScene::StartInit, this));
+	func_.try_emplace(UpdateMode::SetNetworkMode, std::bind(&LoginScene::SetNetWorkMode, this));
+	func_.try_emplace(UpdateMode::SethostIP, std::bind(&LoginScene::SetHostIP, this));
+	func_.try_emplace(UpdateMode::PlayerUpdate, std::bind(&LoginScene::PlayerUpdate, this));
+	func_.try_emplace(UpdateMode::StartInit, std::bind(&LoginScene::StartInit, this));
 
 	updateMode_ = UpdateMode::SetNetworkMode;
 }
 
-TitleScene::~TitleScene()
+LoginScene::~LoginScene()
 {
 }
 
-bool TitleScene::Init()
+bool LoginScene::Init()
 {
-	GetDrawScreenSize(&screen_size_x_, &screen_size_y_);
-	imgHandle_ = LoadGraph("image/mario.png");
-	input_ = std::make_unique<PadInput>();
-	input_->SetUp(0);
 	reConnect_ = false;
-
-	lpTileLoader.TMXLoader("MapData.tmx");
-	
-	// œØÃﬂ¡ØÃﬂì«Ç›çûÇ›
-	auto chipData = lpTileLoader.GetTsxInfo();
-	lpImageMng.GetID("map", chipData.imageName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
-
 	return true;
 }
 
-unique_Base TitleScene::Update(unique_Base own)
+unique_Base LoginScene::Update(unique_Base own)
 {
-	(*input_)();
-	//if (!lpNetWork.Update())
-	//{
-	//	updateMode_ = UpdateMode::SetNetworkMode;
-	//}
 	(func_[updateMode_])();
+	if (updateMode_ == UpdateMode::PlayerUpdate)
+	{
+		own = std::make_unique<CrossOver>(std::make_unique<GameScene>(), std::move(own));
+	}
 	return own;
 }
 
-void TitleScene::Draw(void)
+void LoginScene::Draw(void)
 {
-	auto mapData = lpTileLoader.GetMapData();
-	auto mapInfo = lpTileLoader.GetTmxInfo();
 
-	auto draw = [&](std::string key) {
-		for (int y = 0; y < mapInfo.height; y++)
-		{
-			for (int x = 0; x < mapInfo.width; x++)
-			{
-				if (mapData[key][y * mapInfo.width + x])
-				{
-					DrawGraph(x * mapInfo.tileWidth, y * mapInfo.tileHeight, lpImageMng.GetID("map")[mapData[key][y * mapInfo.width + x] - 1], true);
-				}
-			}
-		}
-	};
-	draw("Bg");
-	draw("Item");
-	draw("Obj");
-	draw("Char");
 }
 
-void TitleScene::SetNetWorkMode(void)
+void LoginScene::SetNetWorkMode(void)
 {
 	auto ipdata = lpNetWork.GetIP();
 
@@ -158,7 +129,7 @@ void TitleScene::SetNetWorkMode(void)
 	}
 }
 
-void TitleScene::StartInit(void)
+void LoginScene::StartInit(void)
 {
 	// ŒΩƒë§ÇÃèàóù
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
@@ -181,6 +152,7 @@ void TitleScene::StartInit(void)
 		}
 	}
 
+	// πﬁΩƒë§ÇÃèàóù
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Gest)
 	{
 		if (lpNetWork.GetActive() == ActiveState::Play)
@@ -192,7 +164,7 @@ void TitleScene::StartInit(void)
 	}
 }
 
-void TitleScene::SetHostIP(void)
+void LoginScene::SetHostIP(void)
 {
 	IPDATA hostIP;
 	std::string ip;
@@ -246,7 +218,7 @@ void TitleScene::SetHostIP(void)
 	}
 }
 
-void TitleScene::PlayerUpdate(void)
+void LoginScene::PlayerUpdate(void)
 {
 	//auto contData = input_->GetContData();
 	//if (contData[INPUT_ID::UP][static_cast<int>(Trg::Now)] && contData[INPUT_ID::UP][static_cast<int>(Trg::Old)])

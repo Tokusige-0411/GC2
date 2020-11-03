@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\imageMng.cpp" />
+    <ClCompile Include="Scene\CrossOver.cpp" />
+    <ClCompile Include="Scene\GameScene.cpp" />
     <ClCompile Include="input\KeyInput.cpp" />
     <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
@@ -30,13 +32,16 @@
     <ClCompile Include="Scene\BaseScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene\SceneMng.cpp" />
-    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="Scene\LoginScene.cpp" />
     <ClCompile Include="TileLoader.cpp" />
+    <ClCompile Include="Scene\Transition.cpp" />
     <ClCompile Include="_debug\_DebugConOut.cpp" />
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\imageMng.h" />
+    <ClInclude Include="Scene\CrossOver.h" />
+    <ClInclude Include="Scene\GameScene.h" />
     <ClInclude Include="input\Controller.h" />
     <ClInclude Include="input\INPUT_ID.h" />
     <ClInclude Include="input\KeyInput.h" />
@@ -54,8 +59,9 @@
     <ClInclude Include="common\detail\Vector2.h" />
     <ClInclude Include="common\Vector2.h" />
     <ClInclude Include="Scene\SceneMng.h" />
-    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="Scene\LoginScene.h" />
     <ClInclude Include="TileLoader.h" />
+    <ClInclude Include="Scene\Transition.h" />
     <ClInclude Include="_debug\_DebugConOut.h" />
     <ClInclude Include="_debug\_DebugDispOut.h" />
   </ItemGroup>

@@ -2,11 +2,12 @@
 #include<algorithm>
 #include"../_debug/_DebugDispOut.h"
 #include"SceneMng.h"
-#include"TitleScene.h"
+#include"LoginScene.h"
+#include"GameScene.h"
 
 void SceneMng::Run()
 {
-	activeScene_ = std::make_unique<TitleScene>();
+	activeScene_ = std::make_unique<LoginScene>();
 	while (!ProcessMessage())
 	{
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
@@ -20,9 +21,14 @@ void SceneMng::Draw()
 	SetDrawScreen(DX_SCREEN_BACK);
 	ClsDrawScreen();
 
-	activeScene_->Draw();
+	activeScene_->BaseScene::Draw();
 
 	ScreenFlip();
+}
+
+const Vector2 SceneMng::GetScreenSize(void)
+{
+	return screenSize_;
 }
 
 const Vector2 SceneMng::GetScreenCenter(void)

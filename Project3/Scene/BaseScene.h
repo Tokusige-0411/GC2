@@ -10,8 +10,11 @@ class BaseScene
 public:
 	BaseScene();
 	virtual ~BaseScene();
-	virtual bool Init() = 0;
+	virtual bool Init();
 	virtual unique_Base Update(unique_Base own) = 0;
-	virtual void Draw(void) = 0;
+	virtual void Draw(void);
+
+protected:
+	int screenID_;
 };
 

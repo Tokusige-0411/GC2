@@ -48,6 +48,7 @@ public:
 
 	void Run();
 
+	const Vector2 GetScreenSize(void);
 	const Vector2 GetScreenCenter(void);
 	int GetFrameCnt(void);
 

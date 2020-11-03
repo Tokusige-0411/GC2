@@ -97,12 +97,12 @@ void NetWark::Update(void)
 							// ‘—MŠÔ
 							end = std::chrono::system_clock::now();
 							double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-							TRACE("‚©‚©‚Á‚½ŠÔ:%d•b\n", elapsed);
+							TRACE("‚©‚©‚Á‚½ŠÔ:%p•b\n", elapsed);
 
 							revStanby = true;
 
 							std::ifstream ifp("cash/TmxHeader.tmx");
-							std::ofstream ofp("cash/revData.tmx");
+							std::ofstream ofp("cash/RevData.tmx");
 							std::string stringLine;
 
 							do
