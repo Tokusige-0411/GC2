@@ -48,10 +48,10 @@ void NetWark::Update(void)
 				if (netState_->GetActiveState() == ActiveState::Stanby)
 				{
 					auto handle = netState_->GetNetHandle();
-					MesData recvData;
-					if (GetNetWorkDataLength(handle) >= sizeof(MesData))
+					MesHeader recvData;
+					if (GetNetWorkDataLength(handle) >= sizeof(MesHeader))
 					{
-						NetWorkRecv(handle, &recvData, sizeof(MesData));
+						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
 						if (recvData.type == MesType::Game_Start)
 						{
 							netState_->SetActiveState(ActiveState::Play);
@@ -72,10 +72,10 @@ void NetWark::Update(void)
 				else
 				{
 					auto handle = netState_->GetNetHandle();
-					MesData recvData;
-					if (GetNetWorkDataLength(handle) >= sizeof(MesData))
+					MesHeader recvData;
+					if (GetNetWorkDataLength(handle) >= sizeof(MesHeader))
 					{
-						NetWorkRecv(handle, &recvData, sizeof(MesData));
+						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
 						if (recvData.type == MesType::TMX_Size)
 						{
 							revBox_.resize(recvData.data[0]);
@@ -177,28 +177,28 @@ void NetWark::CloseNetWork(void)
 	revStanby = false;
 }
 
-bool NetWark::SendMes(MesData& data)
+bool NetWark::SendMes(MesHeader& data)
 {
 	if (!netState_)
 	{
 		return false;
 	}
 
-	NetWorkSend(netState_->GetNetHandle(), &data, sizeof(MesData));
+	NetWorkSend(netState_->GetNetHandle(), &data, sizeof(MesHeader));
 
 	return true;
 }
 
 void NetWark::SendStanby(void)
 {
-	MesData sendData = {MesType::Stanby, 0, 0};
+	MesHeader sendData = {MesType::Stanby, 0, 0};
 	SendMes(sendData);
 	netState_->SetActiveState(ActiveState::Stanby);
 }
 
 void NetWark::SendStart(void)
 {
-	MesData sendData = { MesType::Game_Start, 0, 0 };
+	MesHeader sendData = { MesType::Game_Start, 0, 0 };
 	SendMes(sendData);
 }
 

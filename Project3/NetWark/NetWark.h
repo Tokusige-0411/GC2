@@ -19,13 +19,15 @@ enum class MesType : unsigned char
 	Pos,
 };
 
+struct 
+
 // ±×²ÒİÄ‚É’ˆÓ
-struct MesData 
+struct MesHeader 
 {
 	MesType type;
-	unsigned short sData;
+	unsigned short id;
 	unsigned char cData;
-	int data[2];
+	unsigned int Length;
 };
 
 union unionData
@@ -50,7 +52,7 @@ public:
 	void Update(void);
 	void CloseNetWork(void);
 
-	bool SendMes(MesData& data);
+	bool SendMes(MesHeader& data);
 	void SendStanby(void);
 	void SendStart(void);
 
