@@ -139,7 +139,6 @@ void LoginScene::StartInit(void)
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
 			// TMXﾃﾞｰﾀのｻｲｽﾞ送信
-			lpTileLoader.SendTmxSizeData();
 			lpTileLoader.SendTmxData();
 			TRACE("TMXファイルのサイズ送信\n");
 			lpNetWork.SendStanby();

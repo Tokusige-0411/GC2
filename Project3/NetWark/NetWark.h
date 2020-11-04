@@ -19,15 +19,20 @@ enum class MesType : unsigned char
 	Pos,
 };
 
-struct 
-
 // ±×²ÒİÄ‚É’ˆÓ
 struct MesHeader 
 {
 	MesType type;
 	unsigned short id;
 	unsigned char cData;
-	unsigned int Length;
+	unsigned int length;
+};
+
+struct SizeData
+{
+	unsigned int count;
+	unsigned int size;
+	unsigned int allSize;
 };
 
 union unionData

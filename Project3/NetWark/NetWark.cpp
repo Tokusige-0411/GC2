@@ -78,7 +78,7 @@ void NetWark::Update(void)
 						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
 						if (recvData.type == MesType::TMX_Size)
 						{
-							revBox_.resize(recvData.data[0]);
+							//revBox_.resize(recvData.data[0]);
 							TRACE("TMXファイルの大きさ:%d\n", revBox_.size());
 							continue;
 						}
@@ -86,9 +86,9 @@ void NetWark::Update(void)
 						{
 							// 送られてきたデータを格納しやすいように
 							unionData csvData;
-							csvData.iData[0] = recvData.data[0];
-							csvData.iData[1] = recvData.data[1];
-							revBox_[recvData.sData] = csvData;
+							//csvData.iData[0] = recvData.data[0];
+							//csvData.iData[1] = recvData.data[1];
+							//revBox_[recvData.sData] = csvData;
 							start = std::chrono::system_clock::now();
 							continue;
 						}

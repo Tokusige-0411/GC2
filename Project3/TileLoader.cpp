@@ -85,9 +85,9 @@ void TileLoader::SendTmxSizeData(void)
 {
 	std::ifstream ifp("MapData.tmx");
 	ifp.seekg(0, ifp.end);
-	MesHeader sData = { MesType::TMX_Size, 0, 0, 90, 0 };
+	//MesHeader sData = { MesType::TMX_Size, 0, 0, 90, 0 };
 	TRACE("サイズを送ったよ\n");
-	lpNetWork.SendMes(sData);
+	//lpNetWork.SendMes(sData);
 }
 
 void TileLoader::SendTmxData(void)
@@ -95,14 +95,52 @@ void TileLoader::SendTmxData(void)
 	// ﾌｧｲﾙ操作でする方法
 	std::ifstream ifp("MapData.tmx");
 	std::string str;
-	int charCnt = 0;											// 何個データを取り出したかカウントする(0～15までをカウントする)
-	unionData csvData = { 0 };									// csv読み込みで使う共用体
+	//unionData csvData = { 0 };									// csv読み込みで使う共用体
+	//int charCnt = 0;											// 何個のデータを送るか
 
-	do
+	MesHeader tmxSize = { MesType::TMX_Size , 0, 0, sizeof(SizeData)};
+	lpNetWork.SendMes(tmxSize);
+	SizeData sizeData = { 0, 1000, 0 };
+	std::vector<unsigned char> csvData;
+
+	while (!ifp.eof())
 	{
-		// 1回ﾍｯﾀﾞｰ部を送る
-		MesHeader header = {MesType::TMX_Data, };
-	} while ();
+		// csvのところまで行を飛ばす
+		while (str.find("data encoding") == std::string::npos)
+		{
+			std::getline(ifp, str);
+			if (ifp.eof())
+			{
+				break;
+			}
+		}
+
+		// csvの部分を読み込む
+		if (!ifp.eof())
+		{
+			while (std::getline(ifp, str))
+			{
+				if (str.find("/data") != std::string::npos)
+				{
+					break;
+				}
+
+				std::istringstream iss(str);
+				std::string csvStr;
+				while (std::getline(iss, csvStr, ','))
+				{
+					// 行から数字を取り出した
+					csvData.emplace_back(static_cast<unsigned char>(std::atoi(csvStr.c_str())));
+					sizeData.allSize++;
+				}
+			}
+		}
+	}
+
+	sizeData.count = sizeData.allSize / sizeData.size + 1;
+	NetWorkSend(lpNetWork.GetNetHandle(), &sizeData, sizeof(SizeData));
+
+
 
 	//while (!ifp.eof())
 	//{
@@ -159,56 +197,6 @@ void TileLoader::SendTmxData(void)
 	//	sendData.sData++;
 	//	TRACE("送信回数:%d\n", sendData.sData);
 	//}
-
-	// 数字の部分だけ抜き取る
-	//std::list<int> chipData;
-	//for (auto& vecData : mapData_)
-	//{
-	//	for (auto& data : vecData.second)
-	//	{
-	//		chipData.emplace_back(data);
-	//	}
-	//}
-	// 送信データに変換
-	//unsigned short sendCnt = 0;
-	//while(chipData.begin() != chipData.end())
-	//{
-	//	MesData data;
-	//	unsigned char* charData = reinterpret_cast<unsigned char*>(&data);
-	//	unsigned short* shortData = reinterpret_cast<unsigned short*>(&data);
-	//	charData[0] = static_cast<std::underlying_type<MesType>::type>(MesType::TMX_Data);
-	//	for (int i = 4; i < sizeof(MesData); i++)
-	//	{
-	//		charData[i] = chipData.front();
-	//		chipData.pop_front();
-	//		if (chipData.begin() == chipData.end())
-	//		{
-	//			break;
-	//		}
-	//		charData[i] <<= 4;
-	//		//charData[i] = chipData.front();
-	//		//chipData.pop_front();
-	//		//if (chipData.begin() == chipData.end())
-	//		//{
-	//		//	break;
-	//		//}
-	//	}
-	//	shortData[1] = sendCnt;
-	//	lpNetWork.SendMes(data);
-	//	sendCnt++;
-	//}
-	//TRACE("送信した回数:%d\n", sendCnt);
-	//int ch = 0;
-	//char* string = reinterpret_cast<char*>(&ch);
-	//for (int i = 0; i < sizeof(ch); i++)
-	//{
-	//	if (!ifp.eof())
-	//	{
-	//		string[i] = ifp.get();
-	//	}
-	//}
-	//MesData sData = { MesType::TMX_Data, count, ch };
-	//lpNetWork.SendMes(sData);
 }
 
 void TileLoader::Draw(void)
