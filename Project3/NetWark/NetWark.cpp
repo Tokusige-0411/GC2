@@ -186,7 +186,7 @@ bool NetWark::SendMes(MesPacket& data)
 		return false;
 	}
 
-	NetWorkSend(netState_->GetNetHandle(), &data, sizeof(data.size()));
+	NetWorkSend(netState_->GetNetHandle(), &data[0], data.size() * sizeof(data[0]));
 
 	return true;
 }
