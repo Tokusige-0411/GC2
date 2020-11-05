@@ -78,8 +78,10 @@ void NetWark::Update(void)
 						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
 						if (recvData.type == MesType::TMX_Size)
 						{
-							//revBox_.resize(recvData.data[0]);
-							TRACE("TMXファイルの大きさ:%d\n", revBox_.size());
+							SizeData sizeData;
+							NetWorkRecv(handle, &sizeData, recvData.length);
+							revBox_.resize(sizeData.size);
+							TRACE("1回で受け取るファイルの大きさ:%d\n", revBox_.size());
 							continue;
 						}
 						if (recvData.type == MesType::TMX_Data)
@@ -177,29 +179,39 @@ void NetWark::CloseNetWork(void)
 	revStanby = false;
 }
 
-bool NetWark::SendMes(MesHeader& data)
+bool NetWark::SendMes(MesPacket& data)
 {
 	if (!netState_)
 	{
 		return false;
 	}
 
-	NetWorkSend(netState_->GetNetHandle(), &data, sizeof(MesHeader));
+	NetWorkSend(netState_->GetNetHandle(), &data, sizeof(data.size()));
 
 	return true;
 }
 
 void NetWark::SendStanby(void)
 {
-	MesHeader sendData = {MesType::Stanby, 0, 0};
-	SendMes(sendData);
+	MesHeader header = { MesType::Stanby, 0, 0, 0 };
+	auto iHeader = Header{ header };
+	MesPacket data;
+	data.resize(sizeof(header) / sizeof(int));
+	data[0].iData = iHeader.data[0];
+	data[1].iData = iHeader.data[1];
+	SendMes(data);
 	netState_->SetActiveState(ActiveState::Stanby);
 }
 
 void NetWark::SendStart(void)
 {
-	MesHeader sendData = { MesType::Game_Start, 0, 0 };
-	SendMes(sendData);
+	MesHeader header = { MesType::Game_Start, 0, 0, 0 };
+	auto iHeader = Header{ header };
+	MesPacket data;
+	data.resize(sizeof(header) / sizeof(int));
+	data[0].iData = iHeader.data[0];
+	data[1].iData = iHeader.data[1];
+	SendMes(data);
 }
 
 bool NetWark::SetNetWorkMode(NetWorkMode mode)

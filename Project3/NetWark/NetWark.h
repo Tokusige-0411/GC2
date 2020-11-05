@@ -23,9 +23,15 @@ enum class MesType : unsigned char
 struct MesHeader 
 {
 	MesType type;
-	unsigned short id;
 	unsigned char cData;
+	unsigned short id;
 	unsigned int length;
+};
+
+union Header
+{
+	MesHeader mes;
+	int data[2];
 };
 
 struct SizeData
@@ -37,13 +43,12 @@ struct SizeData
 
 union unionData
 {
-	char cData[8];
-	int iData[2];
-	long long lData;
+	int iData;
+	char cData[4];
 };
 
 using ArrayIP = std::array<IPDATA, 2>;
-using RevBox = std::vector<unionData>;
+using MesPacket = std::vector<unionData>;
 
 class NetWark
 {
@@ -57,7 +62,7 @@ public:
 	void Update(void);
 	void CloseNetWork(void);
 
-	bool SendMes(MesHeader& data);
+	bool SendMes(MesPacket& data);
 	void SendStanby(void);
 	void SendStart(void);
 
@@ -84,7 +89,7 @@ private:
 	std::unique_ptr<NetWorkState> netState_;
 	bool revStanby;
 	ArrayIP ipData_;
-	RevBox revBox_;
+	MesPacket revBox_;
 	int revCnt_;
 
 	std::thread updata_;
