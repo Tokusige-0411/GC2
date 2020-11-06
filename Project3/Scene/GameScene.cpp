@@ -16,7 +16,8 @@ bool GameScene::Init(void)
 	}
 	else
 	{
-		lpTileLoader.TMXLoader("MapData.tmx");
+		lpTileLoader.TMXLoader("cash/RevData.tmx");
+		//lpTileLoader.TMXLoader("MapData.tmx");
 	}
 
 	// Ï¯ÌßÁ¯Ìß“Ç‚İ‚İ

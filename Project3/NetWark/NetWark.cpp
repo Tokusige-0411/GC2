@@ -88,7 +88,7 @@ void NetWark::Update(void)
 						}
 						if (recvData.type == MesType::TMX_Data)
 						{
-														// 送られてきたデータを格納しやすいように
+							// 送られてきたデータを格納しやすいように
 							std::lock_guard<std::mutex> mut(mtx_);
 							NetWorkRecv(handle, revBox_.data(), recvData.length * sizeof(int));
 							start = std::chrono::system_clock::now();
@@ -132,6 +132,10 @@ void NetWark::Update(void)
 								unionData = data;
 								for (int byteCnt = 0; byteCnt < 8; byteCnt++)
 								{
+									if (ifp.eof())
+									{
+										break;
+									}
 									std::ostringstream stream;
 									stream << ((unionData.cData[byteCnt / 2] >> (4 * (byteCnt % 2))) & 0x0f);
 									ofp << stream.str();
@@ -161,10 +165,6 @@ void NetWark::Update(void)
 											} while (stringLine.find("data encoding") == std::string::npos);
 										}
 									}
-								}
-								if (ifp.eof())
-								{
-									break;
 								}
 							}
 						}
