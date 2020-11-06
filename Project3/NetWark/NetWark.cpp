@@ -78,25 +78,26 @@ void NetWark::Update(void)
 						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
 						if (recvData.type == MesType::TMX_Size)
 						{
-							SizeData sizeData;
-							NetWorkRecv(handle, &sizeData, recvData.length);
-							revBox_.resize(sizeData.size);
-							TRACE("1回で受け取るファイルの大きさ:%d\n", revBox_.size());
+							std::lock_guard<std::mutex> mut(mtx_);
+							MesPacket packet;
+							packet.resize(recvData.length);
+							NetWorkRecv(handle, packet.data(), recvData.length * sizeof(int));
+							revBox_.resize(packet[0].iData);
+							//TRACE("1回で受け取るファイルの大きさ:%d\n", revBox_.size());
 							continue;
 						}
 						if (recvData.type == MesType::TMX_Data)
 						{
-							// 送られてきたデータを格納しやすいように
-							unionData csvData;
-							//csvData.iData[0] = recvData.data[0];
-							//csvData.iData[1] = recvData.data[1];
-							//revBox_[recvData.sData] = csvData;
+														// 送られてきたデータを格納しやすいように
+							std::lock_guard<std::mutex> mut(mtx_);
+							NetWorkRecv(handle, revBox_.data(), recvData.length * sizeof(int));
 							start = std::chrono::system_clock::now();
 							continue;
 						}
 						if (recvData.type == MesType::Stanby)
 						{
 							// 送信時間
+							std::lock_guard<std::mutex> mut(mtx_);
 							end = std::chrono::system_clock::now();
 							double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 							TRACE("かかった時間:%p秒\n", elapsed);
@@ -105,6 +106,11 @@ void NetWark::Update(void)
 
 							std::ifstream ifp("cash/TmxHeader.tmx");
 							std::ofstream ofp("cash/RevData.tmx");
+							if ((!ifp) || (!ofp))
+							{
+								AST();
+								return;
+							}
 							std::string stringLine;
 
 							do
@@ -124,7 +130,7 @@ void NetWark::Update(void)
 							for (auto& data : revBox_)
 							{
 								unionData = data;
-								for (int byteCnt = 0; byteCnt < 16; byteCnt++)
+								for (int byteCnt = 0; byteCnt < 8; byteCnt++)
 								{
 									std::ostringstream stream;
 									stream << ((unionData.cData[byteCnt / 2] >> (4 * (byteCnt % 2))) & 0x0f);
@@ -156,6 +162,10 @@ void NetWark::Update(void)
 										}
 									}
 								}
+								if (ifp.eof())
+								{
+									break;
+								}
 							}
 						}
 						{
@@ -186,17 +196,20 @@ bool NetWark::SendMes(MesPacket& data)
 		return false;
 	}
 
-	NetWorkSend(netState_->GetNetHandle(), &data[0], data.size() * sizeof(data[0]));
+	NetWorkSend(netState_->GetNetHandle(), data.data(), data.size() * sizeof(data[0]));
 
 	return true;
 }
 
 void NetWark::SendStanby(void)
 {
-	MesHeader header = { MesType::Stanby, 0, 0, 0 };
-	auto iHeader = Header{ header };
+	if (!netState_)
+	{
+		return;
+	}
+	Header iHeader{ MesType::Stanby, 0, 0, 0 };
 	MesPacket data;
-	data.resize(sizeof(header) / sizeof(int));
+	data.resize(sizeof(iHeader) / sizeof(int));
 	data[0].iData = iHeader.data[0];
 	data[1].iData = iHeader.data[1];
 	SendMes(data);
@@ -205,10 +218,13 @@ void NetWark::SendStanby(void)
 
 void NetWark::SendStart(void)
 {
-	MesHeader header = { MesType::Game_Start, 0, 0, 0 };
-	auto iHeader = Header{ header };
+	if (!netState_)
+	{
+		return;
+	}
+	Header iHeader{ MesType::Game_Start, 0, 0, 0 };
 	MesPacket data;
-	data.resize(sizeof(header) / sizeof(int));
+	data.resize(sizeof(iHeader) / sizeof(int));
 	data[0].iData = iHeader.data[0];
 	data[1].iData = iHeader.data[1];
 	SendMes(data);
@@ -261,4 +277,14 @@ ArrayIP NetWark::GetIP(void)
 {
 	GetMyIPAddress(&ipData_[0], 5);
 	return ipData_;
+}
+
+void NetWark::SetHeader(Header header, MesPacket& packet)
+{
+	MesPacket data;
+	data.resize(2);
+	data[0].iData = header.data[0];
+	data[1].iData = header.data[1];
+	packet.insert(packet.begin(), data[1]);
+	packet.insert(packet.begin(), data[0]);
 }

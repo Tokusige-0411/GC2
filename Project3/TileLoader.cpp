@@ -85,9 +85,7 @@ void TileLoader::SendTmxSizeData(void)
 {
 	std::ifstream ifp("MapData.tmx");
 	ifp.seekg(0, ifp.end);
-	//MesHeader sData = { MesType::TMX_Size, 0, 0, 90, 0 };
 	TRACE("サイズを送ったよ\n");
-	//lpNetWork.SendMes(sData);
 }
 
 void TileLoader::SendTmxData(void)
@@ -95,20 +93,10 @@ void TileLoader::SendTmxData(void)
 	// ﾌｧｲﾙ操作でする方法
 	std::ifstream ifp("MapData.tmx");
 	std::string str;
-	//unionData csvData = { 0 };								// csv読み込みで使う共用体
-	//int charCnt = 0;											// 何個のデータを送るか
+	MesPacket csvData;
+	unionData unionData = { 0 };
 
-	// TMX_sizeのﾍｯﾀﾞｰ部分
-	MesHeader header = { MesType::TMX_Size , 0, 0, sizeof(SizeData) };
-	auto iHeader = Header{ header };
-	MesPacket sendData;
-	sendData.resize(sizeof(header) / sizeof(int) + 3);
-	sendData[0].iData = iHeader.data[0];
-	sendData[1].iData = iHeader.data[1];
-
-	SizeData sizeData = { 0, 1000, 0 };
-	std::vector<unsigned char> csvData;
-
+	int charCnt = 0;
 	while (!ifp.eof())
 	{
 		// csvのところまで行を飛ばす
@@ -136,103 +124,30 @@ void TileLoader::SendTmxData(void)
 				while (std::getline(iss, csvStr, ','))
 				{
 					// 行から数字を取り出した
-					csvData.emplace_back(static_cast<unsigned char>(std::atoi(csvStr.c_str())));
+					auto csvNum = std::atoi(csvStr.c_str());
+					unionData.cData[(charCnt % 8) / 2] |= (csvNum << 4 * (charCnt % 2));
+					if ((charCnt % 8) == 7)
+					{
+						csvData.emplace_back(unionData);
+						unionData = { 0 };
+					}
+					charCnt++;
 				}
 			}
 		}
 	}
+	csvData.emplace_back(unionData);
 
-	// Tmx_Sizeのﾃﾞｰﾀ部
-	sizeData.allSize = csvData.size();
-	sizeData.count = sizeData.allSize / sizeData.size + 1;
-	sendData[2].iData = sizeData.count;
-	sendData[3].iData = sizeData.size;
-	sendData[4].iData = sizeData.allSize;
+	// Tmx_Sizeのﾃﾞｰﾀ送信
+	MesPacket sendData;
+	sendData.resize(1);
+	sendData[0].iData = csvData.size();
+	lpNetWork.SetHeader(Header{MesType::TMX_Size, 0, 0, 1}, sendData);
 	lpNetWork.SendMes(sendData);
-	sendData.clear();
 
 	// Tmx_Dataのﾍｯﾀﾞｰ部
-	header = { MesType::TMX_Data, 0, 0, sizeData.size };
-	iHeader = Header{ header };
-	sendData.resize(sizeof(header) / sizeof(int) + sizeData.size);
-	sendData[0].iData = iHeader.data[0];
-	sendData[1].iData = iHeader.data[1];
-
-	// Tmx_Dataのﾃﾞｰﾀ部
-	int count = 0;
-	std::vector<unsigned char> sendVec;
-	for (auto& data : csvData)
-	{
-		count++;
-		if (count % sizeData.size == 0)
-		{
-			header.length = sendVec.size();
-			header.id++;
-			//lpNetWork.SendMes(header);
-			sendVec.clear();
-		}
-	}
-
-	header.length = sendVec.size();
-	header.id++;
-	//lpNetWork.SendMes(header);
-	NetWorkSend(lpNetWork.GetNetHandle(), &sendVec, static_cast<int>(sendVec.size()));
-
-	//while (!ifp.eof())
-	//{
-	//	// csvのところまで行を飛ばす
-	//	while (str.find("data encoding") == std::string::npos)
-	//	{
-	//		std::getline(ifp, str);
-	//		if (ifp.eof())
-	//		{
-	//			break;
-	//		}
-	//	}
-
-	//	// csvの部分を読み込む
-	//	if (!ifp.eof())
-	//	{
-	//		while (std::getline(ifp, str))
-	//		{
-	//			if (str.find("/data") != std::string::npos)
-	//			{
-	//				break;
-	//			}
-
-	//			std::istringstream iss(str);
-	//			std::string csvStr;
-	//			while (std::getline(iss, csvStr, ','))
-	//			{
-	//				// 行から数字を取り出した
-	//				auto csvNum = std::atoi(csvStr.c_str());
-
-	//				// 共用体にアクセスしてシフトしながらデータを入れていく
-	//				csvData.cData[(charCnt % 16) / 2] |= (csvNum << (4 * ((charCnt % 16) % 2)));
-
-	//				if ((charCnt % 16) == 15)
-	//				{
-	//					// 16個取り出したのでﾃﾞｰﾀを送るよ
-	//					sendData.data[0] = csvData.iData[0];
-	//					sendData.data[1] = csvData.iData[1];
-	//					lpNetWork.SendMes(sendData);
-	//					sendData.sData++;
-	//					TRACE("送信回数:%d\n", sendData.sData);
-	//					csvData = { 0 };
-	//				}
-	//				charCnt++;
-	//			}
-	//		}
-	//	}
-	//}
-	//if ((charCnt % 16))
-	//{
-	//	sendData.data[0] = csvData.iData[0];
-	//	sendData.data[1] = csvData.iData[1];
-	//	lpNetWork.SendMes(sendData);
-	//	sendData.sData++;
-	//	TRACE("送信回数:%d\n", sendData.sData);
-	//}
+	lpNetWork.SetHeader(Header{ MesType::TMX_Data, 0, 0, csvData.size() }, csvData);
+	lpNetWork.SendMes(csvData);
 }
 
 void TileLoader::Draw(void)

@@ -43,6 +43,7 @@ struct SizeData
 
 union unionData
 {
+	unsigned int uiData;
 	int iData;
 	char cData[4];
 };
@@ -76,6 +77,8 @@ public:
 	ActiveState ConnectHost(IPDATA hostIP);
 
 	ArrayIP GetIP(void);
+
+	void SetHeader(Header header, MesPacket& packet);
 
 private:
 	struct NetWorkDeleter
