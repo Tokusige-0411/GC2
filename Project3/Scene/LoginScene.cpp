@@ -73,7 +73,7 @@ void LoginScene::SetNetWorkMode(void)
 
 	// 前回接続したIPｱﾄﾞﾚｽ
 	TRACE("接続方法を選択してください\n");
-	std::ifstream ifs("hostIP.txt");
+	std::ifstream ifs("ini/hostIP.txt");
 	if (!ifs)
 	{
 		TRACE("0:ホストになる\n1:ゲストになる\n\n3:オフライン\n");

@@ -189,6 +189,25 @@ void NetWark::CloseNetWork(void)
 	revStanby = false;
 }
 
+bool NetWark::SendMes(MesPacket& packet, MesType type)
+{
+	// Ì§²Ù‚©‚ç‘—‚éƒoƒCƒg”‚ğ“Ç‚İ‚Ş
+	std::ifstream ifp("ini/setting.txt");
+	int sendSize = 500;
+
+	Header header{type, 0, 0, };
+	packet.insert(packet.begin(), { header.data[1] });
+	packet.insert(packet.begin(), { header.data[0] });
+
+	do
+	{
+
+	} 
+	while ();
+
+	return true;
+}
+
 bool NetWark::SendMes(MesPacket& data)
 {
 	if (!netState_)
@@ -281,10 +300,6 @@ ArrayIP NetWark::GetIP(void)
 
 void NetWark::SetHeader(Header header, MesPacket& packet)
 {
-	MesPacket data;
-	data.resize(2);
-	data[0].iData = header.data[0];
-	data[1].iData = header.data[1];
-	packet.insert(packet.begin(), data[1]);
-	packet.insert(packet.begin(), data[0]);
+	packet.insert(packet.begin(), { header.data[1] });
+	packet.insert(packet.begin(), { header.data[0] });
 }

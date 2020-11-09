@@ -12,6 +12,7 @@
 
 enum class MesType : unsigned char
 {
+	Non = 100,
 	Stanby,
 	Game_Start,
 	TMX_Size,
@@ -23,8 +24,8 @@ enum class MesType : unsigned char
 struct MesHeader 
 {
 	MesType type;
-	unsigned char cData;
-	unsigned short id;
+	unsigned char next;
+	unsigned short sendID;
 	unsigned int length;
 };
 
@@ -32,13 +33,6 @@ union Header
 {
 	MesHeader mes;
 	int data[2];
-};
-
-struct SizeData
-{
-	unsigned int count;
-	unsigned int size;
-	unsigned int allSize;
 };
 
 union unionData
@@ -63,6 +57,7 @@ public:
 	void Update(void);
 	void CloseNetWork(void);
 
+	bool SendMes(MesPacket& packet, MesType type);
 	bool SendMes(MesPacket& data);
 	void SendStanby(void);
 	void SendStart(void);
