@@ -142,12 +142,10 @@ void TileLoader::SendTmxData(void)
 	MesPacket sendData;
 	sendData.resize(1);
 	sendData[0].iData = csvData.size();
-	lpNetWork.SetHeader(Header{ MesType::TMX_Size, 0, 0, 1 }, sendData);
-	lpNetWork.SendMes(sendData);
+	lpNetWork.SendMes(sendData, MesType::TMX_Size);
 
 	// Tmx_Data‚ÌÍ¯ÀÞ°•”
-	lpNetWork.SetHeader(Header{ MesType::TMX_Data, 0, 0, csvData.size() }, csvData);
-	lpNetWork.SendMes(csvData);
+	lpNetWork.SendMes(csvData, MesType::TMX_Data);
 }
 
 void TileLoader::Draw(void)

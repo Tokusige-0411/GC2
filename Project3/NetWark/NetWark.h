@@ -32,7 +32,7 @@ struct MesHeader
 union Header
 {
 	MesHeader mes;
-	int data[2];
+	unsigned int data[2];
 };
 
 union unionData
@@ -58,7 +58,7 @@ public:
 	void CloseNetWork(void);
 
 	bool SendMes(MesPacket& packet, MesType type);
-	bool SendMes(MesPacket& data);
+	bool SendMes(MesType type);
 	void SendStanby(void);
 	void SendStart(void);
 

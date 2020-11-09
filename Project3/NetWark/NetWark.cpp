@@ -76,6 +76,11 @@ void NetWark::Update(void)
 					if (GetNetWorkDataLength(handle) >= sizeof(MesHeader))
 					{
 						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
+						// next‚ª‚ ‚é‚©‚Ç‚¤‚©
+
+
+
+
 						if (recvData.type == MesType::TMX_Size)
 						{
 							std::lock_guard<std::mutex> mut(mtx_);
@@ -193,29 +198,46 @@ bool NetWark::SendMes(MesPacket& packet, MesType type)
 {
 	// Ì§²Ù‚©‚ç‘—‚éƒoƒCƒg”‚ğ“Ç‚İ‚Ş
 	std::ifstream ifp("ini/setting.txt");
-	int sendSize = 500;
+	int sendCnt = 500;
 
-	Header header{type, 0, 0, };
+	Header header{ type, 0, 0, 0 };
 	packet.insert(packet.begin(), { header.data[1] });
 	packet.insert(packet.begin(), { header.data[0] });
 
 	do
 	{
+		int sendSize = (sendCnt < packet.size() ? sendCnt : packet.size());
 
+		packet[1].iData = sendSize - 2;
+
+		if (sendSize == packet.size())
+		{
+			header.mes.next = 0;
+		}
+		else
+		{
+			header.mes.next = 1;
+		}
+
+		packet[0] = { header.data[0] };
+		NetWorkSend(GetNetHandle(), packet.data(), sendSize * sizeof(packet[0]));
+
+		packet.erase(packet.begin() + 2, packet.begin() + sendSize);
 	} 
-	while ();
+	while (packet.size() > 2);
 
 	return true;
 }
 
-bool NetWark::SendMes(MesPacket& data)
+bool NetWark::SendMes(MesType type)
 {
 	if (!netState_)
 	{
 		return false;
 	}
 
-	NetWorkSend(netState_->GetNetHandle(), data.data(), data.size() * sizeof(data[0]));
+	MesPacket data;
+	SendMes(data, type);
 
 	return true;
 }
@@ -226,12 +248,9 @@ void NetWark::SendStanby(void)
 	{
 		return;
 	}
-	Header iHeader{ MesType::Stanby, 0, 0, 0 };
-	MesPacket data;
-	data.resize(sizeof(iHeader) / sizeof(int));
-	data[0].iData = iHeader.data[0];
-	data[1].iData = iHeader.data[1];
-	SendMes(data);
+
+	SendMes(MesType::Stanby);
+
 	netState_->SetActiveState(ActiveState::Stanby);
 }
 
@@ -241,12 +260,7 @@ void NetWark::SendStart(void)
 	{
 		return;
 	}
-	Header iHeader{ MesType::Game_Start, 0, 0, 0 };
-	MesPacket data;
-	data.resize(sizeof(iHeader) / sizeof(int));
-	data[0].iData = iHeader.data[0];
-	data[1].iData = iHeader.data[1];
-	SendMes(data);
+	SendMes(MesType::Game_Start);
 }
 
 bool NetWark::SetNetWorkMode(NetWorkMode mode)
