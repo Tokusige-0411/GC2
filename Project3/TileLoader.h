@@ -25,20 +25,6 @@ struct TSXInfo
 	std::string imageName{};
 };
 
-struct charBit
-{
-	unsigned char ch1;
-	unsigned char ch2;
-	unsigned char ch3;
-	unsigned char ch4;
-};
-
-union revInt
-{
-	charBit charB;
-	unsigned int string;
-};
-
 using MapData = std::map<std::string, std::vector<int>>;
 
 class TileLoader
@@ -49,14 +35,13 @@ public:
 		return *s_Instance;
 	}
 
-	bool TMXLoader(std::string fileName);
-	bool TSXLoader(std::string fileName);
-	void SendTmxSizeData(void);
-	void SendTmxData(void);
-	void Draw(void);
-	const TMXInfo& GetTmxInfo(void);
-	const TSXInfo& GetTsxInfo(void);
-	const MapData& GetMapData(void);
+	bool TMXLoader(std::string fileName);		// TMXÌ§²Ù‚ÌÛ°ÀŞ°
+	bool TSXLoader(std::string fileName);		// TSXÌ§²Ù‚ÌÛ°ÀŞ°
+	void SendTmxData(void);						// TMX‚Ìî•ñ‘—MŠÖ”
+	void Draw(void);							// Ï¯Ìß•`‰æ
+	const TMXInfo& GetTmxInfo(void);			// TMXî•ñæ“¾
+	const TSXInfo& GetTsxInfo(void);			// TSXî•ñæ“¾
+	const MapData& GetMapData(void);			// Ï¯ÌßÃŞ°Àæ“¾
 
 private:
 	struct TileLoderDeleter
@@ -68,15 +53,15 @@ private:
 	};
 
 	// Ï¯ÌßŠÖ˜A
-	TMXInfo tmxInfo_{};
-	TSXInfo tsxInfo_{};
-	MapData mapData_;
+	TMXInfo tmxInfo_;						// TMXî•ñ
+	TSXInfo tsxInfo_;						// TSXî•ñ
+	MapData mapData_;						// Ï¯Ìßî•ñ
 
-	rapidxml::xml_document<> doc_;
+	rapidxml::xml_document<> doc_;			// xmlÌ§²Ù‚ÌeÉ°ÄŞ
 
-	std::map<std::string, bool> version_;
+	std::map<std::string, bool> version_;	// Ï¯ÌßÊŞ°¼Ş®İŠÇ—
 
-	bool Init(void);
+	bool Init(void);						// ‰Šú‰»
 	TileLoader();
 	~TileLoader();
 	static std::unique_ptr<TileLoader, TileLoderDeleter> s_Instance;

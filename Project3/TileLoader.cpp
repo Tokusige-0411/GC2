@@ -81,13 +81,6 @@ bool TileLoader::TSXLoader(std::string fileName)
 	return true;
 }
 
-void TileLoader::SendTmxSizeData(void)
-{
-	std::ifstream ifp("MapData.tmx");
-	ifp.seekg(0, ifp.end);
-	TRACE("サイズを送ったよ\n");
-}
-
 void TileLoader::SendTmxData(void)
 {
 	// ﾌｧｲﾙ操作でする方法
@@ -95,6 +88,9 @@ void TileLoader::SendTmxData(void)
 	std::string str;
 	MesPacket csvData;
 	unionData unionData = { 0 };
+	int layerCnt = 0;
+	int width = 0;
+	int height = 0;
 
 	int charCnt = 0;
 	while (!ifp.eof())
@@ -103,6 +99,15 @@ void TileLoader::SendTmxData(void)
 		while (str.find("data encoding") == std::string::npos)
 		{
 			std::getline(ifp, str);
+			if (str.find("map version") != std::string::npos)
+			{
+
+			}
+			// ﾚｲﾔ数をｶｳﾝﾄ
+			if (str.find("/layer") != std::string::npos)
+			{
+				layerCnt++;
+			}
 			if (ifp.eof())
 			{
 				break;

@@ -6,14 +6,14 @@ class GameScene :
     public BaseScene
 {
 public:
-    bool Init(void) override;
-    unique_Base Update(unique_Base own) override;
-    void Draw(void) override;
+    bool Init(void) override;                           // ‰Šú‰»
+    unique_Base Update(unique_Base own) override;       // XV
+    void Draw(void) override;                           // •`‰æ
 
     GameScene();
     ~GameScene();
 
 private:
-    std::unique_ptr<Controller> input_;
+    std::unique_ptr<Controller> input_;         // ²İ¯ÌßÄî•ñ
 };
 

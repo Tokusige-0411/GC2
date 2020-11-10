@@ -55,20 +55,20 @@ public:
 	void AddDrawQue(DrawQueT dQue);
 
 private:
-	bool SysInit();
+	bool SysInit();								// ¼½ÃÑî•ñ‰Šú‰»
 
-	void Draw();
-
+	void Draw();								// •`‰æ
+		
 	SceneMng();
 	~SceneMng();
 
-	const Vector2 screenSize_;
-	const Vector2 screenCenter_;
+	const Vector2 screenSize_;					// ½¸Ø°İ‚Ì‘å‚«‚³
+	const Vector2 screenCenter_;				// ½¸Ø°İ‚Ì’†SÀ•W
 
 	unique_Base activeScene_;					// “®‚¢‚Ä‚¢‚é¼°İ
 
 	std::vector<DrawQueT> drawList_;			// •`‰æ‚·‚é‚à‚Ì
 
-	int frame_;
+	int frame_;									// ÌÚ°Ñ¶³İÄ
 };
 

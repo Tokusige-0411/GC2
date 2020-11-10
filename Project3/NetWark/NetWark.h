@@ -10,31 +10,35 @@
 
 #define lpNetWork NetWark::GetInstance()
 
+// ﾒｯｾｰｼﾞ種別
 enum class MesType : unsigned char
 {
-	Non = 100,
-	Stanby,
-	Game_Start,
-	TMX_Size,
-	TMX_Data,
-	Pos,
+	Non = 100,		// ﾀｲﾌﾟなし
+	Stanby,			// ｽﾀﾝﾊﾞｲ
+	Game_Start,		// ｹﾞｰﾑ開始
+	TMX_Size,		// TMXのｻｲｽﾞ情報
+	TMX_Data,		// TMXのCSVﾃﾞｰﾀ情報
+	Pos,			// ﾌﾟﾚｲﾔｰの座標
 };
 
 // ｱﾗｲﾒﾝﾄに注意
+// ﾍｯﾀﾞｰ情報
 struct MesHeader 
 {
-	MesType type;
-	unsigned char next;
-	unsigned short sendID;
-	unsigned int length;
+	MesType type;				// ﾒｯｾｰｼﾞ種別
+	unsigned char next;			// 次の情報があるかどうか
+	unsigned short sendID;		// 何番目に送ったﾃﾞｰﾀか
+	unsigned int length;		// ﾃﾞｰﾀ部の長さ
 };
 
+// ﾍｯﾀﾞｰ部分の共用体
 union Header
 {
 	MesHeader mes;
 	unsigned int data[2];
 };
 
+// 送信ﾃﾞｰﾀ
 union unionData
 {
 	unsigned int uiData;
@@ -42,8 +46,8 @@ union unionData
 	char cData[4];
 };
 
-using ArrayIP = std::array<IPDATA, 2>;
-using MesPacket = std::vector<unionData>;
+using ArrayIP = std::array<IPDATA, 2>;						// IPｱﾄﾞﾚｽ格納配列
+using MesPacket = std::vector<unionData>;					// ﾊﾟｹｯﾄﾃﾞｰﾀ
 
 class NetWark
 {
@@ -53,27 +57,25 @@ public:
 		return *s_Instance;
 	}
 
-	void RunUpdata(void);
-	void Update(void);
-	void CloseNetWork(void);
+	void RunUpdata(void);									// Update別ｽﾚｯﾄﾞ化
+	void Update(void);										// 更新
+	void InitCloseNetWork(void);							// 切断時ﾈｯﾄﾜｰｸ情報初期化
 
-	bool SendMes(MesPacket& packet, MesType type);
-	bool SendMes(MesType type);
-	void SendStanby(void);
-	void SendStart(void);
+	bool SendMes(MesPacket& packet, MesType type);			// ﾃﾞｰﾀ部ありﾒｯｾｰｼﾞ送信
+	bool SendMes(MesType type);								// ﾃﾞｰﾀ部なしﾒｯｾｰｼﾞ送信
+	void SendStanby(void);									// ｽﾀﾝﾊﾞｲ情報送信
+	void SendStart(void);									// ｹﾞｰﾑｽﾀｰﾄ情報送信
 
-	bool SetNetWorkMode(NetWorkMode mode);
-	NetWorkMode GetNetWorkMode(void);
+	bool SetNetWorkMode(NetWorkMode mode);					// ﾈｯﾄﾜｰｸﾓｰﾄﾞの設定
+	NetWorkMode GetNetWorkMode(void);						// ﾈｯﾄﾜｰｸﾓｰﾄﾞ取得
 
-	ActiveState GetActive(void);
+	ActiveState GetActive(void);							// ｱｸﾃｨﾌﾞｽﾃｰﾄ取得
 
-	int GetNetHandle(void);
+	int GetNetHandle(void);									// ﾈｯﾄﾜｰｸﾊﾝﾄﾞﾙ取得
 
-	ActiveState ConnectHost(IPDATA hostIP);
+	ActiveState ConnectHost(IPDATA hostIP);					// ﾎｽﾄへの接続
 
-	ArrayIP GetIP(void);
-
-	void SetHeader(Header header, MesPacket& packet);
+	ArrayIP GetIP(void);									// IPｱﾄﾞﾚｽ取得
 
 private:
 	struct NetWorkDeleter
@@ -84,18 +86,22 @@ private:
 		}
 	};
 
-	std::unique_ptr<NetWorkState> netState_;
-	bool revStanby;
-	ArrayIP ipData_;
-	MesPacket revBox_;
-	int revCnt_;
+	bool Init(void);
+	void MakeTmx(void);										// TMXﾌｧｲﾙ作成関数
 
-	std::thread updata_;
-	std::mutex mtx_;
+	std::unique_ptr<NetWorkState> netState_;				// ﾈｯﾄﾜｰｸ状態管理
+	bool revStanby_;										// ｽﾀﾝﾊﾞｲ状態管理ﾌﾗｸﾞ
+	ArrayIP ipData_;										// IPｱﾄﾞﾚｽ格納
+	MesPacket revBox_;										// 受信情報格納変数
+	int intSendCnt_;										// 送信ﾃﾞｰﾀの上限
 
-	MesType revState_;
-	std::chrono::system_clock::time_point start;
-	std::chrono::system_clock::time_point end;
+	std::thread updata_;									// 別ｽﾚｯﾄﾞ化したｱｯﾌﾟﾃﾞｰﾄ
+
+	std::mutex revStanbyMtx_;								// revStanbyにﾛｯｸをかける
+	std::mutex mtx_;										// 変数にﾛｯｸをかける
+										
+	std::chrono::system_clock::time_point start;			// 接続開始時間
+	std::chrono::system_clock::time_point end;				// 接続終了時間
 
 	NetWark();
 	~NetWark();

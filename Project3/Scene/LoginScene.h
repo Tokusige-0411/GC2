@@ -12,7 +12,7 @@ enum class UpdateMode
 {
 	SetNetworkMode,
 	StartInit,
-	PlayerUpdate,
+	GameStart,
 	SethostIP,
 };
 
@@ -27,12 +27,11 @@ public:
 	void Draw(void) override;
 
 private:
-	void SetNetWorkMode(void);
-	void StartInit(void);
-	void SetHostIP(void);
-	void PlayerUpdate(void);
+	void SetNetWorkMode(void);								// ﾈｯﾄﾜｰｸﾓｰﾄﾞ設定
+	void StartInit(void);									// ｹﾞｰﾑに必要な情報の初期化
+	void SetHostIP(void);									// 接続先のIPｱﾄﾞﾚｽを入力する							
 
-	std::map<UpdateMode, std::function<void()>> func_;
-	bool reConnect_;
-	UpdateMode updateMode_;
+	std::map<UpdateMode, std::function<void()>> func_;		// ﾈｯﾄﾜｰｸの状態ごとに更新を変える
+	bool reConnect_;										// 再接続管理ﾌﾗｸﾞ
+	UpdateMode updateMode_;									// ｱｯﾌﾟﾃﾞｰﾄ管理
 };

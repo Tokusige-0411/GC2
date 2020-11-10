@@ -12,7 +12,7 @@ public:
 private:
 
 protected:
-    unique_Base nextScene_;
-    unique_Base oldScene_;
+    unique_Base nextScene_;         // ŽŸ‚Ì¼°Ý
+    unique_Base oldScene_;          // ‘O‚Ì¼°Ý
 };
 

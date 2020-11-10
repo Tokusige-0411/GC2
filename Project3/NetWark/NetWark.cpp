@@ -11,10 +11,7 @@ std::unique_ptr<NetWark, NetWark::NetWorkDeleter> NetWark::s_Instance(new NetWar
 
 NetWark::NetWark()
 {
-	revState_ = MesType::TMX_Size;
-	revStanby = false;
-	revCnt_ = 0;
-	ipData_ = { 0 };
+	Init();
 }
 
 NetWark::~NetWark()
@@ -33,6 +30,10 @@ void NetWark::RunUpdata(void)
 
 void NetWark::Update(void)
 {
+	MesHeader recvHeader = { MesType::Non, 0, 0, 0 };
+	MesPacket recvPacket;
+	unsigned int writePos;
+
 	while(!ProcessMessage())
 	{
 		if (!netState_)
@@ -64,7 +65,7 @@ void NetWark::Update(void)
 
 			if (netState_->GetMode() == NetWorkMode::Gest)
 			{
-				if (revStanby)
+				if (revStanby_)
 				{
 					netState_->SetActiveState(ActiveState::Play);
 					continue;
@@ -72,34 +73,45 @@ void NetWark::Update(void)
 				else
 				{
 					auto handle = netState_->GetNetHandle();
-					MesHeader recvData;
 					if (GetNetWorkDataLength(handle) >= sizeof(MesHeader))
 					{
-						NetWorkRecv(handle, &recvData, sizeof(MesHeader));
+						if (!recvHeader.next)
+						{
+							recvPacket.clear();
+							writePos = 0;
+						}
+
+						NetWorkRecv(handle, &recvHeader, sizeof(MesHeader));
+
+						if (recvHeader.length)
+						{
+							recvPacket.resize(recvPacket.size() + recvHeader.length);
+							NetWorkRecv(handle, recvPacket.data() + writePos, recvHeader.length * sizeof(int));
+							writePos = static_cast<unsigned int>(recvPacket.size());
+						}
 						// nextがあるかどうか
+						if (recvHeader.next)
+						{
+							TRACE("追加情報アリ");
+							continue;
+						}
 
-
-
-
-						if (recvData.type == MesType::TMX_Size)
+						if (recvHeader.type == MesType::TMX_Size)
 						{
 							std::lock_guard<std::mutex> mut(mtx_);
-							MesPacket packet;
-							packet.resize(recvData.length);
-							NetWorkRecv(handle, packet.data(), recvData.length * sizeof(int));
-							revBox_.resize(packet[0].iData);
+							revBox_.resize(recvPacket[0].iData);
 							//TRACE("1回で受け取るファイルの大きさ:%d\n", revBox_.size());
 							continue;
 						}
-						if (recvData.type == MesType::TMX_Data)
+						if (recvHeader.type == MesType::TMX_Data)
 						{
 							// 送られてきたデータを格納しやすいように
 							std::lock_guard<std::mutex> mut(mtx_);
-							NetWorkRecv(handle, revBox_.data(), recvData.length * sizeof(int));
+							revBox_ = std::move(recvPacket);
 							start = std::chrono::system_clock::now();
 							continue;
 						}
-						if (recvData.type == MesType::Stanby)
+						if (recvHeader.type == MesType::Stanby)
 						{
 							// 送信時間
 							std::lock_guard<std::mutex> mut(mtx_);
@@ -107,71 +119,8 @@ void NetWark::Update(void)
 							double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 							TRACE("かかった時間:%p秒\n", elapsed);
 
-							revStanby = true;
-
-							std::ifstream ifp("cash/TmxHeader.tmx");
-							std::ofstream ofp("cash/RevData.tmx");
-							if ((!ifp) || (!ofp))
-							{
-								AST();
-								return;
-							}
-							std::string stringLine;
-
-							do
-							{
-								std::getline(ifp, stringLine);
-								if (ifp.eof())
-								{
-									break;
-								}
-								ofp << stringLine << std::endl;
-							} while (stringLine.find("data encoding") == std::string::npos);
-
-							// 何文字入れたか
-							unionData unionData = { 0 };
-							int strCnt = 0;
-
-							for (auto& data : revBox_)
-							{
-								unionData = data;
-								for (int byteCnt = 0; byteCnt < 8; byteCnt++)
-								{
-									if (ifp.eof())
-									{
-										break;
-									}
-									std::ostringstream stream;
-									stream << ((unionData.cData[byteCnt / 2] >> (4 * (byteCnt % 2))) & 0x0f);
-									ofp << stream.str();
-									strCnt++;
-									if (strCnt % 21 != 0)
-									{
-										ofp << ',';
-									}
-									else
-									{
-										if ((strCnt % (21 * 17)) != 0)
-										{
-											ofp << ',' << std::endl;
-										}
-										else
-										{
-											ofp << std::endl;
-											do
-											{
-												std::getline(ifp, stringLine);
-												if (ifp.eof())
-												{
-													TRACE("初期化情報取得\n");
-													break;
-												}
-												ofp << stringLine << std::endl;
-											} while (stringLine.find("data encoding") == std::string::npos);
-										}
-									}
-								}
-							}
+							revStanby_ = true;
+							MakeTmx();
 						}
 						{
 							// 来たメッセージに対してlockとunlockをかける
@@ -183,22 +132,24 @@ void NetWark::Update(void)
 		else
 		{
 			// 切断された場合
-			CloseNetWork();
+			InitCloseNetWork();
 		}
 	}
 }
 
-void NetWark::CloseNetWork(void)
+void NetWark::InitCloseNetWork(void)
 {
 	netState_.reset();
-	revStanby = false;
+	std::lock_guard<std::mutex> mut(revStanbyMtx_);
+	revStanby_ = false;
 }
 
 bool NetWark::SendMes(MesPacket& packet, MesType type)
 {
-	// ﾌｧｲﾙから送るバイト数を読み込む
-	std::ifstream ifp("ini/setting.txt");
-	int sendCnt = 500;
+	if (!netState_)
+	{
+		return false;
+	}
 
 	Header header{ type, 0, 0, 0 };
 	packet.insert(packet.begin(), { header.data[1] });
@@ -206,7 +157,7 @@ bool NetWark::SendMes(MesPacket& packet, MesType type)
 
 	do
 	{
-		int sendSize = (sendCnt < packet.size() ? sendCnt : packet.size());
+		unsigned int sendSize = static_cast<unsigned int>((intSendCnt_ < packet.size() ? intSendCnt_ : packet.size()));
 
 		packet[1].iData = sendSize - 2;
 
@@ -219,9 +170,10 @@ bool NetWark::SendMes(MesPacket& packet, MesType type)
 			header.mes.next = 1;
 		}
 
-		packet[0] = { header.data[0] };
+		packet[0].iData = header.data[0];
 		NetWorkSend(GetNetHandle(), packet.data(), sendSize * sizeof(packet[0]));
 
+		header.mes.sendID++;
 		packet.erase(packet.begin() + 2, packet.begin() + sendSize);
 	} 
 	while (packet.size() > 2);
@@ -312,8 +264,89 @@ ArrayIP NetWark::GetIP(void)
 	return ipData_;
 }
 
-void NetWark::SetHeader(Header header, MesPacket& packet)
+bool NetWark::Init(void)
 {
-	packet.insert(packet.begin(), { header.data[1] });
-	packet.insert(packet.begin(), { header.data[0] });
+	revStanby_ = false;
+	ipData_ = { 0 };
+	intSendCnt_ = 0;
+	// ﾌｧｲﾙから送るバイト数を読み込む
+	std::ifstream ifp("ini/setting.txt");
+	std::string strLine;
+	while (!ifp.eof())
+	{
+		std::getline(ifp, strLine);
+		if (strLine.find("byte length") != std::string::npos)
+		{
+			auto byteCnt = strLine.substr(strLine.find_first_of('"') + 1, strLine.find_last_of('"'));
+			intSendCnt_ = std::atoi(byteCnt.c_str()) / sizeof(unionData);
+		}
+	}
+	return true;
+}
+
+void NetWark::MakeTmx(void)
+{
+	std::ifstream ifp("cash/TmxHeader.tmx");
+	std::ofstream ofp("cash/RevData.tmx");
+	if ((!ifp) || (!ofp))
+	{
+		AST();
+		return;
+	}
+	std::string stringLine;
+
+	do
+	{
+		std::getline(ifp, stringLine);
+		if (ifp.eof())
+		{
+			break;
+		}
+		ofp << stringLine << std::endl;
+	} while (stringLine.find("data encoding") == std::string::npos);
+
+	// 何文字入れたか
+	unionData unionData = { 0 };
+	int strCnt = 0;
+
+	for (auto& data : revBox_)
+	{
+		unionData = data;
+		for (int byteCnt = 0; byteCnt < 8; byteCnt++)
+		{
+			if (ifp.eof())
+			{
+				break;
+			}
+			std::ostringstream stream;
+			stream << ((unionData.cData[byteCnt / 2] >> (4 * (byteCnt % 2))) & 0x0f);
+			ofp << stream.str();
+			strCnt++;
+			if (strCnt % 21 != 0)
+			{
+				ofp << ',';
+			}
+			else
+			{
+				if ((strCnt % (21 * 17)) != 0)
+				{
+					ofp << ',' << std::endl;
+				}
+				else
+				{
+					ofp << std::endl;
+					do
+					{
+						std::getline(ifp, stringLine);
+						if (ifp.eof())
+						{
+							TRACE("初期化情報取得\n");
+							break;
+						}
+						ofp << stringLine << std::endl;
+					} while (stringLine.find("data encoding") == std::string::npos);
+				}
+			}
+		}
+	}
 }

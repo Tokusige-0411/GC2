@@ -1,7 +1,6 @@
 #include <DxLib.h>
 #include "imageMng.h"
 
-// 名前空間大事！
 std::unique_ptr<ImageMng, ImageMng::ImageMngDeleter> ImageMng::_sInstance(new ImageMng());
 
 // あるかどうかの確認をするだけ
@@ -24,8 +23,6 @@ const VecInt & ImageMng::GetID(const std::string & key, const std::string & file
 // ﾁｯﾌﾟなど
 const VecInt & ImageMng::GetID(const std::string & key, const std::string & fileName, const Vector2 divSize, const Vector2 divCnt)
 {
-	// ｲﾃﾚｰﾀｰ(反復子) 覆いかぶさっているもの
-	// ビギンとエンド
 	if(imgMap.find(key) == imgMap.end())
 	{
 		imgMap[key].resize(divCnt.x * divCnt.y);

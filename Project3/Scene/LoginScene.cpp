@@ -23,7 +23,6 @@ LoginScene::LoginScene()
 
 	func_.try_emplace(UpdateMode::SetNetworkMode, std::bind(&LoginScene::SetNetWorkMode, this));
 	func_.try_emplace(UpdateMode::SethostIP, std::bind(&LoginScene::SetHostIP, this));
-	func_.try_emplace(UpdateMode::PlayerUpdate, std::bind(&LoginScene::PlayerUpdate, this));
 	func_.try_emplace(UpdateMode::StartInit, std::bind(&LoginScene::StartInit, this));
 
 	updateMode_ = UpdateMode::SetNetworkMode;
@@ -41,11 +40,11 @@ bool LoginScene::Init()
 
 unique_Base LoginScene::Update(unique_Base own)
 {
-	(func_[updateMode_])();
-	if (updateMode_ == UpdateMode::PlayerUpdate)
+	if (updateMode_ == UpdateMode::GameStart)
 	{
 		own = std::make_unique<CrossOver>(std::make_unique<GameScene>(), std::move(own));
 	}
+	(func_[updateMode_])();
 	return own;
 }
 
@@ -108,7 +107,7 @@ void LoginScene::SetNetWorkMode(void)
 		else if (mode == 3)
 		{
 			lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
-			updateMode_ = UpdateMode::PlayerUpdate;
+			updateMode_ = UpdateMode::GameStart;
 		}
 	} while (0 > mode || mode > 3);
 
@@ -140,13 +139,12 @@ void LoginScene::StartInit(void)
 		{
 			// TMXﾃﾞｰﾀのｻｲｽﾞ送信
 			lpTileLoader.SendTmxData();
-			TRACE("TMXファイルのサイズ送信\n");
 			lpNetWork.SendStanby();
 			TRACE("初期化情報を送信、開始合図待ち\n");
 		}
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
-			updateMode_ = UpdateMode::PlayerUpdate;
+			updateMode_ = UpdateMode::GameStart;
 			TRACE("ゲームスタート\n");
 		}
 	}
@@ -156,7 +154,7 @@ void LoginScene::StartInit(void)
 	{
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
-			updateMode_ = UpdateMode::PlayerUpdate;
+			updateMode_ = UpdateMode::GameStart;
 			lpNetWork.SendStart();
 			TRACE("ゲームスタート情報送信\n");
 		}
@@ -215,25 +213,4 @@ void LoginScene::SetHostIP(void)
 	{
 		TRACE("接続失敗\n");
 	}
-}
-
-void LoginScene::PlayerUpdate(void)
-{
-	//auto contData = input_->GetContData();
-	//if (contData[INPUT_ID::UP][static_cast<int>(Trg::Now)] && contData[INPUT_ID::UP][static_cast<int>(Trg::Old)])
-	//{
-	//	sendData_.y -= 3;
-	//}
-	//if (contData[INPUT_ID::RIGHT][static_cast<int>(Trg::Now)] && contData[INPUT_ID::RIGHT][static_cast<int>(Trg::Old)])
-	//{
-	//	sendData_.x += 3;
-	//}
-	//if (contData[INPUT_ID::DOWN][static_cast<int>(Trg::Now)] && contData[INPUT_ID::DOWN][static_cast<int>(Trg::Old)])
-	//{
-	//	sendData_.y += 3;
-	//}
-	//if (contData[INPUT_ID::LEFT][static_cast<int>(Trg::Now)] && contData[INPUT_ID::LEFT][static_cast<int>(Trg::Old)])
-	//{
-	//	sendData_.x -= 3;
-	//}
 }
