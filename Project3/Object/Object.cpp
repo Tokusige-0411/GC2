@@ -8,7 +8,7 @@ Object::~Object()
 {
 }
 
-void Object::Update(void)
+void Object::Update(MapData& mapData)
 {
 }
 

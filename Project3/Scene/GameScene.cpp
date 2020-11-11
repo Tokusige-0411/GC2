@@ -8,9 +8,6 @@
 
 bool GameScene::Init(void)
 {
-	input_ = std::make_unique<PadInput>();
-	input_->SetUp(0);
-
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Gest)
 	{
 		lpTileLoader.TMXLoader("cash/RevData.tmx");
@@ -18,6 +15,7 @@ bool GameScene::Init(void)
 	else
 	{
 		lpTileLoader.TMXLoader("TestMap.tmx");
+		//lpTileLoader.TMXLoader("MapData.tmx");
 	}
 
 	// Ï¯ÌßÁ¯Ìß“Ç‚Ýž‚Ý
@@ -33,11 +31,9 @@ bool GameScene::Init(void)
 
 unique_Base GameScene::Update(unique_Base own)
 {
-	(*input_)();
-
 	for (auto& data : objList_)
 	{
-		data->Update();
+		data->Update(mapData_);
 	}
 
 	SetDrawScreen(screenID_);

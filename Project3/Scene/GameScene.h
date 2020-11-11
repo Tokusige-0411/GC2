@@ -19,7 +19,6 @@ public:
     ~GameScene();
 
 private:
-    std::unique_ptr<Controller> input_;         // ²İ¯ÌßÄî•ñ
     MapData mapData_;
     TMXInfo mapInfo_;
 
