@@ -35,16 +35,17 @@ LoginScene::~LoginScene()
 bool LoginScene::Init()
 {
 	reConnect_ = false;
+	gameStart_ = false;
 	return true;
 }
 
 unique_Base LoginScene::Update(unique_Base own)
 {
-	if (updateMode_ == UpdateMode::GameStart)
+	(func_[updateMode_])();
+	if (gameStart_)
 	{
 		own = std::make_unique<CrossOver>(std::make_unique<GameScene>(), std::move(own));
 	}
-	(func_[updateMode_])();
 	return own;
 }
 
@@ -107,7 +108,7 @@ void LoginScene::SetNetWorkMode(void)
 		else if (mode == 3)
 		{
 			lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
-			updateMode_ = UpdateMode::GameStart;
+			gameStart_ = true;
 		}
 	} while (0 > mode || mode > 3);
 
@@ -144,7 +145,7 @@ void LoginScene::StartInit(void)
 		}
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
-			updateMode_ = UpdateMode::GameStart;
+			gameStart_ = true;
 			TRACE("ゲームスタート\n");
 		}
 	}
@@ -154,7 +155,7 @@ void LoginScene::StartInit(void)
 	{
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
-			updateMode_ = UpdateMode::GameStart;
+			gameStart_ = true;
 			lpNetWork.SendStart();
 			TRACE("ゲームスタート情報送信\n");
 		}

@@ -1,6 +1,11 @@
 #pragma once
+#include <vector>
+#include <memory>
 #include "BaseScene.h"
 #include "../input/Controller.h"
+#include "../TileLoader.h"
+
+class Object;
 
 class GameScene :
     public BaseScene
@@ -15,5 +20,9 @@ public:
 
 private:
     std::unique_ptr<Controller> input_;         // ²İ¯ÌßÄî•ñ
+    MapData mapData_;
+    TMXInfo mapInfo_;
+
+    std::vector<std::shared_ptr<Object>> objList_;
 };
 

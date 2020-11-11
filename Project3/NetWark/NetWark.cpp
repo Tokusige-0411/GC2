@@ -92,7 +92,7 @@ void NetWark::Update(void)
 						// next‚ª‚ ‚é‚©‚Ç‚¤‚©
 						if (recvHeader.next)
 						{
-							TRACE("’Ç‰Áî•ñƒAƒŠ");
+							TRACE("’Ç‰Áî•ñƒAƒŠ\n");
 							continue;
 						}
 

@@ -33,5 +33,6 @@ private:
 
 	std::map<UpdateMode, std::function<void()>> func_;		// È¯ÄÜ°¸‚Ìó‘Ô‚²‚Æ‚ÉXV‚ğ•Ï‚¦‚é
 	bool reConnect_;										// ÄÚ‘±ŠÇ—Ì×¸Ş
+	bool gameStart_;										// ¹Ş°Ñ½À°ÄÌ×¸Ş
 	UpdateMode updateMode_;									// ±¯ÌßÃŞ°ÄŠÇ—
 };

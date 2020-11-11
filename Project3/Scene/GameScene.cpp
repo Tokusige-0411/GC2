@@ -4,6 +4,7 @@
 #include "../NetWark/NetWark.h"
 #include "../TileLoader.h"
 #include "../common/imageMng.h"
+#include "../Object/Player.h"
 
 bool GameScene::Init(void)
 {
@@ -16,12 +17,16 @@ bool GameScene::Init(void)
 	}
 	else
 	{
-		lpTileLoader.TMXLoader("MapData.tmx");
+		lpTileLoader.TMXLoader("TestMap.tmx");
 	}
 
 	// œØÃﬂ¡ØÃﬂì«Ç›çûÇ›
 	auto chipData = lpTileLoader.GetTsxInfo();
 	lpImageMng.GetID("map", chipData.imageName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
+	mapData_ = lpTileLoader.GetMapData();
+	mapInfo_ = lpTileLoader.GetTmxInfo();
+
+	objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 32 }));
 
 	return true;
 }
@@ -29,24 +34,28 @@ bool GameScene::Init(void)
 unique_Base GameScene::Update(unique_Base own)
 {
 	(*input_)();
+
+	for (auto& data : objList_)
+	{
+		data->Update();
+	}
+
 	SetDrawScreen(screenID_);
 	Draw();
+
 	return std::move(own);
 }
 
 void GameScene::Draw(void)
 {
-	auto mapData = lpTileLoader.GetMapData();
-	auto mapInfo = lpTileLoader.GetTmxInfo();
-
 	auto draw = [&](std::string key) {
-		for (int y = 0; y < mapInfo.height; y++)
+		for (int y = 0; y < mapInfo_.height; y++)
 		{
-			for (int x = 0; x < mapInfo.width; x++)
+			for (int x = 0; x < mapInfo_.width; x++)
 			{
-				if (mapData[key][y * mapInfo.width + x])
+				if (mapData_[key][y * mapInfo_.width + x])
 				{
-					DrawGraph(x * mapInfo.tileWidth, y * mapInfo.tileHeight, lpImageMng.GetID("map")[mapData[key][y * mapInfo.width + x] - 1], true);
+					DrawGraph(x * mapInfo_.tileWidth, y * mapInfo_.tileHeight, lpImageMng.GetID("map")[mapData_[key][y * mapInfo_.width + x] - 1], true);
 				}
 			}
 		}
@@ -55,6 +64,11 @@ void GameScene::Draw(void)
 	draw("Item");
 	draw("Obj");
 	draw("Char");
+	
+	for (auto& data : objList_)
+	{
+		data->Draw();
+	}
 }
 
 GameScene::GameScene()
