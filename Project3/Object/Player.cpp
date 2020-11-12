@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include <ImageMng.h>
 #include "Player.h"
+#include "../NetWark/NetWark.h"
 
 int Player::playerCnt_ = 0;
 
@@ -12,6 +13,7 @@ Player::Player(Vector2 pos)
 	dirPermit_[Dir::Right] = true;
 	dirPermit_[Dir::Down] = true;
 	dirPermit_[Dir::Left] = true;
+	animCnt_ = 0;
 	Init();
 }
 
@@ -40,6 +42,7 @@ void Player::Update(MapData& mapData)
 		dirPermit_[Dir::Left] = CheckWall({ chipPos.x - 1, chipPos.y });
 	}
 
+	// à⁄ìÆèàóùÇ∆ï˚å¸Çí≤Ç◊ÇÈ
 	do
 	{
 		if (!dirPermit_[dir_])
@@ -52,6 +55,48 @@ void Player::Update(MapData& mapData)
 		}
 	} while (!dirPermit_[dir_]);
 
+	update_();
+
+	animCnt_++;
+}
+
+void Player::Draw(void)
+{
+	DrawRotaGraph(pos_.x + 16, pos_.y - 6, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 4 + static_cast<int>(dir_)], true);
+}
+
+void Player::Init(void)
+{
+	lpImageMng.GetID("player", "image/Player_Anim.png", { 32, 51 }, { 4, 4 });
+
+	playerID_ = playerCnt_;
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
+	{
+		if (!(playerID_ % 2))
+		{
+			update_ = std::bind(&Player::UpdateMyself, this);
+		}
+		else
+		{
+			update_ = std::bind(&Player::UpdateNet, this);
+		}
+	}
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
+	{
+		if (!(playerID_ % 2))
+		{
+			update_ = std::bind(&Player::UpdateNet, this);
+		}
+		else
+		{
+			update_ = std::bind(&Player::UpdateMyself, this);
+		}
+	}
+	playerCnt_++;
+}
+
+void Player::UpdateMyself(void)
+{
 	if (dir_ == Dir::Right)
 	{
 		pos_.x += 2;
@@ -70,15 +115,7 @@ void Player::Update(MapData& mapData)
 	}
 }
 
-void Player::Draw(void)
+void Player::UpdateNet(void)
 {
-	DrawRotaGraph(pos_.x + 16, pos_.y + 16, 1.0, 0.0, IMAGE_ID("player")[0], true);
-}
 
-void Player::Init(void)
-{
-	playerID_ = playerCnt_;
-	playerCnt_++;
-
-	lpImageMng.GetID("player", "image/Player.png");
 }

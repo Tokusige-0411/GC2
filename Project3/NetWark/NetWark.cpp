@@ -63,7 +63,7 @@ void NetWark::Update(void)
 				}
 			}
 
-			if (netState_->GetMode() == NetWorkMode::Gest)
+			if (netState_->GetMode() == NetWorkMode::Guest)
 			{
 				if (revStanby_)
 				{
@@ -122,8 +122,11 @@ void NetWark::Update(void)
 							revStanby_ = true;
 							MakeTmx();
 						}
+						if(recvHeader.type == MesType::Instance)
 						{
 							// 来たメッセージに対してlockとunlockをかける
+							std::lock_guard<std::mutex> mut(mtx_);
+							mesList_.emplace_back(revBox_);
 						}
 					}
 				}
@@ -226,7 +229,7 @@ bool NetWark::SetNetWorkMode(NetWorkMode mode)
 		netState_ = std::make_unique<HostState>();
 		RunUpdata();
 		break;
-	case NetWorkMode::Gest:
+	case NetWorkMode::Guest:
 		netState_ = std::make_unique<GestState>();
 		RunUpdata();
 		break;

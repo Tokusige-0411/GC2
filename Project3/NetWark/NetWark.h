@@ -18,6 +18,7 @@ enum class MesType : unsigned char
 	Game_Start,		// ¹Ş°ÑŠJn
 	TMX_Size,		// TMX‚Ì»²½Şî•ñ
 	TMX_Data,		// TMX‚ÌCSVÃŞ°Àî•ñ
+	Instance,
 	Pos,			// ÌßÚ²Ô°‚ÌÀ•W
 };
 
@@ -77,6 +78,8 @@ public:
 
 	ArrayIP GetIP(void);									// IP±ÄŞÚ½æ“¾
 
+
+
 private:
 	struct NetWorkDeleter
 	{
@@ -93,6 +96,7 @@ private:
 	bool revStanby_;										// ½ÀİÊŞ²ó‘ÔŠÇ—Ì×¸Ş
 	ArrayIP ipData_;										// IP±ÄŞÚ½Ši”[
 	MesPacket revBox_;										// óMî•ñŠi”[•Ï”
+	std::vector<MesPacket> mesList_;						// 
 	int intSendCnt_;										// ‘—MÃŞ°À‚ÌãŒÀ
 
 	std::thread updata_;									// •Ê½Ú¯ÄŞ‰»‚µ‚½±¯ÌßÃŞ°Ä

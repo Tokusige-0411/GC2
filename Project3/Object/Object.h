@@ -1,6 +1,14 @@
 #pragma once
+#include <map>
 #include <Vector2.h>
 #include "../TileLoader.h"
+
+enum class State
+{
+	Normal,
+	Deth,
+	Max
+};
 
 enum class Dir
 {
@@ -37,6 +45,7 @@ public:
 	virtual ~Object();
 	virtual void Update(MapData& mapData);
 	virtual void Draw(void);
+	Vector2 GetPos(void);
 
 private:
 	virtual void Init(void);
@@ -44,5 +53,6 @@ private:
 protected:
 	Vector2 pos_;
 	Dir dir_;
+	int animCnt_;
 };
 

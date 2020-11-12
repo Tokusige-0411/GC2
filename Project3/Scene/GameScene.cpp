@@ -8,7 +8,7 @@
 
 bool GameScene::Init(void)
 {
-	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Gest)
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
 		lpTileLoader.TMXLoader("cash/RevData.tmx");
 	}
@@ -24,7 +24,22 @@ bool GameScene::Init(void)
 	mapData_ = lpTileLoader.GetMapData();
 	mapInfo_ = lpTileLoader.GetTmxInfo();
 
-	objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 32 }));
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
+	{
+		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 32 }));
+		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 64 }));
+
+		// ²Ý½ÀÝ½î•ñ‚Ì‘—M
+		MesPacket plPos;
+		for (auto& data : objList_)
+		{
+			unionData x = { data->GetPos().x };
+			unionData y = { data->GetPos().y };
+			plPos.emplace_back(x);
+			plPos.emplace_back(y);
+		}
+		lpNetWork.SendMes(plPos, MesType::Instance);
+	}
 
 	return true;
 }

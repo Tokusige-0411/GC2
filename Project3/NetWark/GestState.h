@@ -6,7 +6,7 @@ class GestState :
 public:
 	GestState();
 	~GestState() override;
-	NetWorkMode GetMode(void) override { return NetWorkMode::Gest; };
+	NetWorkMode GetMode(void) override { return NetWorkMode::Guest; };
 	ActiveState ConnectHost(IPDATA hostIP) override;
 
 private:

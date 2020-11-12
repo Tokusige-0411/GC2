@@ -84,7 +84,8 @@ bool TileLoader::TSXLoader(std::string fileName)
 void TileLoader::SendTmxData(void)
 {
 	// Ì§²Ù‘€ì‚Å‚·‚é•û–@
-	std::ifstream ifp("MapData.tmx");
+	//std::ifstream ifp("MapData.tmx");
+	std::ifstream ifp("TestMap.tmx");
 	std::string str;
 	MesPacket csvData;
 	unionData unionData = { 0 };

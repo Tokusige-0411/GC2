@@ -96,13 +96,13 @@ void LoginScene::SetNetWorkMode(void)
 		}
 		else if (mode == 1)
 		{
-			lpNetWork.SetNetWorkMode(NetWorkMode::Gest);
+			lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
 			updateMode_ = UpdateMode::SethostIP;
 		}
 		else if (mode == 2)
 		{
 			reConnect_ = true;
-			lpNetWork.SetNetWorkMode(NetWorkMode::Gest);
+			lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
 			updateMode_ = UpdateMode::SethostIP;
 		}
 		else if (mode == 3)
@@ -120,7 +120,7 @@ void LoginScene::SetNetWorkMode(void)
 	case NetWorkMode::Host:
 		TRACE("あなたはホストです\n");
 		break;
-	case NetWorkMode::Gest:
+	case NetWorkMode::Guest:
 		TRACE("あなたはゲストです\n");
 		break;
 	default:
@@ -151,7 +151,7 @@ void LoginScene::StartInit(void)
 	}
 
 	// ｹﾞｽﾄ側の処理
-	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Gest)
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{

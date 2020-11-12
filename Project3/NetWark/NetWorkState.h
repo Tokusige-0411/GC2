@@ -4,7 +4,7 @@ enum class NetWorkMode
 {
 	Offline,
 	Host,
-	Gest,
+	Guest,
 	Max
 };
 enum class ActiveState

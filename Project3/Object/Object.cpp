@@ -16,6 +16,11 @@ void Object::Draw(void)
 {
 }
 
+Vector2 Object::GetPos(void)
+{
+	return pos_;
+}
+
 void Object::Init(void)
 {
 }
