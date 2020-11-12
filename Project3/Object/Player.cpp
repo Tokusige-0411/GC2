@@ -117,5 +117,9 @@ void Player::UpdateMyself(void)
 
 void Player::UpdateNet(void)
 {
-
+	auto data = lpNetWork.PickMes();
+	if (data.first.type == MesType::Pos)
+	{
+		pos_ = { data.second[0].iData, data.second[1].iData };
+	}
 }

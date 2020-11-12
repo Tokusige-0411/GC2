@@ -124,9 +124,12 @@ void NetWark::Update(void)
 						}
 						if(recvHeader.type == MesType::Instance)
 						{
+
+						}
+						{
 							// 来たメッセージに対してlockとunlockをかける
 							std::lock_guard<std::mutex> mut(mtx_);
-							mesList_.emplace_back(revBox_);
+							mesList_.emplace_back(recvHeader, revBox_);
 						}
 					}
 				}
@@ -145,6 +148,14 @@ void NetWark::InitCloseNetWork(void)
 	netState_.reset();
 	std::lock_guard<std::mutex> mut(revStanbyMtx_);
 	revStanby_ = false;
+}
+
+// 来たメッセージに対してlockとunlockをかける
+MesList NetWark::PickMes(void)
+{
+	auto data = mesList_.front();
+	mesList_.erase(mesList_.begin());
+	return data;
 }
 
 bool NetWark::SendMes(MesPacket& packet, MesType type)

@@ -41,6 +41,21 @@ bool GameScene::Init(void)
 		lpNetWork.SendMes(plPos, MesType::Instance);
 	}
 
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
+	{
+		auto recvData = lpNetWork.PickMes();
+		while (recvData.first.type != MesType::Instance)
+		{
+			recvData = lpNetWork.PickMes();
+		}
+
+		while (recvData.second.size())
+		{
+			objList_.emplace_back(std::make_shared<Player>(Vector2{ recvData.second[0].iData, recvData.second[1].iData }));
+			recvData.second.erase(recvData.second.begin(), recvData.second.begin() + 1);
+		}
+	}
+
 	return true;
 }
 

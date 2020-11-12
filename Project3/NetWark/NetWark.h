@@ -49,6 +49,7 @@ union unionData
 
 using ArrayIP = std::array<IPDATA, 2>;						// IP±ÄŞÚ½Ši”[”z—ñ
 using MesPacket = std::vector<unionData>;					// Êß¹¯ÄÃŞ°À
+using MesList = std::pair<MesHeader, MesPacket>;
 
 class NetWark
 {
@@ -61,6 +62,8 @@ public:
 	void RunUpdata(void);									// Update•Ê½Ú¯ÄŞ‰»
 	void Update(void);										// XV
 	void InitCloseNetWork(void);							// Ø’fÈ¯ÄÜ°¸î•ñ‰Šú‰»
+
+	MesList PickMes(void);									// Ò¯¾°¼Ş“n‚·
 
 	bool SendMes(MesPacket& packet, MesType type);			// ÃŞ°À•”‚ ‚èÒ¯¾°¼Ş‘—M
 	bool SendMes(MesType type);								// ÃŞ°À•”‚È‚µÒ¯¾°¼Ş‘—M
@@ -96,7 +99,7 @@ private:
 	bool revStanby_;										// ½ÀİÊŞ²ó‘ÔŠÇ—Ì×¸Ş
 	ArrayIP ipData_;										// IP±ÄŞÚ½Ši”[
 	MesPacket revBox_;										// óMî•ñŠi”[•Ï”
-	std::vector<MesPacket> mesList_;						// 
+	std::vector<MesList> mesList_;										// 
 	int intSendCnt_;										// ‘—MÃŞ°À‚ÌãŒÀ
 
 	std::thread updata_;									// •Ê½Ú¯ÄŞ‰»‚µ‚½±¯ÌßÃŞ°Ä
