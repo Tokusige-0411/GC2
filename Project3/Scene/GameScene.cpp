@@ -52,8 +52,14 @@ bool GameScene::Init(void)
 		while (recvData.second.size())
 		{
 			objList_.emplace_back(std::make_shared<Player>(Vector2{ recvData.second[0].iData, recvData.second[1].iData }));
-			recvData.second.erase(recvData.second.begin(), recvData.second.begin() + 1);
+			recvData.second.erase(recvData.second.begin(), recvData.second.begin() + 2);
 		}
+	}
+
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
+	{
+		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 32 }));
+		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 64 }));
 	}
 
 	return true;

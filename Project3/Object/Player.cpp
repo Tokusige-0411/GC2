@@ -65,8 +65,14 @@ void Player::Draw(void)
 	DrawRotaGraph(pos_.x + 16, pos_.y - 6, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 4 + static_cast<int>(dir_)], true);
 }
 
+int Player::GetPlayerID(void)
+{
+	return playerID_;
+}
+
 void Player::Init(void)
 {
+	//lpImageMng.GetID("player", "image/bomberman.png", { 32, 51 }, { 5, 4 });
 	lpImageMng.GetID("player", "image/Player_Anim.png", { 32, 51 }, { 4, 4 });
 
 	playerID_ = playerCnt_;
@@ -92,6 +98,10 @@ void Player::Init(void)
 			update_ = std::bind(&Player::UpdateMyself, this);
 		}
 	}
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
+	{
+		update_ = std::bind(&Player::UpdateMyself, this);
+	}
 	playerCnt_++;
 }
 
@@ -113,6 +123,14 @@ void Player::UpdateMyself(void)
 	{
 		pos_.x -= 2;
 	}
+
+	// ç¿ïWèÓïÒÇÃëóêM
+	MesPacket plData;
+	plData.resize(3);
+	plData[0].iData = playerID_;
+	plData[1].iData = pos_.x;
+	plData[2].iData = pos_.y;
+	lpNetWork.SendMes(plData, MesType::Pos);
 }
 
 void Player::UpdateNet(void)
@@ -120,6 +138,6 @@ void Player::UpdateNet(void)
 	auto data = lpNetWork.PickMes();
 	if (data.first.type == MesType::Pos)
 	{
-		pos_ = { data.second[0].iData, data.second[1].iData };
+		pos_ = { data.second[1].iData, data.second[2].iData };
 	}
 }

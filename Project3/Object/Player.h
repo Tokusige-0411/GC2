@@ -13,6 +13,7 @@ public:
 
 	void Update(MapData& mapData)override;
 	void Draw(void)override;
+	int GetPlayerID(void);
 
 private:
 	void Init(void)override;

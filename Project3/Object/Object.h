@@ -3,10 +3,10 @@
 #include <Vector2.h>
 #include "../TileLoader.h"
 
-enum class State
+enum class AnimState
 {
-	Normal,
-	Deth,
+	Idle,
+	Walk,
 	Max
 };
 

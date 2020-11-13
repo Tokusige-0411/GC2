@@ -57,6 +57,7 @@ bool SceneMng::SysInit()
 	}
 
 	SetDrawScreen(DX_SCREEN_BACK);
+	SetAlwaysRunFlag(true);
 	return true;
 }
 
