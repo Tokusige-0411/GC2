@@ -57,7 +57,7 @@ void NetWark::Update(void)
 				if (recvHeader.length)
 				{
 					recvPacket.resize(recvPacket.size() + recvHeader.length);
-					NetWorkRecv(handle, recvPacket.data() + writePos, recvHeader.length * sizeof(int));
+					NetWorkRecv(handle, recvPacket.data() + writePos, recvHeader.length * sizeof(unionData));
 					writePos = static_cast<unsigned int>(recvPacket.size());
 				}
 				// nextがあるかどうか
@@ -66,6 +66,11 @@ void NetWark::Update(void)
 					TRACE("追加情報アリ\n");
 					continue;
 				}
+			}
+			else
+			{
+				recvHeader = { MesType::Non, 0, 0, 0 };
+				continue;
 			}
 
 			if (recvHeader.type == MesType::Game_Start)
@@ -78,7 +83,7 @@ void NetWark::Update(void)
 			if (recvHeader.type == MesType::TMX_Size)
 			{
 				std::lock_guard<std::mutex> mut(mtx_);
-				revBox_.resize(recvPacket[0].iData);
+				revBox_.resize((recvPacket[0].cData[0] * recvPacket[0].cData[1]) / 2 + 1);
 				continue;
 			}
 
@@ -86,7 +91,7 @@ void NetWark::Update(void)
 			{
 				// 送られてきたデータを格納しやすいように
 				std::lock_guard<std::mutex> mut(mtx_);
-				revBox_ = std::move(recvPacket);
+				MakeTmx(std::move(recvPacket));
 				start = std::chrono::system_clock::now();
 				continue;
 			}
@@ -97,30 +102,16 @@ void NetWark::Update(void)
 				std::lock_guard<std::mutex> mut(mtx_);
 				end = std::chrono::system_clock::now();
 				double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-				TRACE("かかった時間:%p秒\n", elapsed);
+				//TRACE("かかった時間:%p秒\n", elapsed);
 				netState_->SetActiveState(ActiveState::Play);
-				MakeTmx();
+				recvHeader = { MesType::Non, 0, 0, 0 };
 				continue;
-			}
-
-			if (recvHeader.type == MesType::Instance)
-			{
-				MesPacket mes;
-				mes.resize(recvHeader.length);
-				// 来たメッセージに対してlockとunlockをかける
-				NetWorkRecv(handle, mes.data(), recvHeader.length * sizeof(int));
-				std::lock_guard<std::mutex> mut(mtx_);
-				mesList_.emplace_back(recvHeader, mes);
 			}
 
 			if (recvHeader.type == MesType::Pos)
 			{
-				MesPacket mes;
-				mes.resize(recvHeader.length);
-				// 来たメッセージに対してlockとunlockをかける
-				NetWorkRecv(handle, mes.data(), recvHeader.length * sizeof(int));
-				std::lock_guard<std::mutex> mut(mtx_);
-				mesList_.emplace_back(recvHeader, mes);
+				playerList_[recvPacket[0].iData].get().emplace_back(recvPacket);
+				continue;
 			}
 		}
 		else
@@ -138,19 +129,9 @@ void NetWark::InitCloseNetWork(void)
 	revStanby_ = false;
 }
 
-// 来たメッセージに対してlockとunlockをかける
-MesList NetWark::PickMes(void)
+void NetWark::AddMesList(int id, MesList& list)
 {
-	std::lock_guard<std::mutex>mut(mtx_);
-	MesList mesList;
-	mesList.first = { MesType::Non, 0, 0, 0 };
-	if (mesList_.size())
-	{
-		mesList = mesList_.front();
-		mesList_.erase(mesList_.begin());
-	}
-
-	return mesList;
+	playerList_.emplace_back(list);
 }
 
 bool NetWark::SendMes(MesPacket& packet, MesType type)
@@ -293,7 +274,7 @@ bool NetWark::Init(void)
 	return true;
 }
 
-void NetWark::MakeTmx(void)
+void NetWark::MakeTmx(MesPacket tmxData)
 {
 	std::ifstream ifp("cash/TmxHeader.tmx");
 	std::ofstream ofp("cash/RevData.tmx");
@@ -318,7 +299,7 @@ void NetWark::MakeTmx(void)
 	unionData unionData = { 0 };
 	int strCnt = 0;
 
-	for (auto& data : revBox_)
+	for (auto& data : tmxData)
 	{
 		unionData = data;
 		for (int byteCnt = 0; byteCnt < 8; byteCnt++)

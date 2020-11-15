@@ -24,42 +24,18 @@ bool GameScene::Init(void)
 	mapData_ = lpTileLoader.GetMapData();
 	mapInfo_ = lpTileLoader.GetTmxInfo();
 
-	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
+	// mapÇÃcharÇÃà íuÇ…playerÇ≤›Ω¿›Ω
+	int instanceCnt = 0;
+	for (int y = 0; y < mapInfo_.height; y++)
 	{
-		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 32 }));
-		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 64 }));
-
-		// ≤›Ω¿›ΩèÓïÒÇÃëóêM
-		MesPacket plPos;
-		for (auto& data : objList_)
+		for (int x = 0; x < mapInfo_.width; x++)
 		{
-			unionData x = { data->GetPos().x };
-			unionData y = { data->GetPos().y };
-			plPos.emplace_back(x);
-			plPos.emplace_back(y);
+			if (mapData_["Char"][y * mapInfo_.width + x])
+			{
+				objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{x * mapInfo_.tileWidth, y * mapInfo_.tileHeight}));
+				instanceCnt++;
+			}
 		}
-		lpNetWork.SendMes(plPos, MesType::Instance);
-	}
-
-	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
-	{
-		auto recvData = lpNetWork.PickMes();
-		while (recvData.first.type != MesType::Instance)
-		{
-			recvData = lpNetWork.PickMes();
-		}
-
-		while (recvData.second.size())
-		{
-			objList_.emplace_back(std::make_shared<Player>(Vector2{ recvData.second[0].iData, recvData.second[1].iData }));
-			recvData.second.erase(recvData.second.begin(), recvData.second.begin() + 2);
-		}
-	}
-
-	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
-	{
-		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 32 }));
-		objList_.emplace_back(std::make_shared<Player>(Vector2{ 32, 64 }));
 	}
 
 	return true;

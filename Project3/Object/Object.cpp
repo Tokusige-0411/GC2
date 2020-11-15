@@ -2,6 +2,14 @@
 
 Object::Object()
 {
+	animCnt_ = 0;
+	dir_ = Dir::Up;
+}
+
+Object::Object(int id, Vector2 pos)
+{
+	animCnt_ = 0;
+	dir_ = Dir::Up;
 }
 
 Object::~Object()

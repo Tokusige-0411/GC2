@@ -168,7 +168,7 @@ void LoginScene::SetHostIP(void)
 	std::string ip;
 	if (reConnect_)
 	{
-		std::ifstream ifs("hostIP.txt");
+		std::ifstream ifs("ini/hostIP.txt");
 		if (ifs)
 		{
 			ifs >> ip;
@@ -204,7 +204,7 @@ void LoginScene::SetHostIP(void)
 	if (lpNetWork.GetNetHandle() != -1)
 	{
 		// Ì§²Ù‚Ö‚Ì‘‚«o‚µ
-		std::ofstream ofs("hostIP.txt");
+		std::ofstream ofs("ini/hostIP.txt");
 		ofs << ip;
 		updateMode_ = UpdateMode::StartInit;
 		TRACE("Ú‘±¬Œ÷\n");

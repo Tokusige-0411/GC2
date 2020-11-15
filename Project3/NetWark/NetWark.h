@@ -6,6 +6,8 @@
 #include<chrono>
 #include<thread>
 #include<mutex>
+#include<map>
+#include<functional>
 #include"NetWorkState.h"
 
 #define lpNetWork NetWark::GetInstance()
@@ -18,7 +20,6 @@ enum class MesType : unsigned char
 	Game_Start,		// ¹Ş°ÑŠJn
 	TMX_Size,		// TMX‚Ì»²½Şî•ñ
 	TMX_Data,		// TMX‚ÌCSVÃŞ°Àî•ñ
-	Instance,
 	Pos,			// ÌßÚ²Ô°‚ÌÀ•W
 };
 
@@ -49,7 +50,7 @@ union unionData
 
 using ArrayIP = std::array<IPDATA, 2>;						// IP±ÄŞÚ½Ši”[”z—ñ
 using MesPacket = std::vector<unionData>;					// Êß¹¯ÄÃŞ°À
-using MesList = std::pair<MesHeader, MesPacket>;
+using MesList = std::vector<MesPacket>;
 
 class NetWark
 {
@@ -63,7 +64,7 @@ public:
 	void Update(void);										// XV
 	void InitCloseNetWork(void);							// Ø’fÈ¯ÄÜ°¸î•ñ‰Šú‰»
 
-	MesList PickMes(void);									// Ò¯¾°¼Ş“n‚·
+	void AddMesList(int id, MesList& list);
 
 	bool SendMes(MesPacket& packet, MesType type);			// ÃŞ°À•”‚ ‚èÒ¯¾°¼Ş‘—M
 	bool SendMes(MesType type);								// ÃŞ°À•”‚È‚µÒ¯¾°¼Ş‘—M
@@ -93,13 +94,12 @@ private:
 	};
 
 	bool Init(void);
-	void MakeTmx(void);										// TMXÌ§²Ùì¬ŠÖ”
+	void MakeTmx(MesPacket tmxData);										// TMXÌ§²Ùì¬ŠÖ”
 
 	std::unique_ptr<NetWorkState> netState_;				// È¯ÄÜ°¸ó‘ÔŠÇ—
 	bool revStanby_;										// ½ÀİÊŞ²ó‘ÔŠÇ—Ì×¸Ş
 	ArrayIP ipData_;										// IP±ÄŞÚ½Ši”[
 	MesPacket revBox_;										// óMî•ñŠi”[•Ï”
-	std::vector<MesList> mesList_;										// 
 	int intSendCnt_;										// ‘—MÃŞ°À‚ÌãŒÀ
 
 	std::thread updata_;									// •Ê½Ú¯ÄŞ‰»‚µ‚½±¯ÌßÃŞ°Ä
@@ -109,6 +109,11 @@ private:
 										
 	std::chrono::system_clock::time_point start;			// Ú‘±ŠJnŠÔ
 	std::chrono::system_clock::time_point end;				// Ú‘±I—¹ŠÔ
+
+	//std::map<int, MesList&> playerList_;				// ‘—‚ç‚ê‚Ä‚«‚½ÌßÚ²Ô°î•ñ‚ğŠi”[‚·‚éêŠ
+	//std::map<int, std::mutex> playerMtx_;
+	//std::map<int, MesList&> playerList_;
+	std::vector<std::reference_wrapper<MesList>> playerList_;
 
 	NetWark();
 	~NetWark();

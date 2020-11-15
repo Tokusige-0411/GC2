@@ -3,17 +3,10 @@
 #include "Player.h"
 #include "../NetWark/NetWark.h"
 
-int Player::playerCnt_ = 0;
-
-Player::Player(Vector2 pos)
+Player::Player(int id, Vector2 pos)
 {
 	pos_ = pos;
-	dir_ = Dir::Right;
-	dirPermit_[Dir::Up] = true;
-	dirPermit_[Dir::Right] = true;
-	dirPermit_[Dir::Down] = true;
-	dirPermit_[Dir::Left] = true;
-	animCnt_ = 0;
+	playerID_ = id;
 	Init();
 }
 
@@ -72,10 +65,8 @@ int Player::GetPlayerID(void)
 
 void Player::Init(void)
 {
-	//lpImageMng.GetID("player", "image/bomberman.png", { 32, 51 }, { 5, 4 });
 	lpImageMng.GetID("player", "image/Player_Anim.png", { 32, 51 }, { 4, 4 });
 
-	playerID_ = playerCnt_;
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
 		if (!(playerID_ % 2))
@@ -102,7 +93,15 @@ void Player::Init(void)
 	{
 		update_ = std::bind(&Player::UpdateMyself, this);
 	}
-	playerCnt_++;
+
+	dir_ = Dir::Right;
+	dirPermit_[Dir::Up] = true;
+	dirPermit_[Dir::Right] = true;
+	dirPermit_[Dir::Down] = true;
+	dirPermit_[Dir::Left] = true;
+	animCnt_ = 0;
+
+	lpNetWork.AddMesList(playerID_, mesList_);
 }
 
 void Player::UpdateMyself(void)
@@ -126,18 +125,21 @@ void Player::UpdateMyself(void)
 
 	// ç¿ïWèÓïÒÇÃëóêM
 	MesPacket plData;
-	plData.resize(3);
+	plData.resize(4);
 	plData[0].iData = playerID_;
 	plData[1].iData = pos_.x;
 	plData[2].iData = pos_.y;
+	plData[3].iData = static_cast<int>(dir_);
 	lpNetWork.SendMes(plData, MesType::Pos);
 }
 
 void Player::UpdateNet(void)
 {
-	auto data = lpNetWork.PickMes();
-	if (data.first.type == MesType::Pos)
+	std::lock_guard<std::mutex> mut(mtx_);
+	if (mesList_.size())
 	{
-		pos_ = { data.second[1].iData, data.second[2].iData };
+		auto data = mesList_.front();
+		pos_ = Vector2{ data[1].iData, data[2].iData };
+		mesList_.erase(mesList_.begin());
 	}
 }

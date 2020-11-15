@@ -1,7 +1,9 @@
 #pragma once
 #include <map>
+#include <mutex>
 #include <Vector2.h>
 #include "../TileLoader.h"
+#include "../NetWark/NetWark.h"
 
 enum class AnimState
 {
@@ -42,6 +44,7 @@ class Object
 {
 public:
 	Object();
+	Object(int id, Vector2 pos);
 	virtual ~Object();
 	virtual void Update(MapData& mapData);
 	virtual void Draw(void);
@@ -54,5 +57,8 @@ protected:
 	Vector2 pos_;
 	Dir dir_;
 	int animCnt_;
+
+	std::vector<MesPacket> mesList_;
+	std::mutex mtx_;
 };
 
