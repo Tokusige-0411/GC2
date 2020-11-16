@@ -40,7 +40,14 @@ void NetWark::Update(void)
 		{
 			continue;
 		}
+		else
+		{
+			break;
+		}
+	}
 
+	while (!ProcessMessage() && GetLostNetWork() == -1)
+	{
 		if (netState_->Update())
 		{
 			auto handle = netState_->GetNetHandle();
@@ -83,7 +90,7 @@ void NetWark::Update(void)
 			if (recvHeader.type == MesType::TMX_Size)
 			{
 				std::lock_guard<std::mutex> mut(mtx_);
-				revBox_.resize((recvPacket[0].cData[0] * recvPacket[0].cData[1]) / 2 + 1);
+				revBox_.resize((recvPacket[0].cData[0] * recvPacket[0].cData[1]) / BIT_NUM + 1);
 				continue;
 			}
 
@@ -149,7 +156,7 @@ bool NetWark::SendMes(MesPacket& packet, MesType type)
 	{
 		unsigned int sendSize = static_cast<unsigned int>((intSendCnt_ < packet.size() ? intSendCnt_ : packet.size()));
 
-		packet[1].iData = sendSize - 2;
+		packet[1].iData = sendSize - BIT_NUM;
 
 		if (sendSize == packet.size())
 		{
@@ -164,9 +171,9 @@ bool NetWark::SendMes(MesPacket& packet, MesType type)
 		NetWorkSend(GetNetHandle(), packet.data(), sendSize * sizeof(packet[0]));
 
 		header.mes.sendID++;
-		packet.erase(packet.begin() + 2, packet.begin() + sendSize);
+		packet.erase(packet.begin() + BIT_NUM, packet.begin() + sendSize);
 	} 
-	while (packet.size() > 2);
+	while (packet.size() > BIT_NUM);
 
 	return true;
 }
@@ -274,6 +281,22 @@ bool NetWark::Init(void)
 	return true;
 }
 
+void NetWark::GameStart(void)
+{
+}
+
+void NetWark::GameStanby(void)
+{
+}
+
+void NetWark::TmxSize(void)
+{
+}
+
+void NetWark::TmxData(void)
+{
+}
+
 void NetWark::MakeTmx(MesPacket tmxData)
 {
 	std::ifstream ifp("cash/TmxHeader.tmx");
@@ -309,7 +332,7 @@ void NetWark::MakeTmx(MesPacket tmxData)
 				break;
 			}
 			std::ostringstream stream;
-			stream << ((unionData.cData[byteCnt / 2] >> (4 * (byteCnt % 2))) & 0x0f);
+			stream << ((unionData.cData[byteCnt / BIT_NUM] >> (INT_BYTE_CNT * (byteCnt % BIT_NUM))) & 0x0f);
 			ofp << stream.str();
 			strCnt++;
 			if (strCnt % 21 != 0)

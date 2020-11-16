@@ -69,7 +69,7 @@ void Player::Init(void)
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
-		if (!(playerID_ % 2))
+		if (!(playerID_ % BIT_NUM))
 		{
 			update_ = std::bind(&Player::UpdateMyself, this);
 		}
@@ -78,9 +78,10 @@ void Player::Init(void)
 			update_ = std::bind(&Player::UpdateNet, this);
 		}
 	}
+
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
-		if (!(playerID_ % 2))
+		if (!(playerID_ % BIT_NUM))
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
 		}
@@ -89,6 +90,7 @@ void Player::Init(void)
 			update_ = std::bind(&Player::UpdateMyself, this);
 		}
 	}
+
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
 	{
 		update_ = std::bind(&Player::UpdateMyself, this);
@@ -100,6 +102,7 @@ void Player::Init(void)
 	dirPermit_[Dir::Down] = true;
 	dirPermit_[Dir::Left] = true;
 	animCnt_ = 0;
+	speed_ = 4;
 
 	lpNetWork.AddMesList(playerID_, mesList_);
 }
@@ -108,19 +111,19 @@ void Player::UpdateMyself(void)
 {
 	if (dir_ == Dir::Right)
 	{
-		pos_.x += 2;
+		pos_.x += speed_;
 	}
 	if (dir_ == Dir::Down)
 	{
-		pos_.y += 2;
+		pos_.y += speed_;
 	}
 	if (dir_ == Dir::Up)
 	{
-		pos_.y -= 2;
+		pos_.y -= speed_;
 	}
 	if (dir_ == Dir::Left)
 	{
-		pos_.x -= 2;
+		pos_.x -= speed_;
 	}
 
 	// ç¿ïWèÓïÒÇÃëóêM

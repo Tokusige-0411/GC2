@@ -1,6 +1,7 @@
 #include<Dxlib.h>
 #include<algorithm>
 #include"../_debug/_DebugDispOut.h"
+#include"../_debug/_DebugConOut.h"
 #include"SceneMng.h"
 #include"LoginScene.h"
 #include"GameScene.h"
@@ -8,6 +9,7 @@
 void SceneMng::Run()
 {
 	activeScene_ = std::make_unique<LoginScene>();
+	_dbgSetDrawPosFps(FPS_SIDE::LEFT, FPS_VER::TOP);
 	while (!ProcessMessage())
 	{
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
@@ -19,9 +21,12 @@ void SceneMng::Run()
 void SceneMng::Draw()
 {
 	SetDrawScreen(DX_SCREEN_BACK);
+	_dbgStartDraw();
 	ClsDrawScreen();
 
 	activeScene_->BaseScene::Draw();
+	_dbgDrawFPS();
+	_dbgAddDraw();
 
 	ScreenFlip();
 }

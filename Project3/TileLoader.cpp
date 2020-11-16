@@ -147,7 +147,11 @@ void TileLoader::SendTmxData(void)
 	// Tmx_Size‚ÌÃŞ°À‘—M
 	MesPacket sendData;
 	sendData.resize(1);
-	sendData[0].iData = csvData.size();
+	//sendData[0].iData = csvData.size();
+	sendData[0].cData[0] = 21;
+	sendData[0].cData[1] = 17;
+	sendData[0].cData[2] = 4;
+	sendData[0].cData[3] = 0;
 	lpNetWork.SendMes(sendData, MesType::TMX_Size);
 
 	// Tmx_Data‚ÌÍ¯ÀŞ°•”

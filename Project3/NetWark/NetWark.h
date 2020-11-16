@@ -10,6 +10,8 @@
 #include<functional>
 #include"NetWorkState.h"
 
+#define BIT_NUM 2
+#define INT_BYTE_CNT 4
 #define lpNetWork NetWark::GetInstance()
 
 // Ò¯¾°¼Şí•Ê
@@ -94,26 +96,31 @@ private:
 	};
 
 	bool Init(void);
-	void MakeTmx(MesPacket tmxData);										// TMXÌ§²Ùì¬ŠÖ”
 
-	std::unique_ptr<NetWorkState> netState_;				// È¯ÄÜ°¸ó‘ÔŠÇ—
-	bool revStanby_;										// ½ÀİÊŞ²ó‘ÔŠÇ—Ì×¸Ş
-	ArrayIP ipData_;										// IP±ÄŞÚ½Ši”[
-	MesPacket revBox_;										// óMî•ñŠi”[•Ï”
-	int intSendCnt_;										// ‘—MÃŞ°À‚ÌãŒÀ
+	void GameStart(void);
+	void GameStanby(void);
+	void TmxSize(void);
+	void TmxData(void);
 
-	std::thread updata_;									// •Ê½Ú¯ÄŞ‰»‚µ‚½±¯ÌßÃŞ°Ä
+	void MakeTmx(MesPacket tmxData);								// TMXÌ§²Ùì¬ŠÖ”
 
-	std::mutex revStanbyMtx_;								// revStanby‚ÉÛ¯¸‚ğ‚©‚¯‚é
-	std::mutex mtx_;										// •Ï”‚ÉÛ¯¸‚ğ‚©‚¯‚é
+	std::unique_ptr<NetWorkState> netState_;						// È¯ÄÜ°¸ó‘ÔŠÇ—
+	bool revStanby_;												// ½ÀİÊŞ²ó‘ÔŠÇ—Ì×¸Ş
+	ArrayIP ipData_;												// IP±ÄŞÚ½Ši”[
+	MesPacket revBox_;												// óMî•ñŠi”[•Ï”
+	int intSendCnt_;												// ‘—MÃŞ°À‚ÌãŒÀ
+
+	std::thread updata_;											// •Ê½Ú¯ÄŞ‰»‚µ‚½±¯ÌßÃŞ°Ä
+
+	std::mutex revStanbyMtx_;										// revStanby‚ÉÛ¯¸‚ğ‚©‚¯‚é
+	std::mutex mtx_;												// •Ï”‚ÉÛ¯¸‚ğ‚©‚¯‚é
 										
-	std::chrono::system_clock::time_point start;			// Ú‘±ŠJnŠÔ
-	std::chrono::system_clock::time_point end;				// Ú‘±I—¹ŠÔ
+	std::chrono::system_clock::time_point start;					// Ú‘±ŠJnŠÔ
+	std::chrono::system_clock::time_point end;						// Ú‘±I—¹ŠÔ
 
-	//std::map<int, MesList&> playerList_;				// ‘—‚ç‚ê‚Ä‚«‚½ÌßÚ²Ô°î•ñ‚ğŠi”[‚·‚éêŠ
-	//std::map<int, std::mutex> playerMtx_;
-	//std::map<int, MesList&> playerList_;
-	std::vector<std::reference_wrapper<MesList>> playerList_;
+	std::vector<std::reference_wrapper<MesList>> playerList_;		// ‘—‚ç‚ê‚Ä‚«‚½ÌßÚ²Ô°î•ñ‚ğŠi”[‚·‚éêŠ
+
+	std::map<MesType, std::function<void(void)>> netFunc_;
 
 	NetWark();
 	~NetWark();

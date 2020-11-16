@@ -5,12 +5,13 @@
 #include <assert.h>
 // ﾃﾞﾊﾞｯｸﾞﾒｯｾｰｼﾞ用定義
 
-#define TRACE(fmt, ...) printf(fmt, __VA_ARGS__);
+#define TRACE(fmt, ...) printf(fmt, __VA_ARGS__)
 
-#define AST(){\
+// ﾃﾞﾊﾞｯｸﾞﾒｯｾｰｼﾞ用定義
+#define AST() {\
 	CHAR ast_mes[256];\
-	wsprintf(ast_mes,"%s %d行目\0",__FILE__,__LINE__);\
-	MessageBox(0,ast_mes,"ｱｻｰﾄ表示", MB_OK);\
+	wsprintf(ast_mes, "%s %d行目\0", __FILE__, __LINE__);\
+	MessageBox(0, ast_mes, "ｱｻｰﾄ表示", MB_OK);\
 	}
 
 class _DebugConOut
