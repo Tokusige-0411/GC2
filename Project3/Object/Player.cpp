@@ -104,7 +104,7 @@ void Player::Init(void)
 	animCnt_ = 0;
 	speed_ = 4;
 
-	lpNetWork.AddMesList(playerID_, mesList_);
+	lpNetWork.AddMesList(playerID_, mesList_, mtx_);
 }
 
 void Player::UpdateMyself(void)
@@ -143,6 +143,7 @@ void Player::UpdateNet(void)
 	{
 		auto data = mesList_.front();
 		pos_ = Vector2{ data[1].iData, data[2].iData };
+		dir_ = static_cast<Dir>(data[3].iData);
 		mesList_.erase(mesList_.begin());
 	}
 }

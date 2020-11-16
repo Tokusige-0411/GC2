@@ -1,6 +1,7 @@
 #pragma once
 #include<DxLib.h>
 #include<memory>
+#include <utility>
 #include<array>
 #include<vector>
 #include<chrono>
@@ -66,7 +67,7 @@ public:
 	void Update(void);										// 更新
 	void InitCloseNetWork(void);							// 切断時ﾈｯﾄﾜｰｸ情報初期化
 
-	void AddMesList(int id, MesList& list);
+	void AddMesList(int id, MesList& list, std::mutex& mutex);
 
 	bool SendMes(MesPacket& packet, MesType type);			// ﾃﾞｰﾀ部ありﾒｯｾｰｼﾞ送信
 	bool SendMes(MesType type);								// ﾃﾞｰﾀ部なしﾒｯｾｰｼﾞ送信
@@ -95,12 +96,7 @@ private:
 		}
 	};
 
-	bool Init(void);
-
-	void GameStart(void);
-	void GameStanby(void);
-	void TmxSize(void);
-	void TmxData(void);
+	bool Init(void);												// 初期化
 
 	void MakeTmx(MesPacket tmxData);								// TMXﾌｧｲﾙ作成関数
 
@@ -118,9 +114,7 @@ private:
 	std::chrono::system_clock::time_point start;					// 接続開始時間
 	std::chrono::system_clock::time_point end;						// 接続終了時間
 
-	std::vector<std::reference_wrapper<MesList>> playerList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
-
-	std::map<MesType, std::function<void(void)>> netFunc_;
+	std::vector<std::pair<MesList&, std::mutex&>> playerList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
 
 	NetWark();
 	~NetWark();
