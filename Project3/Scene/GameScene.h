@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <chrono>
 #include "BaseScene.h"
 #include "../input/Controller.h"
 #include "../TileLoader.h"
@@ -19,8 +20,14 @@ public:
     ~GameScene();
 
 private:
+    void DrawOwnScreen(void) override;
+
     MapData mapData_;
     TMXInfo mapInfo_;
+
+    std::chrono::system_clock::time_point start_;					// ïbä‘ä«óùäJén
+    std::chrono::system_clock::time_point end_;						// ïbä‘ä«óùèIóπ
+    int timeCnt_;                                                   // âΩïbåoÇ¡ÇΩÇ©
 
     std::vector<std::shared_ptr<Object>> objList_;
 };

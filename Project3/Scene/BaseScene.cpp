@@ -21,3 +21,8 @@ void BaseScene::Draw(void)
 {
 	DrawGraph(0, 0, screenID_, true);
 }
+
+void BaseScene::DrawOwnScreen(void)
+{
+	Draw();
+}

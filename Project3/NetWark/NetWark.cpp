@@ -30,13 +30,16 @@ void NetWark::RunUpdata(void)
 
 void NetWark::Update(void)
 {
+	int handle = 1;
 	while (!ProcessMessage())
 	{
 		if (!netState_)
 		{
 			continue;
 		}
-		if (netState_->GetNetHandle())
+		netState_->Update();
+		handle = netState_->GetNetHandle();
+		if (handle > 0)
 		{
 			break;
 		}
@@ -44,6 +47,7 @@ void NetWark::Update(void)
 
 	MesHeader recvHeader = { MesType::Non, 0, 0, 0 };
 	MesPacket recvPacket;
+	recvPacket.reserve(200);
 	unsigned int writePos;
 	std::map<MesType, std::function<void(void)>> netFunc;
 
@@ -55,7 +59,8 @@ void NetWark::Update(void)
 	netFunc.emplace(MesType::TMX_Data, [&]() {
 		// ëóÇÁÇÍÇƒÇ´ÇΩÉfÅ[É^Çäiî[ÇµÇ‚Ç∑Ç¢ÇÊÇ§Ç…
 		std::lock_guard<std::mutex> mut(mtx_);
-		MakeTmx(std::move(recvPacket));
+		revBox_ = std::move(recvPacket);
+		MakeTmx(revBox_);
 	});
 
 	netFunc.emplace(MesType::Stanby, [&]() {
@@ -80,12 +85,11 @@ void NetWark::Update(void)
 	{
 		if (netState_->Update())
 		{
-			int handle = netState_->GetNetHandle();
 			if (GetNetWorkDataLength(handle) >= sizeof(MesHeader))
 			{
 				if (!recvHeader.next)
 				{
-					recvPacket.clear();
+					//recvPacket.clear();
 					writePos = 0;
 				}
 
@@ -93,7 +97,8 @@ void NetWark::Update(void)
 
 				if (recvHeader.length)
 				{
-					recvPacket.resize(recvPacket.size() + recvHeader.length);
+					//recvPacket.resize(recvPacket.size() + recvHeader.length);
+					recvPacket.resize(writePos + recvHeader.length);
 					NetWorkRecv(handle, recvPacket.data() + writePos, recvHeader.length * sizeof(unionData));
 					writePos = static_cast<unsigned int>(recvPacket.size());
 				}

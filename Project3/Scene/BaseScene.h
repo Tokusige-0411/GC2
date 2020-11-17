@@ -13,6 +13,7 @@ public:
 	virtual bool Init();
 	virtual unique_Base Update(unique_Base own) = 0;
 	virtual void Draw(void);
+	virtual void DrawOwnScreen(void);
 
 protected:
 	int screenID_;

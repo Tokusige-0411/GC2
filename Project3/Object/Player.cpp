@@ -3,6 +3,10 @@
 #include "Player.h"
 #include "../NetWark/NetWark.h"
 
+#include "../_debug/_DebugConOut.h"
+
+int Player::fallCnt = 0;
+
 Player::Player(int id, Vector2 pos)
 {
 	pos_ = pos;
@@ -104,6 +108,9 @@ void Player::Init(void)
 	animCnt_ = 0;
 	speed_ = 4;
 
+	plData_.resize(4);
+	plData_[0].iData = playerID_;
+
 	lpNetWork.AddMesList(playerID_, mesList_, mtx_);
 }
 
@@ -127,13 +134,10 @@ void Player::UpdateMyself(void)
 	}
 
 	// 座標情報の送信
-	MesPacket plData;
-	plData.resize(4);
-	plData[0].iData = playerID_;
-	plData[1].iData = pos_.x;
-	plData[2].iData = pos_.y;
-	plData[3].iData = static_cast<int>(dir_);
-	lpNetWork.SendMes(plData, MesType::Pos);
+	plData_[1].iData = pos_.x;
+	plData_[2].iData = pos_.y;
+	plData_[3].iData = static_cast<int>(dir_);
+	lpNetWork.SendMes(plData_, MesType::Pos);
 }
 
 void Player::UpdateNet(void)
@@ -141,9 +145,17 @@ void Player::UpdateNet(void)
 	std::lock_guard<std::mutex> mut(mtx_);
 	if (mesList_.size())
 	{
-		auto data = mesList_.front();
-		pos_ = Vector2{ data[1].iData, data[2].iData };
-		dir_ = static_cast<Dir>(data[3].iData);
-		mesList_.erase(mesList_.begin());
+		while (mesList_.size())
+		{
+			auto data = mesList_.front();
+			pos_ = Vector2{ data[1].iData, data[2].iData };
+			dir_ = static_cast<Dir>(data[3].iData);
+			mesList_.erase(mesList_.begin());
+		}
+	}
+	else
+	{
+		//TRACE("データなし:%d", playerID_);
+		fallCnt++;
 	}
 }

@@ -42,6 +42,7 @@ bool LoginScene::Init()
 unique_Base LoginScene::Update(unique_Base own)
 {
 	(func_[updateMode_])();
+	DrawOwnScreen();
 	if (gameStart_)
 	{
 		own = std::make_unique<CrossOver>(std::make_unique<GameScene>(), std::move(own));
@@ -52,6 +53,12 @@ unique_Base LoginScene::Update(unique_Base own)
 void LoginScene::Draw(void)
 {
 
+}
+
+void LoginScene::DrawOwnScreen(void)
+{
+	SetDrawScreen(screenID_);
+	Draw();
 }
 
 void LoginScene::SetNetWorkMode(void)

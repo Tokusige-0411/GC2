@@ -48,8 +48,17 @@ unique_Base GameScene::Update(unique_Base own)
 		data->Update(mapData_);
 	}
 
-	SetDrawScreen(screenID_);
-	Draw();
+	DrawOwnScreen();
+
+	end_ = std::chrono::system_clock::now();
+	if (std::chrono::duration_cast<std::chrono::seconds>(end_ - start_).count() >= 1)
+	{
+		timeCnt_++;
+		start_ = end_;
+	}
+
+	DrawBox(190, 0, 220, 15, 0x000000, true);
+	DrawFormatString(200, 0, 0xffffff, "%d", Player::fallCnt / timeCnt_);
 
 	return std::move(own);
 }
@@ -86,4 +95,10 @@ GameScene::GameScene()
 
 GameScene::~GameScene()
 {
+}
+
+void GameScene::DrawOwnScreen(void)
+{
+	SetDrawScreen(screenID_);
+	Draw();
 }

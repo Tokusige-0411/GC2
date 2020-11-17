@@ -27,6 +27,8 @@ public:
 	void Draw(void) override;
 
 private:
+	void DrawOwnScreen(void) override;
+
 	void SetNetWorkMode(void);								// È¯ÄÜ°¸Ó°ÄŞİ’è
 	void StartInit(void);									// ¹Ş°Ñ‚É•K—v‚Èî•ñ‚Ì‰Šú‰»
 	void SetHostIP(void);									// Ú‘±æ‚ÌIP±ÄŞÚ½‚ğ“ü—Í‚·‚é							

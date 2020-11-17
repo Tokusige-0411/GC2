@@ -11,6 +11,8 @@ public:
 	Player(int id, Vector2 pos);
 	~Player();
 
+	static int fallCnt;
+
 	void Update(MapData& mapData)override;
 	void Draw(void)override;
 	int GetPlayerID(void);
@@ -25,6 +27,7 @@ private:
 	std::map<Dir, bool> dirPermit_;						// Še•ûŒüs‚¯‚é‚©
 
 	std::function<void(void)> update_;					// ¹Ş½Ä‚ÆÎ½Ä‚Å±¯ÌßÃŞ°Ä‚ğ•ª‚¯‚é
+	MesPacket plData_;
 	int playerID_;										// ÌßÚ²Ô°¯•Ê”Ô†
 };
 
