@@ -18,7 +18,7 @@ Player::~Player()
 {
 }
 
-void Player::Update(MapData& mapData)
+bool Player::Update(MapData& mapData)
 {
 	// かべﾁｪｯｸ
 	auto CheckWall = [&](Vector2 checkPos) {
@@ -33,7 +33,7 @@ void Player::Update(MapData& mapData)
 	auto chipPos = (pos_ + 16) / 32;
 	if ((pos_.x % 32 == 0) && (pos_.y % 32 == 0))
 	{
-		dirPermit_[Dir::Up] =  CheckWall({ chipPos.x, chipPos.y - 1 });
+		dirPermit_[Dir::Up] = CheckWall({ chipPos.x, chipPos.y - 1 });
 		dirPermit_[Dir::Down] = CheckWall({ chipPos.x, chipPos.y + 1 });
 		dirPermit_[Dir::Right] = CheckWall({ chipPos.x + 1, chipPos.y });
 		dirPermit_[Dir::Left] = CheckWall({ chipPos.x - 1, chipPos.y });
@@ -51,15 +51,13 @@ void Player::Update(MapData& mapData)
 			dir_ = Dir::Up;
 		}
 	} while (!dirPermit_[dir_]);
-
-	update_();
-
-	animCnt_++;
+	return update_();
 }
 
 void Player::Draw(void)
 {
 	DrawRotaGraph(pos_.x + 16, pos_.y - 6, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 4 + static_cast<int>(dir_)], true);
+	animCnt_++;
 }
 
 int Player::GetPlayerID(void)
@@ -108,13 +106,10 @@ void Player::Init(void)
 	animCnt_ = 0;
 	speed_ = 4;
 
-	plData_.resize(4);
-	plData_[0].iData = playerID_;
-
 	lpNetWork.AddMesList(playerID_, mesList_, mtx_);
 }
 
-void Player::UpdateMyself(void)
+bool Player::UpdateMyself(void)
 {
 	if (dir_ == Dir::Right)
 	{
@@ -134,28 +129,31 @@ void Player::UpdateMyself(void)
 	}
 
 	// 座標情報の送信
-	plData_[1].iData = pos_.x;
-	plData_[2].iData = pos_.y;
-	plData_[3].iData = static_cast<int>(dir_);
-	lpNetWork.SendMes(plData_, MesType::Pos);
+	MesPacket plData;
+	plData.resize(4);
+	plData[0].iData = playerID_;
+	plData[1].iData = pos_.x;
+	plData[2].iData = pos_.y;
+	plData[3].iData = static_cast<int>(dir_);
+	lpNetWork.SendMes(plData, MesType::Pos);
+	return true;
 }
 
-void Player::UpdateNet(void)
+bool Player::UpdateNet(void)
 {
 	std::lock_guard<std::mutex> mut(mtx_);
-	if (mesList_.size())
+	if (Object::IsPickUp())
 	{
-		while (mesList_.size())
+		while (Object::IsPickUp())
 		{
-			auto data = mesList_.front();
+			auto data = Object::PickUp();
 			pos_ = Vector2{ data[1].iData, data[2].iData };
 			dir_ = static_cast<Dir>(data[3].iData);
-			mesList_.erase(mesList_.begin());
 		}
+		return true;
 	}
 	else
 	{
-		//TRACE("データなし:%d", playerID_);
-		fallCnt++;
+		return false;
 	}
 }

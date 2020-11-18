@@ -32,7 +32,7 @@ bool GameScene::Init(void)
 		{
 			if (mapData_["Char"][y * mapInfo_.width + x])
 			{
-				objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{x * mapInfo_.tileWidth, y * mapInfo_.tileHeight}));
+				objList_.emplace_back(std::make_unique<Player>(instanceCnt, Vector2{x * mapInfo_.tileWidth, y * mapInfo_.tileHeight}));
 				instanceCnt++;
 			}
 		}
@@ -43,9 +43,16 @@ bool GameScene::Init(void)
 
 unique_Base GameScene::Update(unique_Base own)
 {
+	std::sort(objList_.begin(), objList_.end(), [](uniqueObj& a, uniqueObj& b) {
+		return a->IsPickUp() > b->IsPickUp();
+		});
+
 	for (auto& data : objList_)
 	{
-		data->Update(mapData_);
+		if (!data->Update(mapData_))
+		{
+			Player::fallCnt++;
+		}
 	}
 
 	DrawOwnScreen();

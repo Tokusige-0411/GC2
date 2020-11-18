@@ -8,6 +8,8 @@
 
 class Object;
 
+using uniqueObj = std::unique_ptr<Object>;
+
 class GameScene :
     public BaseScene
 {
@@ -29,6 +31,6 @@ private:
     std::chrono::system_clock::time_point end_;						// ïbä‘ä«óùèIóπ
     int timeCnt_;                                                   // âΩïbåoÇ¡ÇΩÇ©
 
-    std::vector<std::shared_ptr<Object>> objList_;
+    std::vector<uniqueObj> objList_;
 };
 

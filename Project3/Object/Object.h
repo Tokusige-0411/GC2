@@ -46,9 +46,11 @@ public:
 	Object();
 	Object(int id, Vector2 pos);
 	virtual ~Object();
-	virtual void Update(MapData& mapData);
+	virtual bool Update(MapData& mapData);
 	virtual void Draw(void);
 	Vector2 GetPos(void);
+	bool IsPickUp(void);
+	MesPacket PickUp(void);
 
 private:
 	virtual void Init(void);

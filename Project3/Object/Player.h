@@ -13,20 +13,20 @@ public:
 
 	static int fallCnt;
 
-	void Update(MapData& mapData)override;
+	bool Update(MapData& mapData)override;
 	void Draw(void)override;
 	int GetPlayerID(void);
 
 private:
 	void Init(void)override;
-	void UpdateMyself(void);
-	void UpdateNet(void);
+	bool UpdateMyself(void);
+	bool UpdateNet(void);
 
 	int speed_;
 	std::unique_ptr<Controller> input_;					// ²İ¯ÌßÄî•ñ
 	std::map<Dir, bool> dirPermit_;						// Še•ûŒüs‚¯‚é‚©
 
-	std::function<void(void)> update_;					// ¹Ş½Ä‚ÆÎ½Ä‚Å±¯ÌßÃŞ°Ä‚ğ•ª‚¯‚é
+	std::function<bool(void)> update_;					// ¹Ş½Ä‚ÆÎ½Ä‚Å±¯ÌßÃŞ°Ä‚ğ•ª‚¯‚é
 	MesPacket plData_;
 	int playerID_;										// ÌßÚ²Ô°¯•Ê”Ô†
 };

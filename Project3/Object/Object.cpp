@@ -16,8 +16,9 @@ Object::~Object()
 {
 }
 
-void Object::Update(MapData& mapData)
+bool Object::Update(MapData& mapData)
 {
+	return true;
 }
 
 void Object::Draw(void)
@@ -27,6 +28,18 @@ void Object::Draw(void)
 Vector2 Object::GetPos(void)
 {
 	return pos_;
+}
+
+bool Object::IsPickUp(void)
+{
+	return mesList_.size();
+}
+
+MesPacket Object::PickUp(void)
+{
+	auto data = mesList_.front();
+	mesList_.erase(mesList_.begin());
+	return data;
 }
 
 void Object::Init(void)
