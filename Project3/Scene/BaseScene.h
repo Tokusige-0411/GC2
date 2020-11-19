@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "../TileLoader.h"
 
 class BaseScene;
 
@@ -17,5 +18,6 @@ public:
 
 protected:
 	int screenID_;
+	std::shared_ptr<TileLoader> mapObj_;
 };
 

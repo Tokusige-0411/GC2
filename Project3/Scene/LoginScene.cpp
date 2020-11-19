@@ -36,6 +36,9 @@ bool LoginScene::Init()
 {
 	reConnect_ = false;
 	gameStart_ = false;
+
+	mapObj_ = std::make_shared<TileLoader>();
+
 	return true;
 }
 
@@ -146,7 +149,7 @@ void LoginScene::StartInit(void)
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
 			// TMXﾃﾞｰﾀのｻｲｽﾞ送信
-			lpTileLoader.SendTmxData();
+			mapObj_->SendTmxData();
 			lpNetWork.SendStanby();
 			TRACE("初期化情報を送信、開始合図待ち\n");
 		}

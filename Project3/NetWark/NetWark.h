@@ -24,6 +24,8 @@ enum class MesType : unsigned char
 	TMX_Size,		// TMX‚Ì»²½Şî•ñ
 	TMX_Data,		// TMX‚ÌCSVÃŞ°Àî•ñ
 	Pos,			// ÌßÚ²Ô°‚ÌÀ•W
+	Set_Bomb,
+	Max,
 };
 
 // ±×²ÒİÄ‚É’ˆÓ
@@ -53,7 +55,8 @@ union unionData
 
 using ArrayIP = std::array<IPDATA, 2>;						// IP±ÄŞÚ½Ši”[”z—ñ
 using MesPacket = std::vector<unionData>;					// Êß¹¯ÄÃŞ°À
-using MesList = std::vector<MesPacket>;
+using MesPair = std::pair<MesType, MesPacket>;
+using MesPacketList = std::vector<MesPair>;
 
 class NetWark
 {
@@ -67,7 +70,7 @@ public:
 	void Update(void);										// XV
 	void InitCloseNetWork(void);							// Ø’fÈ¯ÄÜ°¸î•ñ‰Šú‰»
 
-	void AddMesList(int id, MesList& list, std::mutex& mutex);
+	void AddMesList(int id, MesPacketList& list, std::mutex& mutex);
 
 	bool SendMes(MesPacket& packet, MesType type);			// ÃŞ°À•”‚ ‚èÒ¯¾°¼Ş‘—M
 	bool SendMes(MesType type);								// ÃŞ°À•”‚È‚µÒ¯¾°¼Ş‘—M
@@ -114,7 +117,7 @@ private:
 	std::chrono::system_clock::time_point start;					// Ú‘±ŠJnŠÔ
 	std::chrono::system_clock::time_point end;						// Ú‘±I—¹ŠÔ
 
-	std::vector<std::pair<MesList&, std::mutex&>> playerList_;		// ‘—‚ç‚ê‚Ä‚«‚½ÌßÚ²Ô°î•ñ‚ğŠi”[‚·‚éêŠ
+	std::vector<std::pair<MesPacketList&, std::mutex&>> playerList_;		// ‘—‚ç‚ê‚Ä‚«‚½ÌßÚ²Ô°î•ñ‚ğŠi”[‚·‚éêŠ
 
 	NetWark();
 	~NetWark();

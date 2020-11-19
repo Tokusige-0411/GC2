@@ -8,8 +8,6 @@
 
 #include "_debug/_DebugConOut.h"
 
-std::unique_ptr<TileLoader, TileLoader::TileLoderDeleter> TileLoader::s_Instance(new TileLoader());
-
 bool TileLoader::TMXLoader(std::string fileName)
 {
 	rapidxml::file<> file(fileName.c_str());

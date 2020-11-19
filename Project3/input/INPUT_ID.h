@@ -2,12 +2,11 @@
 
 enum class INPUT_ID
 {
-	UP, 
+	UP,
 	DOWN,
 	RIGHT,
 	LEFT,
-	R_ROTA,
-	L_ROTA,
+	SET_BOMB,
 	MAX
 };
 

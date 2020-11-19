@@ -5,8 +5,6 @@
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
 
-#define lpTileLoader TileLoader::GetInstance()
-
 struct TMXInfo
 {
 	int width{};					// ‰¡Ï½”
@@ -30,10 +28,8 @@ using MapData = std::map<std::string, std::vector<int>>;
 class TileLoader
 {
 public:
-	static TileLoader& GetInstance()
-	{
-		return *s_Instance;
-	}
+	TileLoader();
+	~TileLoader();
 
 	bool TMXLoader(std::string fileName);		// TMXÌ§²Ù‚ÌÛ°ÀŞ°
 	bool TSXLoader(std::string fileName);		// TSXÌ§²Ù‚ÌÛ°ÀŞ°
@@ -62,8 +58,5 @@ private:
 	std::map<std::string, bool> version_;	// Ï¯ÌßÊŞ°¼Ş®İŠÇ—
 
 	bool Init(void);						// ‰Šú‰»
-	TileLoader();
-	~TileLoader();
-	static std::unique_ptr<TileLoader, TileLoderDeleter> s_Instance;
 };
 

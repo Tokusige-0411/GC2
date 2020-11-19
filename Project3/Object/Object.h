@@ -4,6 +4,7 @@
 #include <Vector2.h>
 #include "../TileLoader.h"
 #include "../NetWark/NetWark.h"
+#include "../Scene/BaseScene.h"
 
 enum class AnimState
 {
@@ -46,11 +47,12 @@ public:
 	Object();
 	Object(int id, Vector2 pos);
 	virtual ~Object();
-	virtual bool Update(MapData& mapData);
+	virtual bool Update(void);
+	virtual bool UpdateDef(void);
 	virtual void Draw(void);
 	Vector2 GetPos(void);
 	bool IsPickUp(void);
-	MesPacket PickUp(void);
+	MesPair PickUp(void);
 
 private:
 	virtual void Init(void);
@@ -60,7 +62,10 @@ protected:
 	Dir dir_;
 	int animCnt_;
 
-	std::vector<MesPacket> mesList_;
+	MesPacketList mesList_;
 	std::mutex mtx_;
+
+	std::function<bool(void)> update_;					// ¹Þ½Ä‚ÆÎ½Ä‚Å±¯ÌßÃÞ°Ä‚ð•ª‚¯‚é
+	std::shared_ptr<TileLoader> mapObj_;
 };
 

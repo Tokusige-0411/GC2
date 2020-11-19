@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Object\Bomb.cpp" />
     <ClCompile Include="common\imageMng.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\Player.cpp" />
     <ClCompile Include="Scene\CrossOver.cpp" />
     <ClCompile Include="Scene\GameScene.cpp" />
     <ClCompile Include="input\KeyInput.cpp" />
-    <ClCompile Include="input\Mouse.cpp" />
     <ClCompile Include="input\PadInput.cpp" />
     <ClCompile Include="NetWark\GestState.cpp" />
     <ClCompile Include="NetWark\HostState.cpp" />
@@ -41,6 +41,7 @@
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Object\Bomb.h" />
     <ClInclude Include="common\imageMng.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="Object\Player.h" />
@@ -49,7 +50,6 @@
     <ClInclude Include="input\Controller.h" />
     <ClInclude Include="input\INPUT_ID.h" />
     <ClInclude Include="input\KeyInput.h" />
-    <ClInclude Include="input\Mouse.h" />
     <ClInclude Include="input\PadInput.h" />
     <ClInclude Include="NetWark\GestState.h" />
     <ClInclude Include="NetWark\HostState.h" />

@@ -77,9 +77,14 @@ void NetWark::Update(void)
 	});
 
 	netFunc.emplace(MesType::Pos, [&]() {
-		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData].second);
-		playerList_[recvPacket[0].iData].first.emplace_back(recvPacket);
+		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData / 5].second);
+		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
 	});
+
+	netFunc.emplace(MesType::Set_Bomb, [&]() {
+		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData / 5].second);
+		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		});
 
 	while (!ProcessMessage() && GetLostNetWork() == -1)
 	{
@@ -127,9 +132,9 @@ void NetWark::InitCloseNetWork(void)
 	revStanby_ = false;
 }
 
-void NetWark::AddMesList(int id, MesList& list, std::mutex& mutex)
+void NetWark::AddMesList(int id, MesPacketList& list, std::mutex& mutex)
 {
-	playerList_.emplace_back(std::pair<MesList&, std::mutex&>( list, mutex ));
+	playerList_.emplace_back(std::pair<MesPacketList&, std::mutex&>( list, mutex ));
 }
 
 bool NetWark::SendMes(MesPacket& packet, MesType type)
