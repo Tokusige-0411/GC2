@@ -45,6 +45,12 @@ union Header
 	unsigned int data[2];
 };
 
+union Time
+{
+	long long time;
+	unsigned int data[2];
+};
+
 // ‘—MÃŞ°À
 union unionData
 {

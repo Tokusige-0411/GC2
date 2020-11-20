@@ -64,6 +64,11 @@ void Player::Init(void)
 	animCnt_ = 0;
 	speed_ = 4;
 
+	bombList_.push_back(1);
+	bombList_.push_back(2);
+	bombList_.push_back(3);
+	bombList_.push_back(4);
+
 	lpNetWork.AddMesList(playerID_ / UNIT_ID_NUM, mesList_, mtx_);
 }
 
@@ -128,14 +133,20 @@ bool Player::UpdateDef(void)
 	// ボム設置
 	if ((data[INPUT_ID::SET_BOMB][static_cast<int>(Trg::Now)]) && (!data[INPUT_ID::SET_BOMB][static_cast<int>(Trg::Old)]))
 	{
-		MesPacket bombData;
-		bombData.resize(4);
-		bombData[0].iData = playerID_;
-		bombData[1].iData = 0;
-		bombData[2].iData = pos_.x;
-		bombData[3].iData = pos_.y;
-		lpNetWork.SendMes(bombData, MesType::Set_Bomb);
-		dynamic_cast<GameScene&>(scene_).SetBombObj(playerID_, 0, pos_, true);
+		int bombFlag = UseBomb();
+		if (bombFlag != -1)
+		{
+			MesPacket bombData;
+			bombData.resize(6);
+			bombData[0].iData = playerID_;
+			bombData[1].iData = bombFlag;
+			bombData[2].iData = pos_.x;
+			bombData[3].iData = pos_.y;
+			Time now;
+			now.time = std::chrono::system_clock::now();
+			lpNetWork.SendMes(bombData, MesType::Set_Bomb);
+			dynamic_cast<GameScene&>(scene_).SetBombObj(playerID_, bombFlag, pos_, true);
+		}
 	}
 
 	// 座標情報の送信
@@ -219,7 +230,15 @@ bool Player::UpdateAuto(void)
 	return true;
 }
 
-bool Player::UseBomb(int bombID)
+int Player::UseBomb(void)
 {
-	return true;
+	int useBomb = -1;
+
+	if (bombList_.size())
+	{
+		useBomb = bombList_.front();
+		bombList_.pop_front();
+	}
+
+	return useBomb;
 }

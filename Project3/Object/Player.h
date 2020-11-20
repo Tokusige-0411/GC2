@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <functional>
+#include <list>
 #include "Object.h"
 #include "../input/Controller.h"
 
@@ -25,7 +26,7 @@ private:
 	bool UpdateNet(void);
 	bool UpdateAuto(void);
 
-	bool UseBomb(int bombID);
+	int UseBomb(void);
 
 	int speed_;
 	std::unique_ptr<Controller> input_;					// ²İ¯ÌßÄî•ñ
@@ -33,7 +34,7 @@ private:
 
 	int playerID_;										// ÌßÚ²Ô°¯•Ê”Ô†
 
-	std::list<int> bombList;
+	std::list<int> bombList_;
 	BaseScene& scene_;
 };
 
