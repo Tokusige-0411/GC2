@@ -7,6 +7,8 @@
 
 #define UNIT_ID_NUM 5
 
+using InputFunc = std::function<bool(ContData&, bool)>;
+
 class Player :
 	public Object
 {
@@ -26,6 +28,8 @@ private:
 	bool UpdateNet(void);
 	bool UpdateAuto(void);
 
+	void SetInputMoveList(void);
+
 	int UseBomb(void);
 
 	int speed_;
@@ -35,6 +39,10 @@ private:
 	int playerID_;										// ÌßÚ²Ô°¯•Ê”Ô†
 
 	std::list<int> bombList_;
+
+	std::list<INPUT_ID> pushKeyList_;
+	std::list<InputFunc> inputMoveList_;
+
 	BaseScene& scene_;
 };
 

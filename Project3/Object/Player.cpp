@@ -8,6 +8,7 @@
 #include "../Scene/GameScene.h"
 
 #include "../_debug/_DebugConOut.h"
+#include "../_debug/_DebugDispOut.h"
 
 int Player::fallCnt = 0;
 
@@ -29,26 +30,51 @@ void Player::Init(void)
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
-		input_ = std::make_unique<KeyInput>();
-		input_->SetUp(0);
-		if (playerID_ / UNIT_ID_NUM == 1)
+		if (playerID_ / UNIT_ID_NUM == 0)
+		{
+			input_ = std::make_unique<KeyInput>();
+			input_->SetUp(0);
+			SetInputMoveList();
+		}
+		else if (playerID_ / UNIT_ID_NUM == 1)
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
 		}
+		else
+		{
+			update_ = std::bind(&Player::UpdateAuto, this);
+		}
 	}
+
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
-		input_ = std::make_unique<PadInput>();
-		input_->SetUp(0);
 		if (playerID_ / UNIT_ID_NUM == 0)
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
 		}
+		else if (playerID_ / UNIT_ID_NUM == 1)
+		{
+			input_ = std::make_unique<PadInput>();
+			input_->SetUp(0);
+			SetInputMoveList();
+		}
+		else
+		{
+			update_ = std::bind(&Player::UpdateAuto, this);
+		}
 	}
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
 	{
-		input_ = std::make_unique<KeyInput>();
-		input_->SetUp(0);
+		if (playerID_ / UNIT_ID_NUM == 0)
+		{
+			input_ = std::make_unique<KeyInput>();
+			input_->SetUp(0);
+			SetInputMoveList();
+		}
+		else
+		{
+			update_ = std::bind(&Player::UpdateAuto, this);
+		}
 	}
 
 	if ((playerID_ / UNIT_ID_NUM) >= 2)
@@ -86,19 +112,17 @@ bool Player::Update(void)
 
 	// ﾏｽ目ちょうどになったら4方向調べる
 	auto chipPos = (pos_ + 16) / 32;
-	if ((pos_.x % 32 == 0) && (pos_.y % 32 == 0))
-	{
-		dirPermit_[Dir::Up] = CheckWall({ chipPos.x, chipPos.y - 1 });
-		dirPermit_[Dir::Down] = CheckWall({ chipPos.x, chipPos.y + 1 });
-		dirPermit_[Dir::Right] = CheckWall({ chipPos.x + 1, chipPos.y });
-		dirPermit_[Dir::Left] = CheckWall({ chipPos.x - 1, chipPos.y });
-	}
+	dirPermit_[Dir::Up] = CheckWall({ chipPos.x, chipPos.y - 1 });
+	dirPermit_[Dir::Down] = CheckWall({ chipPos.x, chipPos.y + 1 });
+	dirPermit_[Dir::Right] = CheckWall({ chipPos.x + 1, chipPos.y });
+	dirPermit_[Dir::Left] = CheckWall({ chipPos.x - 1, chipPos.y });
 	return update_();
 }
 
 void Player::Draw(void)
 {
-	DrawRotaGraph(pos_.x + 16, pos_.y - 6, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 4 + static_cast<int>(dir_)], true);
+	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 4 + static_cast<int>(dir_)], true);
+	_dbgDrawBox(pos_.x, pos_.y, pos_.x + 32, pos_.y + 32, 0xffffff, false);
 	animCnt_++;
 }
 
@@ -112,22 +136,14 @@ bool Player::UpdateDef(void)
 	(*input_)();
 
 	auto data = input_->GetContData();
-
-	if (data[INPUT_ID::UP][static_cast<int>(Trg::Now)])
+	for (auto inputMove = inputMoveList_.begin(); inputMove != inputMoveList_.end(); inputMove++)
 	{
-		pos_.y -= speed_;
-	}
-	if (data[INPUT_ID::RIGHT][static_cast<int>(Trg::Now)])
-	{
-		pos_.x += speed_;
-	}
-	if (data[INPUT_ID::DOWN][static_cast<int>(Trg::Now)])
-	{
-		pos_.y += speed_;
-	}
-	if (data[INPUT_ID::LEFT][static_cast<int>(Trg::Now)])
-	{
-		pos_.x -= speed_;
+		if ((*inputMove)(data, true))
+		{
+			//inputMoveList_.splice(inputMoveList_.begin(), inputMoveList_.begin() = inputMove);
+			inputMoveList_.sort([&](InputFunc funcA, InputFunc funcB) {return (funcA(data, false) < funcB(data, false)); });
+			break;
+		}
 	}
 
 	// ボム設置
@@ -142,8 +158,9 @@ bool Player::UpdateDef(void)
 			bombData[1].iData = bombFlag;
 			bombData[2].iData = pos_.x;
 			bombData[3].iData = pos_.y;
-			Time now;
-			now.time = std::chrono::system_clock::now();
+			auto now = TimeUnion{ std::chrono::system_clock::now() };
+			bombData[4].iData = now.data[0];
+			bombData[5].iData = now.data[1];
 			lpNetWork.SendMes(bombData, MesType::Set_Bomb);
 			dynamic_cast<GameScene&>(scene_).SetBombObj(playerID_, bombFlag, pos_, true);
 		}
@@ -189,6 +206,19 @@ bool Player::UpdateNet(void)
 
 bool Player::UpdateAuto(void)
 {
+	// 移動処理と方向を調べる
+	do
+	{
+		if (!dirPermit_[dir_])
+		{
+			++dir_;
+		}
+		if (dir_ == Dir::Max)
+		{
+			dir_ = Dir::Up;
+		}
+	} while (!dirPermit_[dir_]);
+
 	if (dir_ == Dir::Right)
 	{
 		pos_.x += speed_;
@@ -206,19 +236,6 @@ bool Player::UpdateAuto(void)
 		pos_.x -= speed_;
 	}
 
-	// 移動処理と方向を調べる
-	do
-	{
-		if (!dirPermit_[dir_])
-		{
-			++dir_;
-		}
-		if (dir_ == Dir::Max)
-		{
-			dir_ = Dir::Up;
-		}
-	} while (!dirPermit_[dir_]);
-
 	// 座標情報の送信
 	MesPacket plData;
 	plData.resize(4);
@@ -228,6 +245,72 @@ bool Player::UpdateAuto(void)
 	plData[3].iData = static_cast<int>(dir_);
 	lpNetWork.SendMes(plData, MesType::Pos);
 	return true;
+}
+
+void Player::SetInputMoveList(void)
+{
+	inputMoveList_.push_back([&](ContData& cont, bool move) {
+			if (cont[INPUT_ID::UP][static_cast<int>(Trg::Now)])
+			{
+				dir_ = Dir::Up;
+				if (move)
+				{
+					// 動けるかどうか
+					if (dirPermit_[Dir::Up])
+					{
+						pos_.y -= speed_;
+					}
+				}
+				return true;
+			}
+			return false;
+		});
+	inputMoveList_.push_back([&](ContData& cont, bool move) {
+		if (cont[INPUT_ID::RIGHT][static_cast<int>(Trg::Now)])
+		{
+			dir_ = Dir::Right;
+			if (move)
+			{
+				if (dirPermit_[Dir::Right])
+				{
+					pos_.x += speed_;
+				}
+			}
+			return true;
+		}
+		return false;
+		});
+	inputMoveList_.push_back([&](ContData& cont, bool move) {
+		if (cont[INPUT_ID::DOWN][static_cast<int>(Trg::Now)])
+		{
+			dir_ = Dir::Down;
+			if (move)
+			{
+				if (dirPermit_[Dir::Down])
+				{
+					pos_.y += speed_;
+				}
+			}
+			return true;
+		}
+		return false;
+		});
+
+	inputMoveList_.push_back([&](ContData& cont, bool move) {
+		if (cont[INPUT_ID::LEFT][static_cast<int>(Trg::Now)])
+		{
+			dir_ = Dir::Left;
+			if (move)
+			{
+				if (dirPermit_[Dir::Left])
+				{
+					pos_.x -= speed_;
+				}
+			}
+			return true;
+		}
+		return false;
+		});
 }
 
 int Player::UseBomb(void)

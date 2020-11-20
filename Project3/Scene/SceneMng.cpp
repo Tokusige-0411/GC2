@@ -12,6 +12,7 @@ void SceneMng::Run()
 	_dbgSetDrawPosFps(FPS_SIDE::LEFT, FPS_VER::TOP);
 	while (!ProcessMessage())
 	{
+		_dbgStartDraw();
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
 		Draw();
 		frame_++;
@@ -21,7 +22,6 @@ void SceneMng::Run()
 void SceneMng::Draw()
 {
 	SetDrawScreen(DX_SCREEN_BACK);
-	_dbgStartDraw();
 	ClsDrawScreen();
 
 	activeScene_->BaseScene::Draw();

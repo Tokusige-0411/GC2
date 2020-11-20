@@ -45,9 +45,9 @@ union Header
 	unsigned int data[2];
 };
 
-union Time
+union TimeUnion
 {
-	long long time;
+	std::chrono::system_clock::time_point time;
 	unsigned int data[2];
 };
 
