@@ -4,6 +4,7 @@
 #include <map>
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
+#include <Vector2.h>
 
 struct TMXInfo
 {
@@ -38,6 +39,7 @@ public:
 	const TMXInfo& GetTmxInfo(void);			// TMXî•ñæ“¾
 	const TSXInfo& GetTsxInfo(void);			// TSXî•ñæ“¾
 	const MapData& GetMapData(void);			// Ï¯ÌßÃŞ°Àæ“¾
+	int GetMapData(std::string layer, Vector2 pos);
 
 private:
 	struct TileLoderDeleter

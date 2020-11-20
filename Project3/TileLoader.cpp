@@ -175,6 +175,12 @@ const MapData& TileLoader::GetMapData(void)
 	return mapData_;
 }
 
+int TileLoader::GetMapData(std::string layer, Vector2 pos)
+{
+	pos = { pos.x / tmxInfo_.tileWidth, pos.y / tmxInfo_.tileHeight };
+	return mapData_[layer][pos.y * tmxInfo_.width + pos.x];
+}
+
 bool TileLoader::Init(void)
 {
 	version_["1.2"] = true;

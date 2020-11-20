@@ -30,7 +30,10 @@ private:
 
 	void SetInputMoveList(void);
 
+	bool CheckWall(Dir dir);
+
 	int UseBomb(void);
+	void BombReload(int self);
 
 	int speed_;
 	std::unique_ptr<Controller> input_;					// ²İ¯ÌßÄî•ñ
