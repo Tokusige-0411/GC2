@@ -1,11 +1,14 @@
 #include "Bomb.h"
 #include <imageMng.h>
+#include "../Scene/GameScene.h"
+#include "Player.h"
 
-Bomb::Bomb(int owner, int self, Vector2 pos)
+Bomb::Bomb(int owner, int self, Vector2 pos, BaseScene& scene) : scene_(scene)
 {
 	ownerID_ = owner;
-	selfID_ = self;
+	objectID_ = self;
 	pos_ = pos;
+	startTime_ = std::chrono::system_clock::now();
 	Init();
 }
 
@@ -15,11 +18,18 @@ Bomb::~Bomb()
 
 bool Bomb::Update(void)
 {
-	return true;
+	return update_();
 }
 
 bool Bomb::UpdateDef(void)
 {
+	endTime_ = std::chrono::system_clock::now();
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime_ - startTime_).count() >= 3000)
+	{
+		alive_ = false;
+		auto& player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);
+		dynamic_cast<Player&>(*player).BombReload(objectID_);
+	}
 	return true;
 }
 

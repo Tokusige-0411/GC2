@@ -7,6 +7,8 @@
 
 #define UNIT_ID_NUM 5
 
+class BaseScene;
+
 using InputFunc = std::function<bool(ContData&, bool)>;
 
 class Player :
@@ -21,6 +23,7 @@ public:
 	bool Update(void)override;
 	void Draw(void)override;
 	int GetPlayerID(void);
+	void BombReload(int self);
 
 private:
 	void Init(void)override;
@@ -33,19 +36,15 @@ private:
 	bool CheckWall(Dir dir);
 
 	int UseBomb(void);
-	void BombReload(int self);
 
 	int speed_;
 	std::unique_ptr<Controller> input_;					// ²İ¯ÌßÄî•ñ
 	std::map<Dir, bool> dirPermit_;						// Še•ûŒüs‚¯‚é‚©
 
-	int playerID_;										// ÌßÚ²Ô°¯•Ê”Ô†
-
 	std::list<int> bombList_;
 
 	std::list<INPUT_ID> pushKeyList_;
 	std::list<InputFunc> inputMoveList_;
-
 	BaseScene& scene_;
 };
 

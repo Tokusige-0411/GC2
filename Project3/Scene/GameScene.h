@@ -8,6 +8,7 @@
 #include "../TileLoader.h"
 #include <Vector2.h>
 
+union TimeUnion;
 class Object;
 
 using uniqueObj = std::unique_ptr<Object>;
@@ -21,6 +22,7 @@ public:
     void Draw(void) override;                           // •`‰æ
 
     void SetBombObj(int owner, int self, Vector2 pos, bool sendFlag);
+    uniqueObj& GetPlayerObj(int id);
 
     GameScene();
     ~GameScene();

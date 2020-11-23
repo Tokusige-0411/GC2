@@ -53,6 +53,8 @@ public:
 	Vector2 GetPos(void);
 	bool IsPickUp(void);
 	MesPair PickUp(void);
+	bool GetAlive(void) { return alive_; };
+	int GetObjectID(void) { return objectID_; };
 
 private:
 	virtual void Init(void);
@@ -60,6 +62,7 @@ private:
 protected:
 	Vector2 pos_;
 	Dir dir_;
+	bool alive_;
 	int animCnt_;
 
 	MesPacketList mesList_;
@@ -67,5 +70,6 @@ protected:
 
 	std::function<bool(void)> update_;					// ¹Þ½Ä‚ÆÎ½Ä‚Å±¯ÌßÃÞ°Ä‚ð•ª‚¯‚é
 	std::shared_ptr<TileLoader> mapObj_;
+	int objectID_;
 };
 

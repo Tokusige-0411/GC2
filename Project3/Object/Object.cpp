@@ -21,7 +21,7 @@ bool Object::Update(void)
 
 bool Object::UpdateDef(void)
 {
-	return false;
+	return true;
 }
 
 void Object::Draw(void)
@@ -50,4 +50,6 @@ void Object::Init(void)
 	animCnt_ = 0;
 	dir_ = Dir::Up;
 	update_ = std::bind(&Object::UpdateDef, this);
+	alive_ = true;
+	objectID_ = 0;
 }

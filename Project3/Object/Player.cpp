@@ -15,7 +15,7 @@ int Player::fallCnt = 0;
 Player::Player(int id, Vector2 pos, std::shared_ptr<TileLoader>& mapObj, BaseScene& scene) : scene_(scene)
 {
 	pos_ = pos;
-	playerID_ = id;
+	objectID_ = id;
 	mapObj_ = mapObj;
 	Init();
 }
@@ -30,13 +30,13 @@ void Player::Init(void)
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
-		if (playerID_ / UNIT_ID_NUM == 0)
+		if (objectID_ / UNIT_ID_NUM == 0)
 		{
 			input_ = std::make_unique<KeyInput>();
 			input_->SetUp(0);
 			SetInputMoveList();
 		}
-		else if (playerID_ / UNIT_ID_NUM == 1)
+		else if (objectID_ / UNIT_ID_NUM == 1)
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
 		}
@@ -48,11 +48,11 @@ void Player::Init(void)
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
-		if (playerID_ / UNIT_ID_NUM == 0)
+		if (objectID_ / UNIT_ID_NUM == 0)
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
 		}
-		else if (playerID_ / UNIT_ID_NUM == 1)
+		else if (objectID_ / UNIT_ID_NUM == 1)
 		{
 			input_ = std::make_unique<PadInput>();
 			input_->SetUp(0);
@@ -65,7 +65,7 @@ void Player::Init(void)
 	}
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
 	{
-		if (playerID_ / UNIT_ID_NUM == 0)
+		if (objectID_ / UNIT_ID_NUM == 0)
 		{
 			input_ = std::make_unique<KeyInput>();
 			input_->SetUp(0);
@@ -77,7 +77,7 @@ void Player::Init(void)
 		}
 	}
 
-	if ((playerID_ / UNIT_ID_NUM) >= 2)
+	if ((objectID_ / UNIT_ID_NUM) >= 2)
 	{
 		update_ = std::bind(&Player::UpdateAuto, this);
 	}
@@ -95,7 +95,7 @@ void Player::Init(void)
 	bombList_.push_back(3);
 	bombList_.push_back(4);
 
-	lpNetWork.AddMesList(playerID_ / UNIT_ID_NUM, mesList_, mtx_);
+	lpNetWork.AddMesList(objectID_ / UNIT_ID_NUM, mesList_, mtx_);
 }
 
 bool Player::Update(void)
@@ -112,7 +112,7 @@ void Player::Draw(void)
 
 int Player::GetPlayerID(void)
 {
-	return playerID_;
+	return objectID_;
 }
 
 bool Player::UpdateDef(void)
@@ -138,7 +138,7 @@ bool Player::UpdateDef(void)
 		{
 			MesPacket bombData;
 			bombData.resize(6);
-			bombData[0].iData = playerID_;
+			bombData[0].iData = objectID_;
 			bombData[1].iData = bombFlag;
 			bombData[2].iData = pos_.x;
 			bombData[3].iData = pos_.y;
@@ -146,14 +146,14 @@ bool Player::UpdateDef(void)
 			bombData[4].iData = now.data[0];
 			bombData[5].iData = now.data[1];
 			lpNetWork.SendMes(bombData, MesType::Set_Bomb);
-			dynamic_cast<GameScene&>(scene_).SetBombObj(playerID_, bombFlag, pos_, true);
+			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, pos_, true);
 		}
 	}
 
 	// 座標情報の送信
 	MesPacket plData;
 	plData.resize(4);
-	plData[0].iData = playerID_;
+	plData[0].iData = objectID_;
 	plData[1].iData = pos_.x;
 	plData[2].iData = pos_.y;
 	plData[3].iData = static_cast<int>(dir_);
@@ -177,7 +177,8 @@ bool Player::UpdateNet(void)
 			}
 			if (data.first == MesType::Set_Bomb)
 			{
-				dynamic_cast<GameScene&>(scene_).SetBombObj(playerID_, 0, pos_, true);
+				auto now = TimeUnion{ std::chrono::system_clock::now() };
+				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, pos_, true);
 			}
 		}
 		return true;
@@ -239,7 +240,7 @@ bool Player::UpdateAuto(void)
 	// 座標情報の送信
 	MesPacket plData;
 	plData.resize(4);
-	plData[0].iData = playerID_;
+	plData[0].iData = objectID_;
 	plData[1].iData = pos_.x;
 	plData[2].iData = pos_.y;
 	plData[3].iData = static_cast<int>(dir_);
@@ -300,7 +301,9 @@ void Player::SetInputMoveList(void)
 							pos_.y = ((pos_.y / 32) + 1) * 32;
 						}
 					}
+					return true;
 				}
+				return false;
 			}
 			return true;
 		}
@@ -327,7 +330,9 @@ void Player::SetInputMoveList(void)
 							pos_.x = ((pos_.x / 32) + 1) * 32;
 						}
 					}
+					return true;
 				}
+				return false;
 			}
 			return true;
 		}
@@ -355,7 +360,9 @@ void Player::SetInputMoveList(void)
 							pos_.y = ((pos_.y / 32) + 1) * 32;
 						}
 					}
+					return true;
 				}
+				return false;
 			}
 			return true;
 		}

@@ -57,6 +57,8 @@ unique_Base GameScene::Update(unique_Base own)
 		}
 	}
 
+	objList_.remove_if([](uniqueObj& obj) {return !(obj->GetAlive()); });
+
 	DrawOwnScreen();
 
 	end_ = std::chrono::system_clock::now();
@@ -97,11 +99,22 @@ void GameScene::Draw(void)
 	}
 }
 
-void GameScene::SetBombObj(int owner, int self, Vector2 pos , bool sendFlag)
+void GameScene::SetBombObj(int owner, int self, Vector2 pos, bool sendFlag)
 {
 	if (sendFlag)
 	{
-		objList_.emplace_back(std::make_unique<Bomb>(owner, self, pos));
+		objList_.emplace_back(std::make_unique<Bomb>(owner, self, pos, *this));
+	}
+}
+
+uniqueObj& GameScene::GetPlayerObj(int id)
+{
+	for (auto& obj : objList_)
+	{
+		if (obj->GetObjectID() == id)
+		{
+			return obj;
+		}
 	}
 }
 
