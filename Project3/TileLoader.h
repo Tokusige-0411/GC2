@@ -28,9 +28,20 @@ struct TSXInfo
 	std::string imageName{};
 };
 
+enum class FireDir
+{
+	Right,
+	Down,
+	Left,
+	Up,
+	Max
+};
+
 struct Fire
 {
-	Dir dir;
+	FireDir dir;
+	int animCnt;
+
 };
 
 using MapData = std::map<std::string, std::vector<int>>;

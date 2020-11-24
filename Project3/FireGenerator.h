@@ -4,6 +4,6 @@
 struct FireGenerator
 {
 	void operator()(void);
-	Vector2 pos_;
-	int length_;
+	Vector2 pos;
+	int length;
 };
