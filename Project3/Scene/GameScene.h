@@ -23,6 +23,7 @@ public:
 
     void SetBombObj(int owner, int self, Vector2 pos, bool sendFlag);
     uniqueObj& GetPlayerObj(int id);
+    void SetFire(const Vector2& pos, int length);
 
     GameScene();
     ~GameScene();

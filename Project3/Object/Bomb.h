@@ -20,6 +20,7 @@ private:
 	int ownerID_;
 	std::chrono::system_clock::time_point startTime_;
 	std::chrono::system_clock::time_point endTime_;
+	int fireLength_;
 	BaseScene& scene_;
 };
 

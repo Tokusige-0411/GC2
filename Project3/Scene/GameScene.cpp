@@ -40,6 +40,8 @@ bool GameScene::Init(void)
 		}
 	}
 
+	lpImageMng.GetID("fire", "image/fire.png", { 32, 32 }, { 3, 4 });
+
 	return true;
 }
 
@@ -76,23 +78,7 @@ unique_Base GameScene::Update(unique_Base own)
 
 void GameScene::Draw(void)
 {
-	auto draw = [&](std::string key) {
-		for (int y = 0; y < mapInfo_.height; y++)
-		{
-			for (int x = 0; x < mapInfo_.width; x++)
-			{
-				if (mapData_[key][y * mapInfo_.width + x])
-				{
-					DrawGraph(x * mapInfo_.tileWidth, y * mapInfo_.tileHeight, lpImageMng.GetID("map")[mapData_[key][y * mapInfo_.width + x] - 1], true);
-				}
-			}
-		}
-	};
-	draw("Bg");
-	draw("Item");
-	draw("Obj");
-	draw("Char");
-	
+	mapObj_->Draw();
 	for (auto& data : objList_)
 	{
 		data->Draw();
@@ -116,6 +102,11 @@ uniqueObj& GameScene::GetPlayerObj(int id)
 			return obj;
 		}
 	}
+}
+
+void GameScene::SetFire(const Vector2& pos, int length)
+{
+	mapObj_->SetFireGenerator(pos, length);
 }
 
 GameScene::GameScene()

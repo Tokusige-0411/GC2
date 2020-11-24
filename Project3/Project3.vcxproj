@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FireGenerator.cpp" />
     <ClCompile Include="Object\Bomb.cpp" />
     <ClCompile Include="common\imageMng.cpp" />
     <ClCompile Include="Object\Object.cpp" />
@@ -41,6 +42,8 @@
     <ClCompile Include="_debug\_DebugDispOut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CheckWall.h" />
+    <ClInclude Include="FireGenerator.h" />
     <ClInclude Include="Object\Bomb.h" />
     <ClInclude Include="common\imageMng.h" />
     <ClInclude Include="Object\Object.h" />

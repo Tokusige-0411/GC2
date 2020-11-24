@@ -25,6 +25,7 @@ enum class MesType : unsigned char
 	TMX_Data,		// TMX‚ÌCSVÃŞ°Àî•ñ
 	Pos,			// ÌßÚ²Ô°‚ÌÀ•W
 	Set_Bomb,
+	Deth,
 	Max,
 };
 

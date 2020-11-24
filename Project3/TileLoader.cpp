@@ -5,6 +5,8 @@
 #include <list>
 #include "TileLoader.h"
 #include "NetWark/NetWark.h"
+#include <imageMng.h>
+#include "FireGenerator.h"
 
 #include "_debug/_DebugConOut.h"
 
@@ -27,6 +29,7 @@ bool TileLoader::TMXLoader(std::string fileName)
 	tmxInfo_.height = std::atoi(map->first_attribute("height")->value());
 	tmxInfo_.tileWidth = std::atoi(map->first_attribute("tilewidth")->value());
 	tmxInfo_.tileHeight = std::atoi(map->first_attribute("tileheight")->value());
+	fireMap_.resize(tmxInfo_.width * tmxInfo_.height);
 
 	for (rapidxml::xml_node<>* layer = map->first_node("layer");
 		layer != nullptr;
@@ -158,6 +161,22 @@ void TileLoader::SendTmxData(void)
 
 void TileLoader::Draw(void)
 {
+	auto draw = [&](std::string key) {
+		for (int y = 0; y < tmxInfo_.height; y++)
+		{
+			for (int x = 0; x < tmxInfo_.width; x++)
+			{
+				if (mapData_[key][y * tmxInfo_.width + x])
+				{
+					DrawGraph(x * tmxInfo_.tileWidth, y * tmxInfo_.tileHeight, lpImageMng.GetID("map")[mapData_[key][y * tmxInfo_.width + x] - 1], true);
+				}
+			}
+		}
+	};
+	draw("Bg");
+	draw("Item");
+	draw("Obj");
+	draw("Char");
 }
 
 const TMXInfo& TileLoader::GetTmxInfo(void)
@@ -179,6 +198,11 @@ int TileLoader::GetMapData(std::string layer, Vector2 pos)
 {
 	pos = { pos.x / tmxInfo_.tileWidth, pos.y / tmxInfo_.tileHeight };
 	return mapData_[layer][pos.y * tmxInfo_.width + pos.x];
+}
+
+void TileLoader::SetFireGenerator(const Vector2& pos, int length)
+{
+	fireGeneratorList_.push_back(FireGenerator{pos, length});
 }
 
 bool TileLoader::Init(void)

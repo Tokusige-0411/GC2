@@ -2,9 +2,13 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <vector>
+#include <list>
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
 #include <Vector2.h>
+
+struct FireGenerator;
 
 struct TMXInfo
 {
@@ -24,6 +28,11 @@ struct TSXInfo
 	std::string imageName{};
 };
 
+struct Fire
+{
+	Dir dir;
+};
+
 using MapData = std::map<std::string, std::vector<int>>;
 
 class TileLoader
@@ -32,28 +41,24 @@ public:
 	TileLoader();
 	~TileLoader();
 
-	bool TMXLoader(std::string fileName);		// TMXﾌｧｲﾙのﾛｰﾀﾞｰ
-	bool TSXLoader(std::string fileName);		// TSXﾌｧｲﾙのﾛｰﾀﾞｰ
-	void SendTmxData(void);						// TMXの情報送信関数
-	void Draw(void);							// ﾏｯﾌﾟ描画
-	const TMXInfo& GetTmxInfo(void);			// TMX情報取得
-	const TSXInfo& GetTsxInfo(void);			// TSX情報取得
-	const MapData& GetMapData(void);			// ﾏｯﾌﾟﾃﾞｰﾀ取得
-	int GetMapData(std::string layer, Vector2 pos);
+	bool TMXLoader(std::string fileName);				// TMXﾌｧｲﾙのﾛｰﾀﾞｰ
+	bool TSXLoader(std::string fileName);				// TSXﾌｧｲﾙのﾛｰﾀﾞｰ
+	void SendTmxData(void);								// TMXの情報送信関数
+	void Draw(void);									// ﾏｯﾌﾟ描画
+	const TMXInfo& GetTmxInfo(void);					// TMX情報取得
+	const TSXInfo& GetTsxInfo(void);					// TSX情報取得
+	const MapData& GetMapData(void);					// ﾏｯﾌﾟﾃﾞｰﾀ取得
+	int GetMapData(std::string layer, Vector2 pos);		// 指定された位置のﾏｯﾌﾟ情報を返す
+	void SetFireGenerator(const Vector2& pos, int length);
 
 private:
-	struct TileLoderDeleter
-	{
-		void operator() (TileLoader* tileLoader) const
-		{
-			delete tileLoader;
-		}
-	};
-
 	// ﾏｯﾌﾟ関連
 	TMXInfo tmxInfo_;						// TMX情報
 	TSXInfo tsxInfo_;						// TSX情報
 	MapData mapData_;						// ﾏｯﾌﾟ情報
+
+	std::vector<Fire> fireMap_;
+	std::list<FireGenerator> fireGeneratorList_;
 
 	rapidxml::xml_document<> doc_;			// xmlﾌｧｲﾙの親ﾉｰﾄﾞ
 
