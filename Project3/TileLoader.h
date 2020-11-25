@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <chrono>
 #include <rapidxml.hpp>
 #include <rapidxml_utils.hpp>
 #include <Vector2.h>
@@ -41,10 +42,12 @@ struct Fire
 {
 	FireDir dir;
 	int animCnt;
-
+	std::chrono::system_clock::time_point time;
+	bool drawFlag;
 };
 
 using MapData = std::map<std::string, std::vector<int>>;
+using FireMap = std::vector<Fire>;
 
 class TileLoader
 {
@@ -56,6 +59,7 @@ public:
 	bool TSXLoader(std::string fileName);				// TSXÌ§²Ù‚ÌÛ°ÀŞ°
 	void SendTmxData(void);								// TMX‚Ìî•ñ‘—MŠÖ”
 	void Draw(void);									// Ï¯Ìß•`‰æ
+	void FireUpdate(void);
 	const TMXInfo& GetTmxInfo(void);					// TMXî•ñæ“¾
 	const TSXInfo& GetTsxInfo(void);					// TSXî•ñæ“¾
 	const MapData& GetMapData(void);					// Ï¯ÌßÃŞ°Àæ“¾
@@ -68,7 +72,7 @@ private:
 	TSXInfo tsxInfo_;						// TSXî•ñ
 	MapData mapData_;						// Ï¯Ìßî•ñ
 
-	std::vector<Fire> fireMap_;
+	FireMap fireMap_;
 	std::list<FireGenerator> fireGeneratorList_;
 
 	rapidxml::xml_document<> doc_;			// xmlÌ§²Ù‚ÌeÉ°ÄŞ

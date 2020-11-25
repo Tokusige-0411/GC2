@@ -9,7 +9,7 @@ Bomb::Bomb(int owner, int self, Vector2 pos, BaseScene& scene) : scene_(scene)
 	objectID_ = self;
 	pos_ = pos;
 	startTime_ = std::chrono::system_clock::now();
-	fireLength_ = 3;
+	fireLength_ = 1;
 	Init();
 }
 
@@ -40,7 +40,7 @@ bool Bomb::UpdateDef(void)
 
 void Bomb::Draw(void)
 {
-	DrawRotaGraph(pos_.x, pos_.y, 1.0, 0.0, IMAGE_ID("bomb")[0], true);
+	DrawRotaGraph(pos_.x + 16, pos_.y + 16, 1.0, 0.0, IMAGE_ID("bomb")[0], true);
 }
 
 void Bomb::Init(void)

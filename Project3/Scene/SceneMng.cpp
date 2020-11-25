@@ -12,6 +12,7 @@ void SceneMng::Run()
 	_dbgSetDrawPosFps(FPS_SIDE::LEFT, FPS_VER::TOP);
 	while (!ProcessMessage())
 	{
+		now_ = std::chrono::system_clock::now();
 		_dbgStartDraw();
 		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
 		Draw();
@@ -41,9 +42,14 @@ const Vector2 SceneMng::GetScreenCenter(void)
 	return screenCenter_;
 }
 
-int SceneMng::GetFrameCnt(void)
+const int& SceneMng::GetFrameCnt(void)
 {
 	return frame_;
+}
+
+const time_point& SceneMng::GetTime(void)
+{
+	return now_;
 }
 
 void SceneMng::AddDrawQue(DrawQueT dQue)

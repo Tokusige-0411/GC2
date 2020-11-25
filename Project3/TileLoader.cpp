@@ -7,6 +7,7 @@
 #include "NetWark/NetWark.h"
 #include <imageMng.h>
 #include "FireGenerator.h"
+#include "Scene/SceneMng.h"
 
 #include "_debug/_DebugConOut.h"
 
@@ -177,6 +178,35 @@ void TileLoader::Draw(void)
 	draw("Item");
 	draw("Obj");
 	draw("Char");
+
+	for (auto data : fireMap_)
+	{
+		if (data.drawFlag)
+		{
+			DrawGraph();
+		}
+	}
+}
+
+void TileLoader::FireUpdate(void)
+{
+	for (auto data : fireGeneratorList_)
+	{
+		data();
+	}
+	fireGeneratorList_.remove_if([&](FireGenerator& data) { return (data.length <= 0); });
+	auto end = lpSceneMng.GetTime();
+	for (auto data : fireMap_)
+	{
+		//if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= (1000 / 6))
+		//{
+		//	data.animCnt++;
+		//}
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= 1000)
+		{
+			data.drawFlag = false;
+		}
+	}
 }
 
 const TMXInfo& TileLoader::GetTmxInfo(void)
@@ -202,7 +232,7 @@ int TileLoader::GetMapData(std::string layer, Vector2 pos)
 
 void TileLoader::SetFireGenerator(const Vector2& pos, int length)
 {
-	fireGeneratorList_.push_back(FireGenerator{pos, length});
+	fireGeneratorList_.push_back(FireGenerator{ pos / 32, length, fireMap_ });
 }
 
 bool TileLoader::Init(void)

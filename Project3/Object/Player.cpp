@@ -140,13 +140,38 @@ bool Player::UpdateDef(void)
 			bombData.resize(6);
 			bombData[0].iData = objectID_;
 			bombData[1].iData = bombFlag;
-			bombData[2].iData = pos_.x;
-			bombData[3].iData = pos_.y;
+			auto tmpPos = pos_ % 32;
+			if (tmpPos.x)
+			{
+				if (tmpPos.x < 16)
+				{
+					tmpPos.x = ((pos_.x / 32)) * 32;
+				}
+				else
+				{
+					tmpPos.x = ((pos_.x / 32) + 1) * 32;
+				}
+				tmpPos.y = pos_.y;
+			}
+			else if (tmpPos.y)
+			{
+				if (tmpPos.y < 16)
+				{
+					tmpPos.y = ((pos_.y / 32)) * 32;
+				}
+				else
+				{
+					tmpPos.y = ((pos_.y / 32) + 1) * 32;
+				}
+				tmpPos.x = pos_.x;
+			}
+			bombData[2].iData = tmpPos.x;
+			bombData[3].iData = tmpPos.y;
 			auto now = TimeUnion{ std::chrono::system_clock::now() };
 			bombData[4].iData = now.data[0];
 			bombData[5].iData = now.data[1];
 			lpNetWork.SendMes(bombData, MesType::Set_Bomb);
-			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, pos_, true);
+			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, tmpPos, true);
 		}
 	}
 
