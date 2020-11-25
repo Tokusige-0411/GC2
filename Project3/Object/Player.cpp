@@ -165,6 +165,10 @@ bool Player::UpdateDef(void)
 				}
 				tmpPos.x = pos_.x;
 			}
+			else
+			{
+				tmpPos = pos_;
+			}
 			bombData[2].iData = tmpPos.x;
 			bombData[3].iData = tmpPos.y;
 			auto now = TimeUnion{ std::chrono::system_clock::now() };

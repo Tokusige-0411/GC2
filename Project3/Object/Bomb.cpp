@@ -9,7 +9,7 @@ Bomb::Bomb(int owner, int self, Vector2 pos, BaseScene& scene) : scene_(scene)
 	objectID_ = self;
 	pos_ = pos;
 	startTime_ = std::chrono::system_clock::now();
-	fireLength_ = 1;
+	fireLength_ = 3;
 	Init();
 }
 

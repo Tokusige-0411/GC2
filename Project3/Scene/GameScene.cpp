@@ -47,6 +47,8 @@ bool GameScene::Init(void)
 
 unique_Base GameScene::Update(unique_Base own)
 {
+	mapObj_->FireUpdate();
+
 	objList_.sort([](uniqueObj& a, uniqueObj& b) {
 		return a->IsPickUp() > b->IsPickUp();
 		});

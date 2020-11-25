@@ -9,8 +9,6 @@
 #include <rapidxml_utils.hpp>
 #include <Vector2.h>
 
-struct FireGenerator;
-
 struct TMXInfo
 {
 	int width{};					// ‰¡Ï½”
@@ -40,11 +38,14 @@ enum class FireDir
 
 struct Fire
 {
+	Vector2 pos;
 	FireDir dir;
 	int animCnt;
-	std::chrono::system_clock::time_point time;
 	bool drawFlag;
+	std::chrono::system_clock::time_point time;
 };
+
+class FireGenerator;
 
 using MapData = std::map<std::string, std::vector<int>>;
 using FireMap = std::vector<Fire>;
@@ -73,7 +74,7 @@ private:
 	MapData mapData_;						// Ï¯Ìßî•ñ
 
 	FireMap fireMap_;
-	std::list<FireGenerator> fireGeneratorList_;
+	std::list<std::unique_ptr<FireGenerator>> fireGeneratorList_;
 
 	rapidxml::xml_document<> doc_;			// xmlÌ§²Ù‚ÌeÉ°ÄŞ
 
