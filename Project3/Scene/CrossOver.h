@@ -7,7 +7,7 @@ public:
     CrossOver(unique_Base next, unique_Base old);
     ~CrossOver();
     bool Init() override;
-    unique_Base Update(unique_Base own) override;
+    unique_Base Update(unique_Base own, double delta) override;
     void Draw(void) override;
 
 private:

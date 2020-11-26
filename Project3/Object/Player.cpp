@@ -54,7 +54,7 @@ void Player::Init(void)
 		}
 		else if (objectID_ / UNIT_ID_NUM == 1)
 		{
-			input_ = std::make_unique<PadInput>();
+			input_ = std::make_unique<KeyInput>();
 			input_->SetUp(0);
 			SetInputMoveList();
 		}
@@ -87,8 +87,10 @@ void Player::Init(void)
 	dirPermit_[Dir::Right] = true;
 	dirPermit_[Dir::Down] = true;
 	dirPermit_[Dir::Left] = true;
+
 	animCnt_ = 0;
 	speed_ = 4;
+	blastLength_ = 3;
 
 	bombList_.push_back(1);
 	bombList_.push_back(2);
@@ -137,7 +139,7 @@ bool Player::UpdateDef(void)
 		if (bombFlag != -1)
 		{
 			MesPacket bombData;
-			bombData.resize(6);
+			bombData.resize(7);
 			bombData[0].iData = objectID_;
 			bombData[1].iData = bombFlag;
 			auto tmpPos = pos_ % 32;
@@ -171,11 +173,12 @@ bool Player::UpdateDef(void)
 			}
 			bombData[2].iData = tmpPos.x;
 			bombData[3].iData = tmpPos.y;
+			bombData[4].iData = blastLength_;
 			auto now = TimeUnion{ std::chrono::system_clock::now() };
-			bombData[4].iData = now.data[0];
-			bombData[5].iData = now.data[1];
+			bombData[5].iData = now.data[0];
+			bombData[6].iData = now.data[1];
 			lpNetWork.SendMes(bombData, MesType::Set_Bomb);
-			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, tmpPos, true);
+			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, tmpPos, blastLength_, true);
 		}
 	}
 
@@ -207,7 +210,7 @@ bool Player::UpdateNet(void)
 			if (data.first == MesType::Set_Bomb)
 			{
 				auto now = TimeUnion{ std::chrono::system_clock::now() };
-				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, pos_, true);
+				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, pos_, data.second[4].iData,true);
 			}
 		}
 		return true;

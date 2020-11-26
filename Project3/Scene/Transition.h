@@ -7,7 +7,7 @@ class Transition :
 public:
     Transition();
     ~Transition();
-    unique_Base Update(unique_Base own) override;
+    unique_Base Update(unique_Base own, double delta) override;
 
 private:
 

@@ -45,9 +45,9 @@ bool GameScene::Init(void)
 	return true;
 }
 
-unique_Base GameScene::Update(unique_Base own)
+unique_Base GameScene::Update(unique_Base own, double delta)
 {
-	mapObj_->FireUpdate();
+	mapObj_->FireUpdate(delta);
 
 	objList_.sort([](uniqueObj& a, uniqueObj& b) {
 		return a->IsPickUp() > b->IsPickUp();
@@ -87,11 +87,11 @@ void GameScene::Draw(void)
 	}
 }
 
-void GameScene::SetBombObj(int owner, int self, Vector2 pos, bool sendFlag)
+void GameScene::SetBombObj(int owner, int self, Vector2 pos, int blastLength, bool sendFlag)
 {
 	if (sendFlag)
 	{
-		objList_.emplace_back(std::make_unique<Bomb>(owner, self, pos, *this));
+		objList_.emplace_back(std::make_unique<Bomb>(owner, self, blastLength, pos, *this));
 	}
 }
 

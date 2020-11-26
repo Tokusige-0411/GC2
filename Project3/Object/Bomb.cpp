@@ -3,13 +3,13 @@
 #include "../Scene/GameScene.h"
 #include "Player.h"
 
-Bomb::Bomb(int owner, int self, Vector2 pos, BaseScene& scene) : scene_(scene)
+Bomb::Bomb(int owner, int self, int blastLength, Vector2 pos, BaseScene& scene) : scene_(scene)
 {
 	ownerID_ = owner;
 	objectID_ = self;
 	pos_ = pos;
 	startTime_ = std::chrono::system_clock::now();
-	fireLength_ = 3;
+	blastLength_ = blastLength;
 	Init();
 }
 
@@ -28,7 +28,7 @@ bool Bomb::UpdateDef(void)
 	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime_ - startTime_).count() >= 3000)
 	{
 		alive_ = false;
-		dynamic_cast<GameScene&>(scene_).SetFire(pos_, fireLength_);
+		dynamic_cast<GameScene&>(scene_).SetFire(pos_, blastLength_);
 		auto& player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);
 		if (player)
 		{

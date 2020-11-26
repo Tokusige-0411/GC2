@@ -23,7 +23,7 @@ public:
 	LoginScene();
 	~LoginScene();
 	bool Init() override;
-	unique_Base Update(unique_Base own) override;
+	unique_Base Update(unique_Base own, double delta) override;
 	void Draw(void) override;
 
 private:

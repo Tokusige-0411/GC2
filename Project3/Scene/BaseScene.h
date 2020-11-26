@@ -12,7 +12,7 @@ public:
 	BaseScene();
 	virtual ~BaseScene();
 	virtual bool Init();
-	virtual unique_Base Update(unique_Base own) = 0;
+	virtual unique_Base Update(unique_Base own, double delta) = 0;
 	virtual void Draw(void);
 	virtual void DrawOwnScreen(void);
 

@@ -65,10 +65,8 @@ struct Fire
 {
 	Vector2 pos{};
 	FireDir dir{};
-	int animCnt{};
-	bool drawFlag{};
+	double animCnt{};
 	int length{};
-	std::chrono::system_clock::time_point time{};
 };
 
 class FireGenerator;
@@ -86,7 +84,7 @@ public:
 	bool TSXLoader(std::string fileName);				// TSXÌ§²Ù‚ÌÛ°ÀŞ°
 	void SendTmxData(void);								// TMX‚Ìî•ñ‘—MŠÖ”
 	void Draw(void);									// Ï¯Ìß•`‰æ
-	void FireUpdate(void);
+	void FireUpdate(double delta);
 	const TMXInfo& GetTmxInfo(void);					// TMXî•ñæ“¾
 	const TSXInfo& GetTsxInfo(void);					// TSXî•ñæ“¾
 	const MapData& GetMapData(void);					// Ï¯ÌßÃŞ°Àæ“¾
@@ -98,6 +96,7 @@ private:
 	TMXInfo tmxInfo_;						// TMXî•ñ
 	TSXInfo tsxInfo_;						// TSXî•ñ
 	MapData mapData_;						// Ï¯Ìßî•ñ
+	double delta_;
 
 	FireMap fireMap_;
 	std::list<std::unique_ptr<FireGenerator>> fireGeneratorList_;

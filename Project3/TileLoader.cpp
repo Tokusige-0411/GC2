@@ -149,7 +149,6 @@ void TileLoader::SendTmxData(void)
 	// Tmx_SizeÇÃ√ﬁ∞¿ëóêM
 	MesPacket sendData;
 	sendData.resize(1);
-	//sendData[0].iData = csvData.size();
 	sendData[0].cData[0] = 21;
 	sendData[0].cData[1] = 17;
 	sendData[0].cData[2] = 4;
@@ -160,7 +159,7 @@ void TileLoader::SendTmxData(void)
 	lpNetWork.SendMes(csvData, MesType::TMX_Data);
 }
 
-void TileLoader::Draw(void)
+void TileLoader::Draw()
 {
 	auto draw = [&](std::string key) {
 		for (int y = 0; y < tmxInfo_.height; y++)
@@ -179,44 +178,47 @@ void TileLoader::Draw(void)
 	draw("Obj");
 	draw("Char");
 
-	for (auto data : fireMap_)
+	for (auto& data : fireMap_)
 	{
-		if (data.drawFlag)
+		if (data.animCnt > 0.0f)
 		{
-			auto animOffset = abs(abs(data.animCnt - 3) - 3);
+			auto animOffset = static_cast<int>(ceil(data.animCnt / 1000 * 60));
+			//animOffset = 
 			DrawRotaGraph(
 				data.pos.x + tmxInfo_.tileWidth / 2,
 				data.pos.y + tmxInfo_.tileHeight / 2,
 				1.0,
 				static_cast<int>(data.dir) * (DX_PI / 2),
-				IMAGE_ID("fire")[animOffset * 3 + data.length],
+				IMAGE_ID("fire")[data.length],
 				true);
+			data.animCnt -= delta_;
 		}
 	}
 }
 
-void TileLoader::FireUpdate(void)
+void TileLoader::FireUpdate(double delta)
 {
+	delta_ = delta;
 	for (auto& data : fireGeneratorList_)
 	{
-		(*data)();
+		(*data)(delta);
 	}
 	fireGeneratorList_.remove_if([](std::unique_ptr<FireGenerator>& data) { return !(data->GetLength()); });
 	auto end = lpSceneMng.GetTime();
 	for (auto& data : fireMap_)
 	{
-		if (data.drawFlag)
-		{
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= 150)
-			{
-				data.animCnt++;
-				data.time = end;
-				if (data.animCnt >= 7)
-				{
-					data.drawFlag = false;
-				}
-			}
-		}
+		//if (data.drawFlag)
+		//{
+		//	if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= 150)
+		//	{
+		//		data.animCnt++;
+		//		data.time = end;
+		//		if (data.animCnt >= 7)
+		//		{
+		//			data.drawFlag = false;
+		//		}
+		//	}
+		//}
 	}
 }
 

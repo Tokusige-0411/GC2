@@ -9,12 +9,15 @@
 void SceneMng::Run()
 {
 	activeScene_ = std::make_unique<LoginScene>();
+	befor_ = std::chrono::system_clock::now();
 	_dbgSetDrawPosFps(FPS_SIDE::LEFT, FPS_VER::TOP);
 	while (!ProcessMessage())
 	{
 		now_ = std::chrono::system_clock::now();
+		double delta = std::chrono::duration_cast<std::chrono::milliseconds>(now_ - befor_).count();
+		befor_ = now_;
 		_dbgStartDraw();
-		activeScene_ = (*activeScene_).Update(std::move(activeScene_));
+		activeScene_ = (*activeScene_).Update(std::move(activeScene_), delta);
 		Draw();
 		frame_++;
 	}

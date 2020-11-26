@@ -74,5 +74,6 @@ private:
 
 	int frame_;									// ÌÚ°Ñ¶³ÝÄ
 	time_point now_;
+	time_point befor_;
 };
 

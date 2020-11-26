@@ -42,7 +42,7 @@ bool LoginScene::Init()
 	return true;
 }
 
-unique_Base LoginScene::Update(unique_Base own)
+unique_Base LoginScene::Update(unique_Base own, double delta)
 {
 	(func_[updateMode_])();
 	DrawOwnScreen();

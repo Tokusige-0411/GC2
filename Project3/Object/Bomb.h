@@ -7,7 +7,7 @@ class Bomb :
 	public Object
 {
 public:
-	Bomb(int owner, int self, Vector2 pos, BaseScene& scene);
+	Bomb(int owner, int self, int blastLength, Vector2 pos, BaseScene& scene);
 	~Bomb();
 
 	bool Update(void)override;
@@ -20,7 +20,7 @@ private:
 	int ownerID_;
 	std::chrono::system_clock::time_point startTime_;
 	std::chrono::system_clock::time_point endTime_;
-	int fireLength_;
+	int blastLength_;
 	BaseScene& scene_;
 };
 

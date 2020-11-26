@@ -18,7 +18,7 @@ bool CrossOver::Init()
 	return true;
 }
 
-unique_Base CrossOver::Update(unique_Base own)
+unique_Base CrossOver::Update(unique_Base own, double delta)
 {
 	Draw();
 	if (fadeCnt_ > 255)

@@ -18,10 +18,10 @@ class GameScene :
 {
 public:
     bool Init(void) override;                           // 初期化
-    unique_Base Update(unique_Base own) override;       // 更新
+    unique_Base Update(unique_Base own, double delta) override;       // 更新
     void Draw(void) override;                           // 描画
 
-    void SetBombObj(int owner, int self, Vector2 pos, bool sendFlag);
+    void SetBombObj(int owner, int self, Vector2 pos, int blastLength, bool sendFlag);
     uniqueObj& GetPlayerObj(int id);
     void SetFire(const Vector2& pos, int length);
 
