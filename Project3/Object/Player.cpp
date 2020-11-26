@@ -191,6 +191,15 @@ bool Player::UpdateDef(void)
 	plData[3].iData = static_cast<int>(dir_);
 	lpNetWork.SendMes(plData, MesType::Pos);
 
+	if (mapObj_->GetFireMap(pos_ + mapObj_->GetTmxInfo().tileWidth / 2) > 0.0)
+	{
+		MesPacket dethData;
+		dethData.resize(1);
+		dethData[0].iData = objectID_;
+		lpNetWork.SendMes(dethData, MesType::Deth);
+		alive_ = false;
+	}
+
 	return true;
 }
 
@@ -211,6 +220,10 @@ bool Player::UpdateNet(void)
 			{
 				auto now = TimeUnion{ std::chrono::system_clock::now() };
 				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, pos_, data.second[4].iData,true);
+			}
+			if (data.first == MesType::Deth)
+			{
+				alive_ = false;
 			}
 		}
 		return true;

@@ -29,7 +29,7 @@ bool Bomb::UpdateDef(void)
 	{
 		alive_ = false;
 		dynamic_cast<GameScene&>(scene_).SetFire(pos_, blastLength_);
-		auto& player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);
+		auto& player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);s
 		if (player)
 		{
 			dynamic_cast<Player&>(*player).BombReload(objectID_);

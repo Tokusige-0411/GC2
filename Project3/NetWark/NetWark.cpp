@@ -86,6 +86,11 @@ void NetWark::Update(void)
 		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
 		});
 
+	netFunc.emplace(MesType::Deth, [&]() {
+		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData / 5].second);
+		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+	});
+
 	while (!ProcessMessage() && GetLostNetWork() == -1)
 	{
 		if (netState_->Update())

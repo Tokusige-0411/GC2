@@ -183,15 +183,14 @@ void TileLoader::Draw()
 		if (data.animCnt > 0.0f)
 		{
 			auto animOffset = static_cast<int>(ceil(data.animCnt / 1000 * 60));
-			//animOffset = 
+			animOffset = abs(abs(animOffset / 10 - 3) - 3);
 			DrawRotaGraph(
 				data.pos.x + tmxInfo_.tileWidth / 2,
 				data.pos.y + tmxInfo_.tileHeight / 2,
 				1.0,
 				static_cast<int>(data.dir) * (DX_PI / 2),
-				IMAGE_ID("fire")[data.length],
+				IMAGE_ID("fire")[animOffset * 3 + data.length],
 				true);
-			data.animCnt -= delta_;
 		}
 	}
 }
@@ -207,18 +206,7 @@ void TileLoader::FireUpdate(double delta)
 	auto end = lpSceneMng.GetTime();
 	for (auto& data : fireMap_)
 	{
-		//if (data.drawFlag)
-		//{
-		//	if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= 150)
-		//	{
-		//		data.animCnt++;
-		//		data.time = end;
-		//		if (data.animCnt >= 7)
-		//		{
-		//			data.drawFlag = false;
-		//		}
-		//	}
-		//}
+		data.animCnt -= delta_;
 	}
 }
 
@@ -241,6 +229,12 @@ int TileLoader::GetMapData(std::string layer, Vector2 pos)
 {
 	pos = { pos.x / tmxInfo_.tileWidth, pos.y / tmxInfo_.tileHeight };
 	return mapData_[layer][pos.y * tmxInfo_.width + pos.x];
+}
+
+double TileLoader::GetFireMap(Vector2 pos)
+{
+	auto chipPos = pos / tmxInfo_.tileWidth;
+	return fireMap_[chipPos.y * tmxInfo_.width + chipPos.x].animCnt;
 }
 
 void TileLoader::SetFireGenerator(const Vector2& pos, int length)

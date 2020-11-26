@@ -89,6 +89,7 @@ public:
 	const TSXInfo& GetTsxInfo(void);					// TSXî•ñæ“¾
 	const MapData& GetMapData(void);					// Ï¯ÌßÃŞ°Àæ“¾
 	int GetMapData(std::string layer, Vector2 pos);		// w’è‚³‚ê‚½ˆÊ’u‚ÌÏ¯Ìßî•ñ‚ğ•Ô‚·
+	double GetFireMap(Vector2 pos);
 	void SetFireGenerator(const Vector2& pos, int length);
 
 private:
