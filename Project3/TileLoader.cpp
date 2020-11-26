@@ -183,7 +183,14 @@ void TileLoader::Draw(void)
 	{
 		if (data.drawFlag)
 		{
-			DrawRotaGraph(data.pos.x + tmxInfo_.tileWidth / 2, data.pos.y + tmxInfo_.tileHeight / 2, 1.0, 0.0, IMAGE_ID("fire")[0], true);
+			auto animOffset = abs(abs(data.animCnt - 3) - 3);
+			DrawRotaGraph(
+				data.pos.x + tmxInfo_.tileWidth / 2,
+				data.pos.y + tmxInfo_.tileHeight / 2,
+				1.0,
+				static_cast<int>(data.dir) * (DX_PI / 2),
+				IMAGE_ID("fire")[animOffset * 3 + data.length],
+				true);
 		}
 	}
 }
@@ -194,13 +201,21 @@ void TileLoader::FireUpdate(void)
 	{
 		(*data)();
 	}
-	//fireGeneratorList_.remove_if([](FireGenerator& data) { return (data.length <= 0); });
+	fireGeneratorList_.remove_if([](std::unique_ptr<FireGenerator>& data) { return !(data->GetLength()); });
 	auto end = lpSceneMng.GetTime();
 	for (auto& data : fireMap_)
 	{
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= 1000)
+		if (data.drawFlag)
 		{
-			data.drawFlag = false;
+			if (std::chrono::duration_cast<std::chrono::milliseconds>(end - data.time).count() >= 150)
+			{
+				data.animCnt++;
+				data.time = end;
+				if (data.animCnt >= 7)
+				{
+					data.drawFlag = false;
+				}
+			}
 		}
 	}
 }
@@ -228,7 +243,7 @@ int TileLoader::GetMapData(std::string layer, Vector2 pos)
 
 void TileLoader::SetFireGenerator(const Vector2& pos, int length)
 {
-	fireGeneratorList_.push_back(std::make_unique<FireGenerator>( pos / 32, length, fireMap_, mapData_));
+	fireGeneratorList_.push_back(std::make_unique<FireGenerator>( pos / 32, length, fireMap_, mapData_, tmxInfo_));
 }
 
 bool TileLoader::Init(void)

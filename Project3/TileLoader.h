@@ -27,6 +27,31 @@ struct TSXInfo
 	std::string imageName{};
 };
 
+enum class BlockType
+{
+	Non = 1,
+	Floor_Blue,
+	Floor_Red,
+	Char,
+	Black,
+	Wall_Blue,
+	Wall_Red,
+	Break_Block,
+	Item_1,
+	Item_2,
+	Item_3,
+	Item_4,
+	Max
+};
+
+struct ClossFire
+{
+	int up : 1;
+	int down : 1;
+	int right : 1;
+	int left : 1;
+};
+
 enum class FireDir
 {
 	Right,
@@ -38,11 +63,12 @@ enum class FireDir
 
 struct Fire
 {
-	Vector2 pos;
-	FireDir dir;
-	int animCnt;
-	bool drawFlag;
-	std::chrono::system_clock::time_point time;
+	Vector2 pos{};
+	FireDir dir{};
+	int animCnt{};
+	bool drawFlag{};
+	int length{};
+	std::chrono::system_clock::time_point time{};
 };
 
 class FireGenerator;
