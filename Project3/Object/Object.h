@@ -27,19 +27,7 @@ static Dir end(Dir) { return Dir::Max; }
 static Dir operator*(Dir id) { return id; }
 static Dir operator++(Dir& id) { return id = static_cast<Dir>(std::underlying_type<Dir>::type(id) + 1); }
 
-struct DirBit
-{
-	unsigned int up : 1;
-	unsigned int right : 1;
-	unsigned int down : 1;
-	unsigned int left : 1;
-};
-
-union DirPermit
-{
-	DirBit bit;
-	unsigned int perbit;
-};
+using sharedMap = std::shared_ptr<TileLoader>;
 
 class Object
 {
@@ -69,7 +57,7 @@ protected:
 	std::mutex mtx_;
 
 	std::function<bool(void)> update_;					// ¹Þ½Ä‚ÆÎ½Ä‚Å±¯ÌßÃÞ°Ä‚ð•ª‚¯‚é
-	std::shared_ptr<TileLoader> mapObj_;
+	sharedMap mapObj_;
 	int objectID_;
 };
 

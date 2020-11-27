@@ -34,7 +34,7 @@ bool GameScene::Init(void)
 		{
 			if (mapData_["Char"][y * mapInfo_.width + x])
 			{
-				objList_.emplace_back(std::make_unique<Player>(instanceCnt, Vector2{x * mapInfo_.tileWidth, y * mapInfo_.tileHeight}, mapObj_, *this));
+				objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{x * mapInfo_.tileWidth, y * mapInfo_.tileHeight}, mapObj_, *this));
 				instanceCnt += UNIT_ID_NUM;
 			}
 		}
@@ -49,7 +49,7 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 {
 	mapObj_->FireUpdate(delta);
 
-	objList_.sort([](uniqueObj& a, uniqueObj& b) {
+	objList_.sort([](sharedObj& a, sharedObj& b) {
 		return a->IsPickUp() > b->IsPickUp();
 		});
 
@@ -61,7 +61,7 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 		}
 	}
 
-	objList_.remove_if([](uniqueObj& obj) {return !(obj->GetAlive()); });
+	objList_.remove_if([](sharedObj& obj) {return !(obj->GetAlive()); });
 
 	DrawOwnScreen();
 
@@ -91,11 +91,11 @@ void GameScene::SetBombObj(int owner, int self, Vector2 pos, int blastLength, bo
 {
 	if (sendFlag)
 	{
-		objList_.emplace_back(std::make_unique<Bomb>(owner, self, blastLength, pos, *this));
+		objList_.emplace_back(std::make_shared<Bomb>(owner, self, blastLength, pos, mapObj_, *this));
 	}
 }
 
-uniqueObj& GameScene::GetPlayerObj(int id)
+sharedObj GameScene::GetPlayerObj(int id)
 {
 	for (auto& obj : objList_)
 	{
@@ -104,9 +104,11 @@ uniqueObj& GameScene::GetPlayerObj(int id)
 			return obj;
 		}
 	}
+	sharedObj obj = nullptr;
+	return obj;
 }
 
-void GameScene::SetFire(const Vector2& pos, int length)
+void GameScene::SetFireMap(const Vector2& pos, int length)
 {
 	mapObj_->SetFireGenerator(pos, length);
 }

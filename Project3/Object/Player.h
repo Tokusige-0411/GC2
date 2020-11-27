@@ -15,7 +15,7 @@ class Player :
 	public Object
 {
 public:
-	Player(int id, Vector2 pos, std::shared_ptr<TileLoader>& mapObj, BaseScene& scene);
+	Player(int id, Vector2 pos, sharedMap& mapObj, BaseScene& scene);
 	~Player();
 
 	static int fallCnt;

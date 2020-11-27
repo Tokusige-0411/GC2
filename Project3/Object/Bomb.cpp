@@ -3,13 +3,14 @@
 #include "../Scene/GameScene.h"
 #include "Player.h"
 
-Bomb::Bomb(int owner, int self, int blastLength, Vector2 pos, BaseScene& scene) : scene_(scene)
+Bomb::Bomb(int owner, int self, int blastLength, Vector2 pos, sharedMap& mapObj,BaseScene& scene) : scene_(scene)
 {
 	ownerID_ = owner;
 	objectID_ = self;
 	pos_ = pos;
 	startTime_ = std::chrono::system_clock::now();
 	blastLength_ = blastLength;
+	mapObj_ = mapObj;
 	Init();
 }
 
@@ -25,16 +26,23 @@ bool Bomb::Update(void)
 bool Bomb::UpdateDef(void)
 {
 	endTime_ = std::chrono::system_clock::now();
-	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime_ - startTime_).count() >= 3000)
-	{
+	auto Set = [&]() {
 		alive_ = false;
-		dynamic_cast<GameScene&>(scene_).SetFire(pos_, blastLength_);
-		auto& player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);s
+		mapObj_->SetFireGenerator(pos_, blastLength_);
+		auto player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);
 		if (player)
 		{
 			dynamic_cast<Player&>(*player).BombReload(objectID_);
 		}
+	};
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime_ - startTime_).count() >= 3000 ||
+		mapObj_->GetFireMap(pos_) > 0.0)
+	{
+		Set();
 	}
+
+	mapObj_->SetBombMap(pos_, alive_);
+
 	return true;
 }
 

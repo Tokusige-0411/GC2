@@ -65,6 +65,7 @@ struct Fire
 {
 	Vector2 pos{};
 	FireDir dir{};
+	ClossFire fire{};
 	double animCnt{};
 	int length{};
 };
@@ -73,6 +74,7 @@ class FireGenerator;
 
 using MapData = std::map<std::string, std::vector<int>>;
 using FireMap = std::vector<Fire>;
+using BombMap = std::vector<bool>;
 
 class TileLoader
 {
@@ -80,26 +82,30 @@ public:
 	TileLoader();
 	~TileLoader();
 
-	bool TMXLoader(std::string fileName);				// TMXﾌｧｲﾙのﾛｰﾀﾞｰ
-	bool TSXLoader(std::string fileName);				// TSXﾌｧｲﾙのﾛｰﾀﾞｰ
-	void SendTmxData(void);								// TMXの情報送信関数
-	void Draw(void);									// ﾏｯﾌﾟ描画
+	bool TMXLoader(std::string fileName);						// TMXﾌｧｲﾙのﾛｰﾀﾞｰ
+	bool TSXLoader(std::string fileName);						// TSXﾌｧｲﾙのﾛｰﾀﾞｰ
+	void SendTmxData(void);										// TMXの情報送信関数
+	void Draw(void);											// ﾏｯﾌﾟ描画
 	void FireUpdate(double delta);
-	const TMXInfo& GetTmxInfo(void);					// TMX情報取得
-	const TSXInfo& GetTsxInfo(void);					// TSX情報取得
-	const MapData& GetMapData(void);					// ﾏｯﾌﾟﾃﾞｰﾀ取得
-	int GetMapData(std::string layer, Vector2 pos);		// 指定された位置のﾏｯﾌﾟ情報を返す
-	double GetFireMap(Vector2 pos);
+	const TMXInfo& GetTmxInfo(void);							// TMX情報取得
+	const TSXInfo& GetTsxInfo(void);							// TSX情報取得
+	const MapData& GetMapData(void);							// ﾏｯﾌﾟﾃﾞｰﾀ取得
+	int GetMapData(std::string layer, Vector2 pos);				// 指定された位置のﾏｯﾌﾟ情報を返す
+	double GetFireMap(Vector2 pos);								// 指定場所に爆風があるか判断する
 	void SetFireGenerator(const Vector2& pos, int length);
+	void SetBombMap(const Vector2& pos, bool flag);
+	bool GetBombMap(const Vector2& pos);
 
 private:
 	// ﾏｯﾌﾟ関連
 	TMXInfo tmxInfo_;						// TMX情報
 	TSXInfo tsxInfo_;						// TSX情報
 	MapData mapData_;						// ﾏｯﾌﾟ情報
-	double delta_;
+	double delta_;							// 時間間隔
 
-	FireMap fireMap_;
+	FireMap fireMap_;						// 爆風ﾏｯﾌﾟ
+	BombMap bombMap_;						// ﾎﾞﾑ位置ﾏｯﾌﾟ
+
 	std::list<std::unique_ptr<FireGenerator>> fireGeneratorList_;
 
 	rapidxml::xml_document<> doc_;			// xmlﾌｧｲﾙの親ﾉｰﾄﾞ

@@ -22,7 +22,7 @@ void FireGenerator::operator()(double delta)
 
 	if(fireTime_ >= 0.0)
 	{
-		if (static_cast<int>(ceil((fireTime_ * 60.0 / 1000.0))) % 5 == 0)
+		if (static_cast<int>(ceil((fireTime_ * 60.0 / 1000.0))) % 10 == 0)
 		{
 			if (lengthMap_[FireDir::Up])
 			{
@@ -58,7 +58,7 @@ void FireGenerator::operator()(double delta)
 				int offset = abs(length_ - lengthMap_[FireDir::Down]);
 				int num = (chipPos_.y + offset) * mapInfo_.width + chipPos_.x;
 				auto SetFireMapUp = [&](int a) {
-					Firemap_[num].animCnt = ceil(10 * 7 * 1000 / 60);;
+					Firemap_[num].animCnt = ceil(10 * 7 * 1000 / 60);
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { chipPos_.x * mapInfo_.tileWidth, (chipPos_.y + offset) * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Down;
@@ -86,7 +86,7 @@ void FireGenerator::operator()(double delta)
 				int offset = abs(length_ - lengthMap_[FireDir::Right]);
 				int num = chipPos_.y * mapInfo_.width + (chipPos_.x + offset);
 				auto SetFireMapUp = [&](int a) {
-					Firemap_[num].animCnt = ceil(10 * 7 * 1000 / 60);;
+					Firemap_[num].animCnt = ceil(10 * 7 * 1000 / 60);
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { (chipPos_.x + offset) * mapInfo_.tileWidth, chipPos_.y * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Right;
@@ -114,7 +114,7 @@ void FireGenerator::operator()(double delta)
 				int offset = abs(length_ - lengthMap_[FireDir::Left]);
 				int num = chipPos_.y * mapInfo_.width + (chipPos_.x - offset);
 				auto SetFireMapUp = [&](int a) {
-					Firemap_[num].animCnt = ceil(10 * 7 * 1000 / 60);;
+					Firemap_[num].animCnt = ceil(10 * 7 * 1000 / 60);
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { (chipPos_.x - offset) * mapInfo_.tileWidth, chipPos_.y * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Left;

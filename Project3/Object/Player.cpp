@@ -12,7 +12,7 @@
 
 int Player::fallCnt = 0;
 
-Player::Player(int id, Vector2 pos, std::shared_ptr<TileLoader>& mapObj, BaseScene& scene) : scene_(scene)
+Player::Player(int id, Vector2 pos, sharedMap& mapObj, BaseScene& scene) : scene_(scene)
 {
 	pos_ = pos;
 	objectID_ = id;
@@ -191,14 +191,14 @@ bool Player::UpdateDef(void)
 	plData[3].iData = static_cast<int>(dir_);
 	lpNetWork.SendMes(plData, MesType::Pos);
 
-	if (mapObj_->GetFireMap(pos_ + mapObj_->GetTmxInfo().tileWidth / 2) > 0.0)
-	{
-		MesPacket dethData;
-		dethData.resize(1);
-		dethData[0].iData = objectID_;
-		lpNetWork.SendMes(dethData, MesType::Deth);
-		alive_ = false;
-	}
+	//if (mapObj_->GetFireMap(pos_ + mapObj_->GetTmxInfo().tileWidth / 2) > 0.0)
+	//{
+	//	MesPacket dethData;
+	//	dethData.resize(1);
+	//	dethData[0].iData = objectID_;
+	//	lpNetWork.SendMes(dethData, MesType::Deth);
+	//	alive_ = false;
+	//}
 
 	return true;
 }
@@ -238,20 +238,12 @@ bool Player::UpdateAuto(void)
 {
 	// ‚©‚×Áª¯¸
 	auto mapData = mapObj_->GetMapData();
-	auto CheckWall = [&](Vector2 checkPos) {
-		if (mapData["Obj"][checkPos.y * 21 + checkPos.x])
-		{
-			return false;
-		}
-		return true;
-	};
 
 	// Ï½–Ú‚¿‚å‚¤‚Ç‚É‚È‚Á‚½‚ç4•ûŒü’²‚×‚é
-	auto chipPos = (pos_ + 16) / 32;
-	dirPermit_[Dir::Up] = CheckWall({ chipPos.x, chipPos.y - 1 });
-	dirPermit_[Dir::Down] = CheckWall({ chipPos.x, chipPos.y + 1 });
-	dirPermit_[Dir::Right] = CheckWall({ chipPos.x + 1, chipPos.y });
-	dirPermit_[Dir::Left] = CheckWall({ chipPos.x - 1, chipPos.y });
+	dirPermit_[Dir::Up] = CheckWall(Dir::Up);
+	dirPermit_[Dir::Down] = CheckWall(Dir::Down);
+	dirPermit_[Dir::Right] = CheckWall(Dir::Right);
+	dirPermit_[Dir::Left] = CheckWall(Dir::Left);
 	// ˆÚ“®ˆ—‚Æ•ûŒü‚ğ’²‚×‚é
 	do
 	{
@@ -310,11 +302,11 @@ void Player::SetInputMoveList(void)
 					{
 						if (tmpPos < 16)
 						{
-							pos_.x = ((pos_.x / 32)) * 32;
+							pos_.x -= tmpPos;
 						}
 						else
 						{
-							pos_.x = ((pos_.x / 32) + 1) * 32;
+							pos_.x += 32 - tmpPos;
 						}
 					}
 					return true;
@@ -339,11 +331,11 @@ void Player::SetInputMoveList(void)
 					{
 						if (tmpPos < 16)
 						{
-							pos_.y = ((pos_.y / 32)) * 32;
+							pos_.y -= tmpPos;
 						}
 						else
 						{
-							pos_.y = ((pos_.y / 32) + 1) * 32;
+							pos_.y += 32 - tmpPos;
 						}
 					}
 					return true;
@@ -368,11 +360,11 @@ void Player::SetInputMoveList(void)
 					{
 						if (tmpPos < 16)
 						{
-							pos_.x = ((pos_.x / 32)) * 32;
+							pos_.x -= tmpPos;
 						}
 						else
 						{
-							pos_.x = ((pos_.x / 32) + 1) * 32;
+							pos_.x += 32 - tmpPos;
 						}
 					}
 					return true;
@@ -398,11 +390,11 @@ void Player::SetInputMoveList(void)
 					{
 						if (tmpPos < 16)
 						{
-							pos_.y = ((pos_.y / 32)) * 32;
+							pos_.y -= tmpPos;
 						}
 						else
 						{
-							pos_.y = ((pos_.y / 32) + 1) * 32;
+							pos_.y += 32 - tmpPos;
 						}
 					}
 					return true;
@@ -418,23 +410,24 @@ void Player::SetInputMoveList(void)
 bool Player::CheckWall(Dir dir)
 {
 	Vector2 checkPos = pos_;
+	auto data = mapObj_->GetTmxInfo();
 	switch (dir)
 	{
 	case Dir::Up:
-		checkPos.x += 16;
+		checkPos.x += data.tileWidth / 2;
 		checkPos.y -= 1;
 		break;
 	case Dir::Right:
-		checkPos.x += 33;
-		checkPos.y += 16;
+		checkPos.x += data.tileWidth + 1;
+		checkPos.y += data.tileHeight / 2;
 		break;
 	case Dir::Down:
-		checkPos.x += 16;
-		checkPos.y += 33;
+		checkPos.x += data.tileWidth / 2;
+		checkPos.y += data.tileHeight + 1;
 		break;
 	case Dir::Left:
 		checkPos.x -= 1;
-		checkPos.y += 16;
+		checkPos.y += data.tileHeight / 2;
 		break;
 	default:
 		break;
@@ -444,6 +437,12 @@ bool Player::CheckWall(Dir dir)
 	{
 		return false;
 	}
+
+	if (mapObj_->GetBombMap(checkPos))
+	{
+		return false;
+	}
+
 	return true;
 }
 

@@ -11,7 +11,7 @@
 union TimeUnion;
 class Object;
 
-using uniqueObj = std::unique_ptr<Object>;
+using sharedObj = std::shared_ptr<Object>;
 
 class GameScene :
     public BaseScene
@@ -22,8 +22,8 @@ public:
     void Draw(void) override;                           // ï`âÊ
 
     void SetBombObj(int owner, int self, Vector2 pos, int blastLength, bool sendFlag);
-    uniqueObj& GetPlayerObj(int id);
-    void SetFire(const Vector2& pos, int length);
+    sharedObj GetPlayerObj(int id);
+    void SetFireMap(const Vector2& pos, int length);
 
     GameScene();
     ~GameScene();
@@ -38,6 +38,6 @@ private:
     std::chrono::system_clock::time_point end_;						// ïbä‘ä«óùèIóπ
     int timeCnt_;                                                   // âΩïbåoÇ¡ÇΩÇ©
 
-    std::list<uniqueObj> objList_;
+    std::list<sharedObj> objList_;
 };
 

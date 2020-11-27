@@ -7,7 +7,7 @@ class Bomb :
 	public Object
 {
 public:
-	Bomb(int owner, int self, int blastLength, Vector2 pos, BaseScene& scene);
+	Bomb(int owner, int self, int blastLength, Vector2 pos, sharedMap& mapObj, BaseScene& scene);
 	~Bomb();
 
 	bool Update(void)override;
