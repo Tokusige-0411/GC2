@@ -55,12 +55,26 @@ unique_Base LoginScene::Update(unique_Base own, double delta)
 
 void LoginScene::Draw(void)
 {
-
+	if (!lpNetWork.GetConnectFlag())
+	{
+		DrawString(200, 200, "待機中", 0xffffff);
+	}
+	else
+	{
+		auto now = lpSceneMng.GetTime();
+		auto time = COUNT_DOWN_MAX - std::chrono::duration_cast<std::chrono::milliseconds>(now - lpNetWork.GetConnectTime()).count();
+		if (time < 0)
+		{
+			time = 0;
+		}
+		DrawFormatString(200, 200, 0xffffff, "開始まで残り%d秒", time / 1000);
+	}
 }
 
 void LoginScene::DrawOwnScreen(void)
 {
 	SetDrawScreen(screenID_);
+	ClsDrawScreen();
 	Draw();
 }
 

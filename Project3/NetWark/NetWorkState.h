@@ -1,7 +1,9 @@
 #pragma once
+#include<list>
 
 enum class NetWorkMode
 {
+	Non,
 	Offline,
 	Host,
 	Guest,
@@ -17,6 +19,8 @@ enum class ActiveState
 	Offline,
 };
 
+using NetHandleList = std::list<std::pair<int, unsigned int>>;
+
 class NetWorkState
 {
 public:
@@ -26,7 +30,7 @@ public:
 	bool Update(void);
 	ActiveState GetActiveState(void);
 	void SetActiveState(ActiveState state);
-	int GetNetHandle(void);
+	NetHandleList& GetNetHandle(void);
 	virtual ActiveState ConnectHost(IPDATA hostIP);
 
 private:
@@ -36,5 +40,7 @@ protected:
 	const int portNum_ = 8086;
 	ActiveState active_;
 	int netHandle_ = 0;
+	NetHandleList netHandleList_;
+	bool startFlag_;
 };
 

@@ -36,23 +36,15 @@ void Player::Init(void)
 			input_->SetUp(0);
 			SetInputMoveList();
 		}
-		else if (objectID_ / UNIT_ID_NUM == 1)
-		{
-			update_ = std::bind(&Player::UpdateNet, this);
-		}
 		else
 		{
-			update_ = std::bind(&Player::UpdateAuto, this);
+			update_ = std::bind(&Player::UpdateNet, this);
 		}
 	}
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
-		if (objectID_ / UNIT_ID_NUM == 0)
-		{
-			update_ = std::bind(&Player::UpdateNet, this);
-		}
-		else if (objectID_ / UNIT_ID_NUM == 1)
+		if(objectID_ == lpNetWork.GetPlayerInf().first)
 		{
 			input_ = std::make_unique<KeyInput>();
 			input_->SetUp(0);
@@ -60,7 +52,7 @@ void Player::Init(void)
 		}
 		else
 		{
-			update_ = std::bind(&Player::UpdateAuto, this);
+			update_ = std::bind(&Player::UpdateNet, this);
 		}
 	}
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
@@ -75,11 +67,6 @@ void Player::Init(void)
 		{
 			update_ = std::bind(&Player::UpdateAuto, this);
 		}
-	}
-
-	if ((objectID_ / UNIT_ID_NUM) >= 2)
-	{
-		update_ = std::bind(&Player::UpdateAuto, this);
 	}
 
 	dir_ = Dir::Right;

@@ -12,9 +12,10 @@ GestState::~GestState()
 
 ActiveState GestState::ConnectHost(IPDATA hostIP)
 {
-	netHandle_ = ConnectNetWork(hostIP, portNum_);
+	//netHandle_ = ConnectNetWork(hostIP, portNum_);
+	netHandleList_.push_back(std::pair<int, int>(ConnectNetWork(hostIP, portNum_), 0));
 
-	if (netHandle_ != -1)
+	if (netHandleList_.front().first != -1)
 	{
 		active_ = ActiveState::Init;
 		return active_;

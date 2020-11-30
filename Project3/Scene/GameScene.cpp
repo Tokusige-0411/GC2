@@ -28,14 +28,15 @@ bool GameScene::Init(void)
 
 	// map‚Ìchar‚ÌˆÊ’u‚Éplayer‚ð²Ý½ÀÝ½
 	int instanceCnt = 0;
-	for (int y = 0; y < mapInfo_.height; y++)
+	for (int i = 0; i < mapInfo_.height * mapInfo_.width; i++)
 	{
-		for (int x = 0; x < mapInfo_.width; x++)
+		if (mapData_["Char"][i])
 		{
-			if (mapData_["Char"][y * mapInfo_.width + x])
+			objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{ (i / mapInfo_.width) * mapInfo_.tileWidth, (i / mapInfo_.height) * mapInfo_.tileHeight }, mapObj_, *this));
+			instanceCnt += UNIT_ID_NUM;
+			if (instanceCnt / UNIT_ID_NUM >= lpNetWork.GetPlayerInf().second)
 			{
-				objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{x * mapInfo_.tileWidth, y * mapInfo_.tileHeight}, mapObj_, *this));
-				instanceCnt += UNIT_ID_NUM;
+				break;
 			}
 		}
 	}
@@ -125,5 +126,6 @@ GameScene::~GameScene()
 void GameScene::DrawOwnScreen(void)
 {
 	SetDrawScreen(screenID_);
+	ClsDrawScreen();
 	Draw();
 }

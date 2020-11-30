@@ -10,10 +10,12 @@
 #include<map>
 #include<functional>
 #include"NetWorkState.h"
+#include"../Scene/SceneMng.h"
 
 #define BIT_NUM 2
 #define INT_BYTE_CNT 4
 #define lpNetWork NetWark::GetInstance()
+#define COUNT_DOWN_MAX 3000
 
 // ﾒｯｾｰｼﾞ種別
 enum class MesType : unsigned char
@@ -23,7 +25,6 @@ enum class MesType : unsigned char
 	ID,
 	Stanby,			// ｽﾀﾝﾊﾞｲ
 	Game_Start,		// ｹﾞｰﾑ開始
-	Start_Time,
 	TMX_Size,		// TMXのｻｲｽﾞ情報
 	TMX_Data,		// TMXのCSVﾃﾞｰﾀ情報
 	Pos,			// ﾌﾟﾚｲﾔｰの座標
@@ -68,6 +69,7 @@ using ArrayIP = std::array<IPDATA, 2>;						// IPｱﾄﾞﾚｽ格納配列
 using MesPacket = std::vector<unionData>;					// ﾊﾟｹｯﾄﾃﾞｰﾀ
 using MesPair = std::pair<MesType, MesPacket>;
 using MesPacketList = std::vector<MesPair>;
+using PairInt = std::pair<int, int>;
 
 class NetWark
 {
@@ -99,7 +101,11 @@ public:
 
 	ArrayIP GetIP(void);									// IPｱﾄﾞﾚｽ取得
 
+	PairInt GetPlayerInf(void);
 
+	time_point GetConnectTime(void);						
+	bool GetConnectFlag(void);
+	void SetConnectFlag(bool flag);
 
 private:
 	struct NetWorkDeleter
@@ -128,7 +134,11 @@ private:
 	std::chrono::system_clock::time_point start;					// 接続開始時間
 	std::chrono::system_clock::time_point end;						// 接続終了時間
 
-	std::vector<std::pair<MesPacketList&, std::mutex&>> playerList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
+	time_point countStartTime_;										// ホストが接続し始めた時間
+	bool connectFlag_;												// 接続ができたかどうか
+	PairInt playerInf_;												// <自分のPlayerID, Playerの総人数>
+
+	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
 
 	NetWark();
 	~NetWark();

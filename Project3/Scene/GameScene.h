@@ -17,9 +17,9 @@ class GameScene :
     public BaseScene
 {
 public:
-    bool Init(void) override;                           // ‰Šú‰»
+    bool Init(void) override;                                         // ‰Šú‰»
     unique_Base Update(unique_Base own, double delta) override;       // XV
-    void Draw(void) override;                           // •`‰æ
+    void Draw(void) override;                                         // •`‰æ
 
     void SetBombObj(int owner, int self, Vector2 pos, int blastLength, bool sendFlag);
     sharedObj GetPlayerObj(int id);

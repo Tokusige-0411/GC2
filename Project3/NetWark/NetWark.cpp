@@ -30,7 +30,17 @@ void NetWark::RunUpdata(void)
 
 void NetWark::Update(void)
 {
-	int handle = 1;
+	auto handleChack = [&]() {
+		auto& handleList = netState_->GetNetHandle();
+		for (auto data : handleList)
+		{
+			if (data.first <= 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	};
 	while (!ProcessMessage())
 	{
 		if (!netState_)
@@ -38,8 +48,7 @@ void NetWark::Update(void)
 			continue;
 		}
 		netState_->Update();
-		handle = netState_->GetNetHandle();
-		if (handle > 0)
+		if (handleChack())
 		{
 			break;
 		}
@@ -50,6 +59,21 @@ void NetWark::Update(void)
 	recvPacket.reserve(200);
 	unsigned int writePos;
 	std::map<MesType, std::function<void(void)>> netFunc;
+
+	netFunc.emplace(MesType::Countdown, [&]() {
+		std::lock_guard<std::mutex> mut(mtx_);
+		TimeUnion data{};
+		data.data[0] = recvPacket[0].iData;
+		data.data[1] = recvPacket[1].iData;
+		countStartTime_ = data.time;
+		connectFlag_ = true;
+	});
+
+	netFunc.emplace(MesType::ID, [&]() {
+		std::lock_guard<std::mutex> mut(mtx_);
+		playerInf_.first = recvPacket[0].iData;
+		playerInf_.second = recvPacket[1].iData;
+	});
 
 	netFunc.emplace(MesType::TMX_Size, [&]() {
 		std::lock_guard<std::mutex> mut(mtx_);
@@ -77,48 +101,56 @@ void NetWark::Update(void)
 	});
 
 	netFunc.emplace(MesType::Pos, [&]() {
-		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData / 5].second);
-		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / 5].second);
+		playerMesList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
 	});
 
 	netFunc.emplace(MesType::Set_Bomb, [&]() {
-		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData / 5].second);
-		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / 5].second);
+		playerMesList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
 		});
 
 	netFunc.emplace(MesType::Deth, [&]() {
-		std::lock_guard<std::mutex> lock(playerList_[recvPacket[0].iData / 5].second);
-		playerList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / 5].second);
+		playerMesList_[recvPacket[0].iData / 5].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+	});
+
+	netFunc.emplace(MesType::Lost, [&]() {
+
 	});
 
 	while (!ProcessMessage() && GetLostNetWork() == -1)
 	{
 		if (netState_->Update())
 		{
-			if (GetNetWorkDataLength(handle) >= sizeof(MesHeader))
+			auto& handle = netState_->GetNetHandle();
+			for (auto data : handle)
 			{
-				if (!recvHeader.next)
+				if (GetNetWorkDataLength(data.first) >= sizeof(MesHeader))
 				{
-					//recvPacket.clear();
-					writePos = 0;
-				}
+					if (!recvHeader.next)
+					{
+						//recvPacket.clear();
+						writePos = 0;
+					}
 
-				NetWorkRecv(handle, &recvHeader, sizeof(MesHeader));
+					NetWorkRecv(data.first, &recvHeader, sizeof(MesHeader));
 
-				if (recvHeader.length)
-				{
-					recvPacket.resize(writePos + recvHeader.length);
-					NetWorkRecv(handle, recvPacket.data() + writePos, recvHeader.length * sizeof(unionData));
-					writePos = static_cast<unsigned int>(recvPacket.size());
-				}
-				// nextがあるかどうか
-				if (recvHeader.next)
-				{
-					TRACE("追加情報アリ\n");
-					continue;
-				}
+					if (recvHeader.length)
+					{
+						recvPacket.resize(writePos + recvHeader.length);
+						NetWorkRecv(data.first, recvPacket.data() + writePos, recvHeader.length * sizeof(unionData));
+						writePos = static_cast<unsigned int>(recvPacket.size());
+					}
+					// nextがあるかどうか
+					if (recvHeader.next)
+					{
+						TRACE("追加情報アリ\n");
+						continue;
+					}
 
-				(netFunc[recvHeader.type])();
+					(netFunc[recvHeader.type])();
+				}
 			}
 		}
 		else
@@ -138,7 +170,7 @@ void NetWark::InitCloseNetWork(void)
 
 void NetWark::AddMesList(int id, MesPacketList& list, std::mutex& mutex)
 {
-	playerList_.emplace_back(std::pair<MesPacketList&, std::mutex&>( list, mutex ));
+	playerMesList_.emplace_back(std::pair<MesPacketList&, std::mutex&>( list, mutex ));
 }
 
 bool NetWark::SendMes(MesPacket& packet, MesType type)
@@ -237,21 +269,37 @@ bool NetWark::SetNetWorkMode(NetWorkMode mode)
 
 NetWorkMode NetWark::GetNetWorkMode(void)
 {
+	if (!netState_)
+	{
+		return NetWorkMode::Non;
+	}
 	return netState_->GetMode();
 }
 
 ActiveState NetWark::GetActive(void)
 {
+	if (!netState_)
+	{
+		return ActiveState::Non;
+	}
 	return netState_->GetActiveState();;
 }
 
 int NetWark::GetNetHandle(void)
 {
-	return netState_->GetNetHandle();
+	if (!netState_)
+	{
+		return -1;
+	}
+	return netState_->GetNetHandle().front().first;
 }
 
 ActiveState NetWark::ConnectHost(IPDATA hostIP)
 {
+	if (!netState_)
+	{
+		return ActiveState::Non;
+	}
 	return netState_->ConnectHost(hostIP);
 }
 
@@ -261,9 +309,30 @@ ArrayIP NetWark::GetIP(void)
 	return ipData_;
 }
 
+PairInt NetWark::GetPlayerInf(void)
+{
+	return playerInf_;
+}
+
+time_point NetWark::GetConnectTime(void)
+{
+	return countStartTime_;
+}
+
+bool NetWark::GetConnectFlag(void)
+{
+	return connectFlag_;
+}
+
+void NetWark::SetConnectFlag(bool flag)
+{
+	connectFlag_ = flag;
+}
+
 bool NetWark::Init(void)
 {
 	revStanby_ = false;
+	connectFlag_ = false;
 	ipData_ = { 0 };
 	intSendCnt_ = 0;
 	// ﾌｧｲﾙから送るバイト数を読み込む

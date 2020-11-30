@@ -25,9 +25,9 @@ bool NetWorkState::Update(void)
 	return CheckNetWork();
 }
 
-int NetWorkState::GetNetHandle(void)
+NetHandleList& NetWorkState::GetNetHandle(void)
 {
-	return netHandle_;
+	return netHandleList_;
 }
 
 ActiveState NetWorkState::ConnectHost(IPDATA hostIP)
