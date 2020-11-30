@@ -107,7 +107,6 @@ void NetWark::Update(void)
 
 				if (recvHeader.length)
 				{
-					//recvPacket.resize(recvPacket.size() + recvHeader.length);
 					recvPacket.resize(writePos + recvHeader.length);
 					NetWorkRecv(handle, recvPacket.data() + writePos, recvHeader.length * sizeof(unionData));
 					writePos = static_cast<unsigned int>(recvPacket.size());

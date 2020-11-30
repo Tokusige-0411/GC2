@@ -86,7 +86,7 @@ public:
 	bool TSXLoader(std::string fileName);						// TSXÌ§²Ù‚ÌÛ°ÀŞ°
 	void SendTmxData(void);										// TMX‚Ìî•ñ‘—MŠÖ”
 	void Draw(void);											// Ï¯Ìß•`‰æ
-	void FireUpdate(double delta);
+	void FireUpdate(double delta);								// ”š•—XV
 	const TMXInfo& GetTmxInfo(void);							// TMXî•ñæ“¾
 	const TSXInfo& GetTsxInfo(void);							// TSXî•ñæ“¾
 	const MapData& GetMapData(void);							// Ï¯ÌßÃŞ°Àæ“¾

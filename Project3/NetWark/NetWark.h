@@ -19,13 +19,17 @@
 enum class MesType : unsigned char
 {
 	Non = 100,		// À²Ìß‚È‚µ
+	Countdown,
+	ID,
 	Stanby,			// ½ÀİÊŞ²
 	Game_Start,		// ¹Ş°ÑŠJn
+	Start_Time,
 	TMX_Size,		// TMX‚Ì»²½Şî•ñ
 	TMX_Data,		// TMX‚ÌCSVÃŞ°Àî•ñ
 	Pos,			// ÌßÚ²Ô°‚ÌÀ•W
 	Set_Bomb,
 	Deth,
+	Lost,
 	Max,
 };
 
