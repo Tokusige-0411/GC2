@@ -178,14 +178,14 @@ bool Player::UpdateDef(void)
 	plData[3].iData = static_cast<int>(dir_);
 	lpNetWork.SendMes(plData, MesType::Pos);
 
-	//if (mapObj_->GetFireMap(pos_ + mapObj_->GetTmxInfo().tileWidth / 2) > 0.0)
-	//{
-	//	MesPacket dethData;
-	//	dethData.resize(1);
-	//	dethData[0].iData = objectID_;
-	//	lpNetWork.SendMes(dethData, MesType::Deth);
-	//	alive_ = false;
-	//}
+	if (mapObj_->GetFireMap(pos_ + mapObj_->GetTmxInfo().tileWidth / 2) > 0.0)
+	{
+		MesPacket dethData;
+		dethData.resize(1);
+		dethData[0].iData = objectID_;
+		lpNetWork.SendMes(dethData, MesType::Deth);
+		alive_ = false;
+	}
 
 	return true;
 }

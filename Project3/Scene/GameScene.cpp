@@ -7,6 +7,8 @@
 #include "../Object/Player.h"
 #include "../Object/Bomb.h"
 
+#include "../_debug/_DebugConOut.h"
+
 bool GameScene::Init(void)
 {
 	mapObj_ = std::make_shared<TileLoader>();
@@ -32,7 +34,7 @@ bool GameScene::Init(void)
 	{
 		if (mapData_["Char"][i])
 		{
-			objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{ (i / mapInfo_.width) * mapInfo_.tileWidth, (i / mapInfo_.height) * mapInfo_.tileHeight }, mapObj_, *this));
+			objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{ (i % mapInfo_.width) * mapInfo_.tileWidth, (i / mapInfo_.width) * mapInfo_.tileHeight }, mapObj_, *this));
 			instanceCnt += UNIT_ID_NUM;
 			if (instanceCnt / UNIT_ID_NUM >= lpNetWork.GetPlayerInf().second)
 			{
@@ -48,21 +50,24 @@ bool GameScene::Init(void)
 
 unique_Base GameScene::Update(unique_Base own, double delta)
 {
-	mapObj_->FireUpdate(delta);
-
-	objList_.sort([](sharedObj& a, sharedObj& b) {
-		return a->IsPickUp() > b->IsPickUp();
-		});
-
-	for (auto& data : objList_)
+	if (lpNetWork.GetStartState() == StartState::GameStart)
 	{
-		if (!data->Update())
-		{
-			Player::fallCnt++;
-		}
-	}
+		mapObj_->FireUpdate(delta);
 
-	objList_.remove_if([](sharedObj& obj) {return !(obj->GetAlive()); });
+		objList_.sort([](sharedObj& a, sharedObj& b) {
+			return a->IsPickUp() > b->IsPickUp();
+			});
+
+		for (auto& data : objList_)
+		{
+			if (!data->Update())
+			{
+				Player::fallCnt++;
+			}
+		}
+
+		objList_.remove_if([](sharedObj& obj) {return !(obj->GetAlive()); });
+	}
 
 	DrawOwnScreen();
 
@@ -81,6 +86,16 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 
 void GameScene::Draw(void)
 {
+	if (lpNetWork.GetStartState() == StartState::Countdown)
+	{
+		auto now = lpSceneMng.GetTime();
+		auto time = GAME_START_TIME - (std::chrono::duration_cast<std::chrono::milliseconds>(now - lpNetWork.GetStartTime()).count());
+		if (time < 0)
+		{
+			lpNetWork.SetStartState(StartState::GameStart);
+			TRACE("ゲームスタート\n");
+		}
+	}
 	mapObj_->Draw();
 	for (auto& data : objList_)
 	{

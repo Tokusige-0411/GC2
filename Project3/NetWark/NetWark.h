@@ -15,23 +15,34 @@
 #define BIT_NUM 2
 #define INT_BYTE_CNT 4
 #define lpNetWork NetWark::GetInstance()
-#define COUNT_DOWN_MAX 3000
+#define COUNT_DOWN_MAX 15000
+#define GAME_START_TIME 10000
+#define UNIT_ID_NUM 5
 
 // ﾒｯｾｰｼﾞ種別
 enum class MesType : unsigned char
 {
-	Non = 100,		// ﾀｲﾌﾟなし
-	Countdown,
+	Non = 100,			// ﾀｲﾌﾟなし
+	Count_Down_Room,
 	ID,
-	Stanby,			// ｽﾀﾝﾊﾞｲ
-	Game_Start,		// ｹﾞｰﾑ開始
-	TMX_Size,		// TMXのｻｲｽﾞ情報
-	TMX_Data,		// TMXのCSVﾃﾞｰﾀ情報
-	Pos,			// ﾌﾟﾚｲﾔｰの座標
+	Stanby_Host,		// ｽﾀﾝﾊﾞｲ
+	Stanby_Guest,		// ｹﾞｰﾑ開始
+	Count_Down_Game,	
+	TMX_Size,			// TMXのｻｲｽﾞ情報
+	TMX_Data,			// TMXのCSVﾃﾞｰﾀ情報
+	Pos,				// ﾌﾟﾚｲﾔｰの座標
 	Set_Bomb,
 	Deth,
 	Lost,
 	Max,
+};
+
+enum class StartState
+{
+	Wait,
+	Countdown,
+	GameStart,
+	Max
 };
 
 // ｱﾗｲﾒﾝﾄに注意
@@ -103,9 +114,13 @@ public:
 
 	PairInt GetPlayerInf(void);
 
-	time_point GetConnectTime(void);						
+	time_point GetConnectTime(void);	
 	bool GetConnectFlag(void);
 	void SetConnectFlag(bool flag);
+
+	time_point GetStartTime(void);
+	StartState GetStartState(void);
+	void SetStartState(StartState state);
 
 private:
 	struct NetWorkDeleter
@@ -136,6 +151,8 @@ private:
 
 	time_point countStartTime_;										// ホストが接続し始めた時間
 	bool connectFlag_;												// 接続ができたかどうか
+	time_point gameStartTime_;
+	StartState startState_;
 	PairInt playerInf_;												// <自分のPlayerID, Playerの総人数>
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所

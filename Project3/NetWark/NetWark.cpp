@@ -60,7 +60,7 @@ void NetWark::Update(void)
 	unsigned int writePos;
 	std::map<MesType, std::function<void(void)>> netFunc;
 
-	netFunc.emplace(MesType::Countdown, [&]() {
+	netFunc.emplace(MesType::Count_Down_Room, [&]() {
 		std::lock_guard<std::mutex> mut(mtx_);
 		TimeUnion data{};
 		data.data[0] = recvPacket[0].iData;
@@ -87,7 +87,7 @@ void NetWark::Update(void)
 		MakeTmx(revBox_);
 	});
 
-	netFunc.emplace(MesType::Stanby, [&]() {
+	netFunc.emplace(MesType::Stanby_Host, [&]() {
 		// 送信時間
 		std::lock_guard<std::mutex> mut(mtx_);
 		end = std::chrono::system_clock::now();
@@ -95,9 +95,18 @@ void NetWark::Update(void)
 		netState_->SetActiveState(ActiveState::Play);
 	});
 
-	netFunc.emplace(MesType::Game_Start, [&]() {
+	netFunc.emplace(MesType::Stanby_Guest, [&]() {
 		netState_->SetActiveState(ActiveState::Play);
 		TRACE("ゲームスタート情報受信\n");
+	});
+
+	netFunc.emplace(MesType::Count_Down_Game, [&]() {
+		std::lock_guard<std::mutex> mut(mtx_);
+		TimeUnion data{};
+		data.data[0] = recvPacket[0].iData;
+		data.data[1] = recvPacket[1].iData;
+		gameStartTime_ = data.time;
+		startState_ = StartState::Countdown;
 	});
 
 	netFunc.emplace(MesType::Pos, [&]() {
@@ -230,7 +239,7 @@ void NetWark::SendStanby(void)
 		return;
 	}
 
-	SendMes(MesType::Stanby);
+	SendMes(MesType::Stanby_Host);
 
 	netState_->SetActiveState(ActiveState::Stanby);
 }
@@ -241,7 +250,7 @@ void NetWark::SendStart(void)
 	{
 		return;
 	}
-	SendMes(MesType::Game_Start);
+	SendMes(MesType::Stanby_Guest);
 }
 
 bool NetWark::SetNetWorkMode(NetWorkMode mode)
@@ -291,7 +300,14 @@ int NetWark::GetNetHandle(void)
 	{
 		return -1;
 	}
-	return netState_->GetNetHandle().front().first;
+	if (netState_->GetNetHandle().size())
+	{
+		return netState_->GetNetHandle().front().first;
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 ActiveState NetWark::ConnectHost(IPDATA hostIP)
@@ -329,12 +345,28 @@ void NetWark::SetConnectFlag(bool flag)
 	connectFlag_ = flag;
 }
 
+time_point NetWark::GetStartTime(void)
+{
+	return gameStartTime_;
+}
+
+StartState NetWark::GetStartState(void)
+{
+	return startState_;
+}
+
+void NetWark::SetStartState(StartState state)
+{
+	startState_ = state;
+}
+
 bool NetWark::Init(void)
 {
 	revStanby_ = false;
 	connectFlag_ = false;
 	ipData_ = { 0 };
 	intSendCnt_ = 0;
+	startState_ = StartState::Wait;
 	// ﾌｧｲﾙから送るバイト数を読み込む
 	std::ifstream ifp("ini/setting.txt");
 	std::string strLine;

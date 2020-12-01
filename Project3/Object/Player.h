@@ -5,8 +5,6 @@
 #include "Object.h"
 #include "../input/Controller.h"
 
-#define UNIT_ID_NUM 5
-
 class BaseScene;
 
 using InputFunc = std::function<bool(ContData&, bool)>;

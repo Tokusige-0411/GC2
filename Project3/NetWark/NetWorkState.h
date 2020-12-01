@@ -39,8 +39,6 @@ private:
 protected:
 	const int portNum_ = 8086;
 	ActiveState active_;
-	int netHandle_ = 0;
 	NetHandleList netHandleList_;
-	bool startFlag_;
 };
 
