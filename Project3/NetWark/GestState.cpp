@@ -28,8 +28,8 @@ bool GestState::CheckNetWork(void)
 {
 	if (GetLostNetWork() != -1)
 	{
-		//CloseNetWork(netHandle_);
-		//TRACE("ホストが切断しました\n");
+		CloseNetWork(netHandleList_.front().first);
+		TRACE("ホストから切断されました\n");
 		return false;
 	}
 	return true;

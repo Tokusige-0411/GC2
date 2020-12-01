@@ -162,8 +162,10 @@ void LoginScene::StartInit(void)
 		// この前に変数もろもろ初期化
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
-			// TMXﾃﾞｰﾀのｻｲｽﾞ送信
+			// 接続されたｹﾞｽﾄ全員にTMXﾃﾞｰﾀのｻｲｽﾞ送信
 			mapObj_->SendTmxData();
+
+			// 
 			lpNetWork.SendStanby();
 			TRACE("初期化情報を送信、開始合図待ち\n");
 		}

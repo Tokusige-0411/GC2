@@ -90,31 +90,34 @@ public:
 		return *s_Instance;
 	}
 
-	void RunUpdata(void);									// Update別ｽﾚｯﾄﾞ化
-	void Update(void);										// 更新
-	void InitCloseNetWork(void);							// 切断時ﾈｯﾄﾜｰｸ情報初期化
+	void RunUpdata(void);												// Update別ｽﾚｯﾄﾞ化
+	void Update(void);													// 更新
+	void InitCloseNetWork(void);										// 切断時ﾈｯﾄﾜｰｸ情報初期化
 
 	void AddMesList(int id, MesPacketList& list, std::mutex& mutex);
 
-	bool SendMes(MesPacket& packet, MesType type);			// ﾃﾞｰﾀ部ありﾒｯｾｰｼﾞ送信
-	bool SendMes(MesType type);								// ﾃﾞｰﾀ部なしﾒｯｾｰｼﾞ送信
-	void SendStanby(void);									// ｽﾀﾝﾊﾞｲ情報送信
-	void SendStart(void);									// ｹﾞｰﾑｽﾀｰﾄ情報送信
+	bool SendMesAll(MesPacket& packet, MesType type, int handle);		// ﾎｽﾄがみんなにﾃﾞｰﾀを送るときに使う
+	bool SendMes(MesPacket& packet, MesType type);						// ﾃﾞｰﾀ部ありﾒｯｾｰｼﾞ送信
+	bool SendMes(MesType type);											// ﾃﾞｰﾀ部なしﾒｯｾｰｼﾞ送信
+	void SendStanby(void);												// ｽﾀﾝﾊﾞｲ情報送信
+	void SendStart(void);												// ｹﾞｰﾑｽﾀｰﾄ情報送信
+	void SendCountDown(void);
 
-	bool SetNetWorkMode(NetWorkMode mode);					// ﾈｯﾄﾜｰｸﾓｰﾄﾞの設定
-	NetWorkMode GetNetWorkMode(void);						// ﾈｯﾄﾜｰｸﾓｰﾄﾞ取得
+	bool SetNetWorkMode(NetWorkMode mode);								// ﾈｯﾄﾜｰｸﾓｰﾄﾞの設定
+	NetWorkMode GetNetWorkMode(void);									// ﾈｯﾄﾜｰｸﾓｰﾄﾞ取得
 
-	ActiveState GetActive(void);							// ｱｸﾃｨﾌﾞｽﾃｰﾄ取得
+	ActiveState GetActive(void);										// ｱｸﾃｨﾌﾞｽﾃｰﾄ取得
 
-	int GetNetHandle(void);									// ﾈｯﾄﾜｰｸﾊﾝﾄﾞﾙ取得
+	int GetNetHandle(void);												// ﾈｯﾄﾜｰｸﾊﾝﾄﾞﾙ取得
 
-	ActiveState ConnectHost(IPDATA hostIP);					// ﾎｽﾄへの接続
+	ActiveState ConnectHost(IPDATA hostIP);								// ﾎｽﾄへの接続
 
-	ArrayIP GetIP(void);									// IPｱﾄﾞﾚｽ取得
+	ArrayIP GetIP(void);												// IPｱﾄﾞﾚｽ取得
 
 	PairInt GetPlayerInf(void);
 
 	time_point GetConnectTime(void);	
+	void SetConnectTime(time_point time);
 	bool GetConnectFlag(void);
 	void SetConnectFlag(bool flag);
 
