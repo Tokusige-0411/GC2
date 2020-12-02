@@ -101,14 +101,15 @@ public:
 	bool SendMes(MesType type);											// ﾃﾞｰﾀ部なしﾒｯｾｰｼﾞ送信
 	void SendStanby(void);												// ｽﾀﾝﾊﾞｲ情報送信
 	void SendStart(void);												// ｹﾞｰﾑｽﾀｰﾄ情報送信
-	void SendCountDown(void);
+	void SendCountDown(void);											// 接続待機時間送信
+	void SendPlayerID(void);											// 各ゲストにPlayerID送信
 
 	bool SetNetWorkMode(NetWorkMode mode);								// ﾈｯﾄﾜｰｸﾓｰﾄﾞの設定
 	NetWorkMode GetNetWorkMode(void);									// ﾈｯﾄﾜｰｸﾓｰﾄﾞ取得
 
 	ActiveState GetActive(void);										// ｱｸﾃｨﾌﾞｽﾃｰﾄ取得
 
-	int GetNetHandle(void);												// ﾈｯﾄﾜｰｸﾊﾝﾄﾞﾙ取得
+	int GetNetHandleList(void);											// ﾈｯﾄﾜｰｸﾊﾝﾄﾞﾙ取得
 
 	ActiveState ConnectHost(IPDATA hostIP);								// ﾎｽﾄへの接続
 
@@ -157,6 +158,8 @@ private:
 	time_point gameStartTime_;
 	StartState startState_;
 	PairInt playerInf_;												// <自分のPlayerID, Playerの総人数>
+	int playerMax_;
+	int guestCount_;
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
 

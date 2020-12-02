@@ -13,9 +13,9 @@ GestState::~GestState()
 ActiveState GestState::ConnectHost(IPDATA hostIP)
 {
 	//netHandle_ = ConnectNetWork(hostIP, portNum_);
-	netHandleList_.push_back(std::pair<int, int>(ConnectNetWork(hostIP, portNum_), 0));
+	netHandleList_.push_back(PlayerHandle{ConnectNetWork(hostIP, portNum_), 0, 0});
 
-	if (netHandleList_.front().first != -1)
+	if (netHandleList_.front().handle != -1)
 	{
 		active_ = ActiveState::Init;
 		return active_;
@@ -28,7 +28,7 @@ bool GestState::CheckNetWork(void)
 {
 	if (GetLostNetWork() != -1)
 	{
-		CloseNetWork(netHandleList_.front().first);
+		CloseNetWork(netHandleList_.front().handle);
 		TRACE("ÉzÉXÉgÇ©ÇÁêÿífÇ≥ÇÍÇ‹ÇµÇΩ\n");
 		return false;
 	}

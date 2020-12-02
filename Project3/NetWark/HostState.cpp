@@ -21,7 +21,7 @@ bool HostState::CheckNetWork(void)
 
 	if (handle != -1)
 	{
-		netHandleList_.push_back(std::pair<int, int>( handle, netHandleList_.size() * UNIT_ID_NUM + UNIT_ID_NUM ));
+		netHandleList_.push_back(PlayerHandle{ handle, netHandleList_.size() * UNIT_ID_NUM + UNIT_ID_NUM, 0 });
 		TRACE("Ú‘±Šm”F\n");
 		if (netHandleList_.size() == 1)
 		{
@@ -32,12 +32,24 @@ bool HostState::CheckNetWork(void)
 		lpNetWork.SendCountDown();
 	}
 
-	if (GetLostNetWork() != -1)
+	auto lost = GetLostNetWork();
+	if (lost != -1)
 	{
-		//PreparationListenNetWork(portNum_);
-		//CloseNetWork(netHandle_);
-		TRACE("ƒQƒXƒg‚ªØ’f‚µ‚Ü‚µ‚½\n");
-		return false;
+		for (auto data : netHandleList_)
+		{
+			if (data.handle == lost)
+			{
+				data.netState = -1;
+				CloseNetWork(data.handle);
+				TRACE("Ø’f‚ª‚ ‚è‚Ü‚µ‚½:ID%d\n", data.playerID);
+			}
+		}
+
+		if (!(netHandleList_.size()))
+		{
+			PreparationListenNetWork(portNum_);
+			return false;
+		}
 	}
 
 	return true;

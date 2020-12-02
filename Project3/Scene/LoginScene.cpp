@@ -165,8 +165,9 @@ void LoginScene::StartInit(void)
 			// 接続されたｹﾞｽﾄ全員にTMXﾃﾞｰﾀのｻｲｽﾞ送信
 			mapObj_->SendTmxData();
 
-			// 
-			lpNetWork.SendStanby();
+			// 各ゲストにIDと人数を送信
+			lpNetWork.SendPlayerID();
+
 			TRACE("初期化情報を送信、開始合図待ち\n");
 		}
 		if (lpNetWork.GetActive() == ActiveState::Play)
@@ -227,7 +228,7 @@ void LoginScene::SetHostIP(void)
 	TRACE("接続先のIPアドレス:%d.%d.%d.%d\n", hostIP.d1, hostIP.d2, hostIP.d3, hostIP.d4);
 	lpNetWork.ConnectHost(hostIP);
 
-	if (lpNetWork.GetNetHandle() != -1)
+	if (lpNetWork.GetNetHandleList() != -1)
 	{
 		// ﾌｧｲﾙへの書き出し
 		std::ofstream ofs("ini/hostIP.txt");

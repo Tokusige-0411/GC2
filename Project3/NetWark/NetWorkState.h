@@ -19,7 +19,14 @@ enum class ActiveState
 	Offline,
 };
 
-using NetHandleList = std::list<std::pair<int, unsigned int>>;
+struct PlayerHandle
+{
+	int handle;
+	unsigned int playerID;
+	int netState;
+};
+
+using NetHandleList = std::list<PlayerHandle>;
 
 class NetWorkState
 {
