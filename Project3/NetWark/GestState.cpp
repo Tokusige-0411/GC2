@@ -29,6 +29,7 @@ bool GestState::CheckNetWork(void)
 	if (GetLostNetWork() != -1)
 	{
 		CloseNetWork(netHandleList_.front().handle);
+		netHandleList_.clear();
 		TRACE("ƒzƒXƒg‚©‚çØ’f‚³‚ê‚Ü‚µ‚½\n");
 		return false;
 	}

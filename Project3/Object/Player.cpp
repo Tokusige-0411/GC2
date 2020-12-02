@@ -32,7 +32,7 @@ void Player::Init(void)
 	{
 		if (objectID_ / UNIT_ID_NUM == 0)
 		{
-			input_ = std::make_unique<KeyInput>();
+ 			input_ = std::make_unique<KeyInput>();
 			input_->SetUp(0);
 			SetInputMoveList();
 		}
@@ -164,7 +164,7 @@ bool Player::UpdateDef(void)
 			auto now = TimeUnion{ std::chrono::system_clock::now() };
 			bombData[5].iData = now.data[0];
 			bombData[6].iData = now.data[1];
-			lpNetWork.SendMes(bombData, MesType::Set_Bomb);
+			lpNetWork.SendMesAll(bombData, MesType::Set_Bomb, 0);
 			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, tmpPos, blastLength_, true);
 		}
 	}
@@ -176,14 +176,14 @@ bool Player::UpdateDef(void)
 	plData[1].iData = pos_.x;
 	plData[2].iData = pos_.y;
 	plData[3].iData = static_cast<int>(dir_);
-	lpNetWork.SendMes(plData, MesType::Pos);
+	lpNetWork.SendMesAll(plData, MesType::Pos, 0);
 
 	if (mapObj_->GetFireMap(pos_ + mapObj_->GetTmxInfo().tileWidth / 2) > 0.0)
 	{
 		MesPacket dethData;
 		dethData.resize(1);
 		dethData[0].iData = objectID_;
-		lpNetWork.SendMes(dethData, MesType::Deth);
+		lpNetWork.SendMesAll(dethData, MesType::Deth, 0);
 		alive_ = false;
 	}
 
@@ -212,6 +212,10 @@ bool Player::UpdateNet(void)
 			{
 				alive_ = false;
 			}
+			if (data.first == MesType::Lost)
+			{
+				alive_ = false;
+			}				
 		}
 		return true;
 	}

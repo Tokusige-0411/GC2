@@ -154,10 +154,10 @@ void TileLoader::SendTmxData(void)
 	sendData[0].cData[1] = 17;
 	sendData[0].cData[2] = 4;
 	sendData[0].cData[3] = 0;
-	lpNetWork.SendMesAll(sendData, MesType::TMX_Size, -1);
+	lpNetWork.SendMesAll(std::move(sendData), MesType::TMX_Size, -1);
 
 	// Tmx_Data‚ÌÍ¯ÀÞ°•”
-	lpNetWork.SendMesAll(csvData, MesType::TMX_Data, -1);
+	lpNetWork.SendMesAll(std::move(csvData), MesType::TMX_Data, -1);
 }
 
 void TileLoader::Draw()

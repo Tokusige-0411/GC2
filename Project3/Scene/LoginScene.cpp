@@ -162,16 +162,20 @@ void LoginScene::StartInit(void)
 		// この前に変数もろもろ初期化
 		if (lpNetWork.GetActive() == ActiveState::Init)
 		{
-			// 接続されたｹﾞｽﾄ全員にTMXﾃﾞｰﾀのｻｲｽﾞ送信
+			// 接続されたｹﾞｽﾄ全員にTMXﾃﾞｰﾀを送信
 			mapObj_->SendTmxData();
 
 			// 各ゲストにIDと人数を送信
 			lpNetWork.SendPlayerID();
 
+			// ｽﾀﾝﾊﾞｲ情報送信
+			lpNetWork.SendStanby();
+
 			TRACE("初期化情報を送信、開始合図待ち\n");
 		}
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
+			lpNetWork.SendCountGame();
 			gameStart_ = true;
 			TRACE("ゲームスタート\n");
 		}

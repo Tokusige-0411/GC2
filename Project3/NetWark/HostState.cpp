@@ -29,13 +29,13 @@ bool HostState::CheckNetWork(void)
 			lpNetWork.SetConnectTime(lpSceneMng.GetTime());
 			lpNetWork.SetConnectFlag(true);
 		}
-		lpNetWork.SendCountDown();
+		lpNetWork.SendCountRoom();
 	}
 
 	auto lost = GetLostNetWork();
 	if (lost != -1)
 	{
-		for (auto data : netHandleList_)
+		for (auto& data : netHandleList_)
 		{
 			if (data.handle == lost)
 			{
@@ -45,11 +45,31 @@ bool HostState::CheckNetWork(void)
 			}
 		}
 
+		netHandleList_.remove_if([](PlayerHandle& data) { return (data.netState == -1); });
+
 		if (!(netHandleList_.size()))
 		{
 			PreparationListenNetWork(portNum_);
 			return false;
 		}
+	}
+
+	if (active_ == ActiveState::Wait)
+	{
+		if (lpNetWork.GetConnectFlag())
+		{
+			auto now = lpSceneMng.GetTime();
+			auto time = (COUNT_DOWN_MAX - std::chrono::duration_cast<std::chrono::milliseconds>(now - lpNetWork.GetConnectTime()).count());
+			if (time > 0)
+			{
+				return false;
+			}
+			active_ = ActiveState::Init;
+			lpNetWork.SetPlayerInf(static_cast<int>(netHandleList_.size() + 1));
+			StopListenNetWork();
+			return true;
+		}
+		return false;
 	}
 
 	return true;

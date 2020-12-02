@@ -94,14 +94,16 @@ public:
 	void Update(void);													// 更新
 	void InitCloseNetWork(void);										// 切断時ﾈｯﾄﾜｰｸ情報初期化
 
-	void AddMesList(int id, MesPacketList& list, std::mutex& mutex);
+	void AddMesList(int id, MesPacketList& list, std::mutex& mutex);	// 
 
-	bool SendMesAll(MesPacket& packet, MesType type, int handle);		// ﾎｽﾄがみんなにﾃﾞｰﾀを送るときに使う
+	bool SendMesAll(MesPacket packet, MesType type, int handle);		// ﾎｽﾄがみんなにﾃﾞｰﾀを送るときに使う
+	bool SendMes(MesPacket& packet, MesType type, int handle);
 	bool SendMes(MesPacket& packet, MesType type);						// ﾃﾞｰﾀ部ありﾒｯｾｰｼﾞ送信
 	bool SendMes(MesType type);											// ﾃﾞｰﾀ部なしﾒｯｾｰｼﾞ送信
 	void SendStanby(void);												// ｽﾀﾝﾊﾞｲ情報送信
 	void SendStart(void);												// ｹﾞｰﾑｽﾀｰﾄ情報送信
-	void SendCountDown(void);											// 接続待機時間送信
+	void SendCountRoom(void);											// 接続待機時間送信
+	void SendCountGame(void);
 	void SendPlayerID(void);											// 各ゲストにPlayerID送信
 
 	bool SetNetWorkMode(NetWorkMode mode);								// ﾈｯﾄﾜｰｸﾓｰﾄﾞの設定
@@ -116,6 +118,7 @@ public:
 	ArrayIP GetIP(void);												// IPｱﾄﾞﾚｽ取得
 
 	PairInt GetPlayerInf(void);
+	void SetPlayerInf(int max);
 
 	time_point GetConnectTime(void);	
 	void SetConnectTime(time_point time);
@@ -159,7 +162,6 @@ private:
 	StartState startState_;
 	PairInt playerInf_;												// <自分のPlayerID, Playerの総人数>
 	int playerMax_;
-	int guestCount_;
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
 
