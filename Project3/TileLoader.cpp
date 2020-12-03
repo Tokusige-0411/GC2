@@ -251,13 +251,13 @@ void TileLoader::SetFireGenerator(const Vector2& pos, int length)
 void TileLoader::SetBombMap(const Vector2& pos, bool flag)
 {
 	auto chipPos = pos / tmxInfo_.tileWidth;
-	bombMap_[chipPos.y + tmxInfo_.width + chipPos.x] = flag;
+	bombMap_[chipPos.y * tmxInfo_.width + chipPos.x] = flag;
 }
 
 bool TileLoader::GetBombMap(const Vector2& pos)
 {
 	auto chipPos = pos / tmxInfo_.tileWidth;
-	return bombMap_[chipPos.y + tmxInfo_.width + chipPos.x];
+	return bombMap_[chipPos.y * tmxInfo_.width + chipPos.x];
 }
 
 bool TileLoader::Init(void)

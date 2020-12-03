@@ -129,42 +129,15 @@ bool Player::UpdateDef(void)
 			bombData.resize(7);
 			bombData[0].iData = objectID_;
 			bombData[1].iData = bombFlag;
-			auto tmpPos = pos_ % 32;
-			if (tmpPos.x)
-			{
-				if (tmpPos.x < 16)
-				{
-					tmpPos.x = ((pos_.x / 32)) * 32;
-				}
-				else
-				{
-					tmpPos.x = ((pos_.x / 32) + 1) * 32;
-				}
-				tmpPos.y = pos_.y;
-			}
-			else if (tmpPos.y)
-			{
-				if (tmpPos.y < 16)
-				{
-					tmpPos.y = ((pos_.y / 32)) * 32;
-				}
-				else
-				{
-					tmpPos.y = ((pos_.y / 32) + 1) * 32;
-				}
-				tmpPos.x = pos_.x;
-			}
-			else
-			{
-				tmpPos = pos_;
-			}
-			bombData[2].iData = pos_.x;
-			bombData[3].iData = pos_.y;
+			bombData[2].iData = pos_.x + 16;
+			bombData[3].iData = pos_.y + 16;
 			bombData[4].iData = blastLength_;
 			auto now = TimeUnion{ std::chrono::system_clock::now() };
 			bombData[5].iData = now.data[0];
 			bombData[6].iData = now.data[1];
 			lpNetWork.SendMesAll(bombData, MesType::Set_Bomb, 0);
+			//auto tmpPos = pos_ % 32;
+			auto tmpPos = ((pos_ + 16) / 32) * 32;
 			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, tmpPos, blastLength_, true);
 		}
 	}
@@ -206,35 +179,8 @@ bool Player::UpdateNet(void)
 			if (data.first == MesType::Set_Bomb)
 			{
 				auto now = TimeUnion{ std::chrono::system_clock::now() };
-				auto tmpPos = pos_ % 32;
-				if (tmpPos.x)
-				{
-					if (tmpPos.x < 16)
-					{
-						tmpPos.x = ((pos_.x / 32)) * 32;
-					}
-					else
-					{
-						tmpPos.x = ((pos_.x / 32) + 1) * 32;
-					}
-					tmpPos.y = pos_.y;
-				}
-				else if (tmpPos.y)
-				{
-					if (tmpPos.y < 16)
-					{
-						tmpPos.y = ((pos_.y / 32)) * 32;
-					}
-					else
-					{
-						tmpPos.y = ((pos_.y / 32) + 1) * 32;
-					}
-					tmpPos.x = pos_.x;
-				}
-				else
-				{
-					tmpPos = pos_;
-				}
+				auto tmpPos = Vector2{ data.second[2].iData, data.second[3].iData };
+				tmpPos = (tmpPos / 32) * 32;
 				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, tmpPos, data.second[4].iData, true);
 			}
 			if (data.first == MesType::Deth)
@@ -336,7 +282,7 @@ void Player::SetInputMoveList(void)
 			return true;
 		}
 		return false;
-		});
+	});
 	inputMoveList_.push_back([&](ContData& cont, bool move) {
 		if (cont[INPUT_ID::RIGHT][static_cast<int>(Trg::Now)])
 		{
@@ -365,7 +311,7 @@ void Player::SetInputMoveList(void)
 			return true;
 		}
 		return false;
-		});
+	});
 	inputMoveList_.push_back([&](ContData& cont, bool move) {
 		if (cont[INPUT_ID::DOWN][static_cast<int>(Trg::Now)])
 		{
@@ -394,7 +340,7 @@ void Player::SetInputMoveList(void)
 			return true;
 		}
 		return false;
-		});
+	});
 
 	inputMoveList_.push_back([&](ContData& cont, bool move) {
 		if (cont[INPUT_ID::LEFT][static_cast<int>(Trg::Now)])
@@ -424,7 +370,7 @@ void Player::SetInputMoveList(void)
 			return true;
 		}
 		return false;
-		});
+	});
 }
 
 bool Player::CheckWall(Dir dir)
