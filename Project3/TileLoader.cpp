@@ -177,7 +177,7 @@ void TileLoader::Draw()
 	draw("Bg");
 	draw("Item");
 	draw("Obj");
-	draw("Char");
+	//draw("Char");
 
 	for (auto& data : fireMap_)
 	{

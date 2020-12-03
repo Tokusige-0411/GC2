@@ -26,7 +26,7 @@ Player::~Player()
 
 void Player::Init(void)
 {
-	lpImageMng.GetID("player", "image/Player_Anim.png", { 32, 51 }, { 4, 4 });
+	lpImageMng.GetID("player", "image/bomberman.png", { 32, 51 }, { 5, 4 });
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
@@ -94,7 +94,7 @@ bool Player::Update(void)
 
 void Player::Draw(void)
 {
-	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 4 + static_cast<int>(dir_)], true);
+	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 5 + static_cast<int>(dir_)], true);
 	_dbgDrawBox(pos_.x, pos_.y, pos_.x + 32, pos_.y + 32, 0xffffff, false);
 	animCnt_++;
 }
@@ -158,8 +158,8 @@ bool Player::UpdateDef(void)
 			{
 				tmpPos = pos_;
 			}
-			bombData[2].iData = tmpPos.x;
-			bombData[3].iData = tmpPos.y;
+			bombData[2].iData = pos_.x;
+			bombData[3].iData = pos_.y;
 			bombData[4].iData = blastLength_;
 			auto now = TimeUnion{ std::chrono::system_clock::now() };
 			bombData[5].iData = now.data[0];
@@ -206,7 +206,36 @@ bool Player::UpdateNet(void)
 			if (data.first == MesType::Set_Bomb)
 			{
 				auto now = TimeUnion{ std::chrono::system_clock::now() };
-				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, pos_, data.second[4].iData,true);
+				auto tmpPos = pos_ % 32;
+				if (tmpPos.x)
+				{
+					if (tmpPos.x < 16)
+					{
+						tmpPos.x = ((pos_.x / 32)) * 32;
+					}
+					else
+					{
+						tmpPos.x = ((pos_.x / 32) + 1) * 32;
+					}
+					tmpPos.y = pos_.y;
+				}
+				else if (tmpPos.y)
+				{
+					if (tmpPos.y < 16)
+					{
+						tmpPos.y = ((pos_.y / 32)) * 32;
+					}
+					else
+					{
+						tmpPos.y = ((pos_.y / 32) + 1) * 32;
+					}
+					tmpPos.x = pos_.x;
+				}
+				else
+				{
+					tmpPos = pos_;
+				}
+				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, tmpPos, data.second[4].iData, true);
 			}
 			if (data.first == MesType::Deth)
 			{

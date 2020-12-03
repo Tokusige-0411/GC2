@@ -101,13 +101,16 @@ void NetWark::Update(void)
 
 	// ホスト
 	netFunc.emplace(MesType::Stanby_Guest, [&]() {
-		guestCount++;
-		if (guestCount == netState_->GetNetHandle().size())
+		if (netState_->GetMode() == NetWorkMode::Host)
 		{
-			gameStartTime_ = lpSceneMng.GetTime();
-			startState_ = StartState::Countdown;
-			netState_->SetActiveState(ActiveState::Play);
-			TRACE("ゲームスタート情報受信\n");
+			guestCount++;
+			if (guestCount == netState_->GetNetHandle().size())
+			{
+				gameStartTime_ = lpSceneMng.GetTime();
+				startState_ = StartState::Countdown;
+				netState_->SetActiveState(ActiveState::Play);
+				TRACE("ゲームスタート情報受信\n");
+			}
 		}
 	});
 
@@ -116,8 +119,11 @@ void NetWark::Update(void)
 		{
 			return;
 		}
-		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
-		playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
+		{
+			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
+			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		}
 	});
 
 	netFunc.emplace(MesType::Set_Bomb, [&]() {
@@ -125,8 +131,11 @@ void NetWark::Update(void)
 		{
 			return;
 		}
-		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
-		playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
+		{
+			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
+			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		}
 	});
 
 	netFunc.emplace(MesType::Deth, [&]() {
@@ -134,8 +143,11 @@ void NetWark::Update(void)
 		{
 			return;
 		}
-		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
-		playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
+		{
+			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
+			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		}
 	});
 
 	netFunc.emplace(MesType::Lost, [&]() {
@@ -143,8 +155,11 @@ void NetWark::Update(void)
 		{
 			return;
 		}
-		std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
-		playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
+		{
+			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
+			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		}
 	});
 
 	while (!ProcessMessage() && netState_->GetNetHandle().size())

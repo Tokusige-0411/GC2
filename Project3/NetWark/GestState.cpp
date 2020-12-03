@@ -26,6 +26,10 @@ ActiveState GestState::ConnectHost(IPDATA hostIP)
 
 bool GestState::CheckNetWork(void)
 {
+	if (!(netHandleList_.size()))
+	{
+		return false;
+	}
 	if (GetLostNetWork() != -1)
 	{
 		CloseNetWork(netHandleList_.front().handle);

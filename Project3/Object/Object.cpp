@@ -51,5 +51,6 @@ void Object::Init(void)
 	dir_ = Dir::Up;
 	update_ = std::bind(&Object::UpdateDef, this);
 	alive_ = true;
+	deth_ = false;
 	objectID_ = 0;
 }
