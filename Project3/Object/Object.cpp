@@ -35,11 +35,13 @@ Vector2 Object::GetPos(void)
 
 bool Object::IsPickUp(void)
 {
+	std::lock_guard<std::mutex> lock(mtx_);
 	return mesList_.size();
 }
 
 MesPair Object::PickUp(void)
 {
+	std::lock_guard<std::mutex> lock(mtx_);
 	auto data = mesList_.front();
 	mesList_.erase(mesList_.begin());
 	return data;
@@ -47,10 +49,11 @@ MesPair Object::PickUp(void)
 
 void Object::Init(void)
 {
-	animCnt_ = 0;
 	dir_ = Dir::Up;
 	update_ = std::bind(&Object::UpdateDef, this);
 	alive_ = true;
 	deth_ = false;
+	lost_ = true;
 	objectID_ = 0;
+	animCnt_ = 0;
 }

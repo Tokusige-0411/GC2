@@ -6,11 +6,21 @@
 #include "Vector2.h"
 #include "imageMng.h"
 
-using VecInt = std::vector<int>;
-
 // lp Ûİ¸ŞÎß²İÀ°
 #define lpImageMng ImageMng::GetInstance()
 #define IMAGE_ID(KEY) (ImageMng::GetInstance().GetID(KEY))
+
+enum class ObjectID
+{
+	Player,
+	Bomb,
+	Enemy,
+	Fire,
+	Map,
+	Max
+};
+
+using VecInt = std::vector<int>;
 
 class ImageMng
 {
@@ -25,9 +35,9 @@ public:
 	}
 
 	// ·°(¡‰ñ‚Í•¶š—ñ)
-	const VecInt& GetID(const std::string& key);									// ‚ ‚é‚©‚Ç‚¤‚©‚ğŠm”F
-	const VecInt& GetID(const std::string& key, const std::string& fileName);		// 1–‡ŠG
-	const VecInt& GetID(const std::string& key, const std::string& fileName,		// Á¯Ìß‰æ‘œ
+	const VecInt& GetID(const ObjectID& key);									// ‚ ‚é‚©‚Ç‚¤‚©‚ğŠm”F
+	const VecInt& GetID(const ObjectID& key, const std::string& fileName);		// 1–‡ŠG
+	const VecInt& GetID(const ObjectID& key, const std::string& fileName,		// Á¯Ìß‰æ‘œ
 						const Vector2 divSize, const Vector2 divCnt);
 private:
 	// ½Ï°ÄÎß²İÀ°‚ÍÃŞÌ«ÙÄ‚ÅÃŞ½Ä×¸À°‚ªŒÄ‚Î‚ê‚é
@@ -48,6 +58,6 @@ private:
 
 	// std::map<·°‚ÌŒ^, ·°‚©‚ç±¸¾½‚µ‚½”z—ñ‚ÌŒ^>
 	// ²Ò°¼ŞÏ¯Ìß<‰æ‘œ‚Ì·°, ‰æ‘œ‚ğŠi”[‚µ‚½êŠ>
-	std::map<std::string, std::vector<int>> imgMap;
+	std::map<ObjectID, std::vector<int>> imgMap;
 };
 

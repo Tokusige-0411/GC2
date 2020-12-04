@@ -26,7 +26,7 @@ Player::~Player()
 
 void Player::Init(void)
 {
-	lpImageMng.GetID("player", "image/bomberman.png", { 32, 51 }, { 5, 4 });
+	lpImageMng.GetID(ObjectID::Player, "image/bomberman.png", { 32, 51 }, { 5, 4 });
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
@@ -78,6 +78,7 @@ void Player::Init(void)
 	animCnt_ = 0;
 	speed_ = 4;
 	blastLength_ = 3;
+	lost_ = false;
 
 	bombList_.push_back(1);
 	bombList_.push_back(2);
@@ -89,12 +90,16 @@ void Player::Init(void)
 
 bool Player::Update(void)
 {
-	return update_();
+	if (alive_)
+	{
+		return update_();
+	}
+	return true;
 }
 
 void Player::Draw(void)
 {
-	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID("player")[(2 + (animCnt_ / 15 % 2)) * 5 + static_cast<int>(dir_)], true);
+	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID(ObjectID::Player)[(2 + (animCnt_ / 15 % 2)) * 5 + static_cast<int>(dir_)], true);
 	_dbgDrawBox(pos_.x, pos_.y, pos_.x + 32, pos_.y + 32, 0xffffff, false);
 	animCnt_++;
 }
@@ -109,6 +114,7 @@ bool Player::UpdateDef(void)
 	(*input_)();
 
 	auto data = input_->GetContData();
+	auto mapInfo = mapObj_->GetTmxInfo();
 	for (auto inputMove = inputMoveList_.begin(); inputMove != inputMoveList_.end(); inputMove++)
 	{
 		if ((*inputMove)(data, true))
@@ -129,15 +135,14 @@ bool Player::UpdateDef(void)
 			bombData.resize(7);
 			bombData[0].iData = objectID_;
 			bombData[1].iData = bombFlag;
-			bombData[2].iData = pos_.x + 16;
-			bombData[3].iData = pos_.y + 16;
+			bombData[2].iData = pos_.x + mapInfo.tileWidth / 2;
+			bombData[3].iData = pos_.y + mapInfo.tileHeight / 2;
 			bombData[4].iData = blastLength_;
 			auto now = TimeUnion{ std::chrono::system_clock::now() };
 			bombData[5].iData = now.data[0];
 			bombData[6].iData = now.data[1];
 			lpNetWork.SendMesAll(bombData, MesType::Set_Bomb, 0);
-			//auto tmpPos = pos_ % 32;
-			auto tmpPos = ((pos_ + 16) / 32) * 32;
+			auto tmpPos = ((pos_ + mapInfo.tileWidth / 2) / mapInfo.tileWidth) * mapInfo.tileWidth;
 			dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, bombFlag, tmpPos, blastLength_, true);
 		}
 	}
@@ -165,7 +170,7 @@ bool Player::UpdateDef(void)
 
 bool Player::UpdateNet(void)
 {
-	std::lock_guard<std::mutex> lock(mtx_);
+	auto mapInfo = mapObj_->GetTmxInfo();
 	if (Object::IsPickUp())
 	{
 		while (Object::IsPickUp())
@@ -178,10 +183,17 @@ bool Player::UpdateNet(void)
 			}
 			if (data.first == MesType::Set_Bomb)
 			{
-				auto now = TimeUnion{ std::chrono::system_clock::now() };
-				auto tmpPos = Vector2{ data.second[2].iData, data.second[3].iData };
-				tmpPos = (tmpPos / 32) * 32;
-				dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, tmpPos, data.second[4].iData, true);
+				if (data.second[4].iData == blastLength_)
+				{
+					auto now = TimeUnion{ std::chrono::system_clock::now() };
+					auto tmpPos = Vector2{ data.second[2].iData, data.second[3].iData };
+					tmpPos = (tmpPos / mapInfo.tileWidth) * mapInfo.tileWidth;
+					dynamic_cast<GameScene&>(scene_).SetBombObj(objectID_, 0, tmpPos, data.second[4].iData, true);
+				}
+				else
+				{
+					TRACE("blastLengthÇ™ïsê≥Ç≈Ç∑ÅBlength:%d", data.second[4].iData);
+				}
 			}
 			if (data.first == MesType::Deth)
 			{
@@ -189,8 +201,9 @@ bool Player::UpdateNet(void)
 			}
 			if (data.first == MesType::Lost)
 			{
-				alive_ = false;
-			}				
+				deth_ = true;
+				lost_ = true;
+			}
 		}
 		return true;
 	}

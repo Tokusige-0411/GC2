@@ -24,7 +24,7 @@ bool GameScene::Init(void)
 
 	// Ï¯ÌßÁ¯Ìß“Ç‚Ýž‚Ý
 	auto chipData = mapObj_->GetTsxInfo();
-	lpImageMng.GetID("map", chipData.imageName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
+	lpImageMng.GetID(ObjectID::Map, chipData.imageName, Vector2{ chipData.tileWidth, chipData.tileHeight }, Vector2{ chipData.width, chipData.height });
 	mapData_ = mapObj_->GetMapData();
 	mapInfo_ = mapObj_->GetTmxInfo();
 
@@ -43,7 +43,7 @@ bool GameScene::Init(void)
 		}
 	}
 
-	lpImageMng.GetID("fire", "image/fire.png", { 32, 32 }, { 3, 4 });
+	lpImageMng.GetID(ObjectID::Fire, "image/fire.png", { 32, 32 }, { 3, 4 });
 
 	return true;
 }
@@ -66,7 +66,7 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 			}
 		}
 
-		objList_.remove_if([](sharedObj& obj) {return !(obj->GetAlive()); });
+		objList_.remove_if([](sharedObj& obj) { return (obj->GetDeth() && obj->GetLost()); });
 	}
 
 	DrawOwnScreen();
@@ -99,7 +99,10 @@ void GameScene::Draw(void)
 	mapObj_->Draw();
 	for (auto& data : objList_)
 	{
-		data->Draw();
+		if (!(data->GetDeth()))
+		{
+			data->Draw();
+		}
 	}
 }
 

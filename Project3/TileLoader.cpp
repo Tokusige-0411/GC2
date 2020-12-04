@@ -169,7 +169,7 @@ void TileLoader::Draw()
 			{
 				if (mapData_[key][y * tmxInfo_.width + x])
 				{
-					DrawGraph(x * tmxInfo_.tileWidth, y * tmxInfo_.tileHeight, lpImageMng.GetID("map")[mapData_[key][y * tmxInfo_.width + x] - 1], true);
+					DrawGraph(x * tmxInfo_.tileWidth, y * tmxInfo_.tileHeight, lpImageMng.GetID(ObjectID::Map)[mapData_[key][y * tmxInfo_.width + x] - 1], true);
 				}
 			}
 		}
@@ -190,7 +190,7 @@ void TileLoader::Draw()
 				data.pos.y + tmxInfo_.tileHeight / 2,
 				1.0,
 				static_cast<int>(data.dir) * (DX_PI / 2),
-				IMAGE_ID("fire")[animOffset * 3 + data.length],
+				IMAGE_ID(ObjectID::Fire)[animOffset * 3 + data.length],
 				true);
 			data.animCnt -= delta_;
 		}

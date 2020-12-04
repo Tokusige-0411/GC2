@@ -4,13 +4,13 @@
 std::unique_ptr<ImageMng, ImageMng::ImageMngDeleter> ImageMng::_sInstance(new ImageMng());
 
 // ‚ ‚é‚©‚Ç‚¤‚©‚ÌŠm”F‚ð‚·‚é‚¾‚¯
-const VecInt & ImageMng::GetID(const std::string & key)
+const VecInt & ImageMng::GetID(const ObjectID& key)
 {
-	return GetID(key, key);
+	return GetID(key, "");
 }
 
 // 1–‡ŠG
-const VecInt & ImageMng::GetID(const std::string & key, const std::string & fileName)
+const VecInt & ImageMng::GetID(const ObjectID& key, const std::string & fileName)
 {
 	if (imgMap.find(key) == imgMap.end())
 	{
@@ -21,7 +21,7 @@ const VecInt & ImageMng::GetID(const std::string & key, const std::string & file
 }
 
 // Á¯Ìß‚È‚Ç
-const VecInt & ImageMng::GetID(const std::string & key, const std::string & fileName, const Vector2 divSize, const Vector2 divCnt)
+const VecInt & ImageMng::GetID(const ObjectID& key, const std::string & fileName, const Vector2 divSize, const Vector2 divCnt)
 {
 	if(imgMap.find(key) == imgMap.end())
 	{

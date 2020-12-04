@@ -28,6 +28,7 @@ bool Bomb::UpdateDef(void)
 	endTime_ = std::chrono::system_clock::now();
 	auto Set = [&]() {
 		alive_ = false;
+		deth_ = true;
 		mapObj_->SetFireGenerator(pos_, blastLength_);
 		auto player = dynamic_cast<GameScene&>(scene_).GetPlayerObj(ownerID_);
 		if (player)
@@ -48,10 +49,25 @@ bool Bomb::UpdateDef(void)
 
 void Bomb::Draw(void)
 {
-	DrawRotaGraph(pos_.x + 16, pos_.y + 16, 1.0, 0.0, IMAGE_ID("bomb")[0], true);
+	DrawRotaGraph(pos_.x + 16, pos_.y + 16, 1.0, 0.0, IMAGE_ID(ObjectID::Bomb)[0], true);
 }
 
 void Bomb::Init(void)
 {
-	lpImageMng.GetID("bomb", "image/bomb.png", { 32, 32 }, { 2, 7 });
+	lpImageMng.GetID(ObjectID::Bomb, "image/bomb.png", { 32, 32 }, { 2, 7 });
+	AnimVector data;
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[0], 10);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[2], 20);
+	animMap_.emplace(AnimState::Normal, data);
+	data.clear();
+
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[1], 3);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[3], 6);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[5], 9);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[7], 12);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[9], 15);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[11], 18);
+	data.emplace_back(IMAGE_ID(ObjectID::Bomb)[13], 21);
+	data.emplace_back(-1, 24);
+	animMap_.emplace(AnimState::Deth, data);
 }

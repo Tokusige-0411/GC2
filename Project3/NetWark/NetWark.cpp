@@ -51,19 +51,35 @@ void NetWark::Update(void)
 
 	// ゲスト
 	netFunc.emplace(MesType::Count_Down_Room, [&]() {
-		std::lock_guard<std::mutex> mut(mtx_);
-		TimeUnion data{};
-		data.data[0] = recvPacket[0].iData;
-		data.data[1] = recvPacket[1].iData;
-		countStartTime_ = data.time;
-		connectFlag_ = true;
+		if (!connectFlag_)
+		{
+			std::lock_guard<std::mutex> mut(mtx_);
+			TimeUnion data{};
+			data.data[0] = recvPacket[0].iData;
+			data.data[1] = recvPacket[1].iData;
+			countStartTime_ = data.time;
+			connectFlag_ = true;
+			TRACE("Count_Down_Room受け取り\n");
+		}
+		else
+		{
+			TRACE("不正な時間値です:Count_Down_Room\n");
+		}
 	});
 
 	// ゲスト
 	netFunc.emplace(MesType::ID, [&]() {
-		std::lock_guard<std::mutex> mut(mtx_);
-		playerInf_.first = recvPacket[0].iData;
-		playerInf_.second = recvPacket[1].iData;
+		if (recvPacket[0].iData % UNIT_ID_NUM)
+		{
+			if (recvPacket[0].iData / UNIT_ID_NUM < recvPacket[1].iData)
+			{
+				std::lock_guard<std::mutex> mut(mtx_);
+				playerInf_.first = recvPacket[0].iData;
+				playerInf_.second = recvPacket[1].iData;
+				return;
+			}
+		}
+		TRACE("不正なPlayerIDです。ID:%d, PlayerMax:%d\n", recvPacket[0].iData, recvPacket[1].iData);
 	});
 
 	// ゲスト
@@ -91,12 +107,20 @@ void NetWark::Update(void)
 
 	// ゲスト
 	netFunc.emplace(MesType::Count_Down_Game, [&]() {
-		std::lock_guard<std::mutex> mut(mtx_);
-		TimeUnion data{};
-		data.data[0] = recvPacket[0].iData;
-		data.data[1] = recvPacket[1].iData;
-		gameStartTime_ = data.time;
-		startState_ = StartState::Countdown;
+		if (netState_->GetActiveState() == ActiveState::Play)
+		{
+			std::lock_guard<std::mutex> mut(mtx_);
+			TimeUnion data{};
+			data.data[0] = recvPacket[0].iData;
+			data.data[1] = recvPacket[1].iData;
+			gameStartTime_ = data.time;
+			startState_ = StartState::Countdown;
+			TRACE("Count_Down_Game受け取り\n");
+		}
+		else
+		{
+			TRACE("不正な時間値です:Count_Down_Game\n");
+		}
 	});
 
 	// ホスト
@@ -124,6 +148,10 @@ void NetWark::Update(void)
 			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
 			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
 		}
+		else
+		{
+			TRACE("PlayerIDが不正です。:ID%d\n", recvPacket[0].iData);
+		}
 	});
 
 	netFunc.emplace(MesType::Set_Bomb, [&]() {
@@ -133,8 +161,19 @@ void NetWark::Update(void)
 		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
-			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
-			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+			if (recvPacket[1].iData % UNIT_ID_NUM)
+			{
+				std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
+				playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+			}
+			else
+			{
+				TRACE("bombIDが不正です。:ID%d\n", recvPacket[1].iData);
+			}
+		}
+		else
+		{
+			TRACE("PlayerIDが不正です。:ID%d\n", recvPacket[0].iData);
 		}
 	});
 
@@ -148,6 +187,10 @@ void NetWark::Update(void)
 			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
 			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
 		}
+		else
+		{
+			TRACE("PlayerIDが不正です。:ID%d\n", recvPacket[0].iData);
+		}
 	});
 
 	netFunc.emplace(MesType::Lost, [&]() {
@@ -159,6 +202,10 @@ void NetWark::Update(void)
 		{
 			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
 			playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].first.emplace_back(MesPair{ recvHeader.type, recvPacket });
+		}
+		else
+		{
+			TRACE("PlayerIDが不正です。:ID%d\n", recvPacket[0].iData);
 		}
 	});
 
