@@ -69,7 +69,7 @@ void NetWark::Update(void)
 
 	// ÉQÉXÉg
 	netFunc.emplace(MesType::ID, [&]() {
-		if (recvPacket[0].iData % UNIT_ID_NUM)
+		if (!(recvPacket[0].iData % UNIT_ID_NUM))
 		{
 			if (recvPacket[0].iData / UNIT_ID_NUM < recvPacket[1].iData)
 			{
