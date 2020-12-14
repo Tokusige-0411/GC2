@@ -11,7 +11,6 @@
 #include "LoginScene.h"
 #include "CrossOver.h"
 #include "GameScene.h"
-#include "../NetWark/NetWark.h"
 #include "../NetWark/HostState.h"
 #include "../NetWark/GestState.h"
 #include "../TileLoader.h"
@@ -21,11 +20,29 @@ LoginScene::LoginScene()
 {
 	Init();
 
-	func_.try_emplace(UpdateMode::SetNetworkMode, std::bind(&LoginScene::SetNetWorkMode, this));
-	func_.try_emplace(UpdateMode::SethostIP, std::bind(&LoginScene::SetHostIP, this));
-	func_.try_emplace(UpdateMode::StartInit, std::bind(&LoginScene::StartInit, this));
+	func_.emplace(UpdateMode::SetNetworkMode, std::bind(&LoginScene::SetNetWorkMode, this));
+	func_.emplace(UpdateMode::SethostIP, std::bind(&LoginScene::SetHostIP, this));
+	func_.emplace(UpdateMode::StartInit, std::bind(&LoginScene::StartInit, this));
+
+	drawFunc_.emplace(UpdateMode::SetNetworkMode, std::bind(&LoginScene::SetNetWorkModeDraw, this));
+	drawFunc_.emplace(UpdateMode::SethostIP, std::bind(&LoginScene::SetHostIPDraw, this));
+	drawFunc_.emplace(UpdateMode::StartInit, std::bind(&LoginScene::StartInitDraw, this));
 
 	updateMode_ = UpdateMode::SetNetworkMode;
+	ipData_ = lpNetWork.GetIP();
+
+	std::ifstream ifs("ini/hostIP.txt");
+	if (!ifs)
+	{
+		select_ = "0:ホストになる\n1:ゲストになる\n\n3:オフライン";
+	}
+	else
+	{
+		std::string ip;
+		ifs >> ip;
+		//TRACE("0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)%s\n3:オフライン\n", ip.c_str());
+		select_ = "0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)\n3:オフライン";
+	}
 }
 
 LoginScene::~LoginScene()
@@ -55,9 +72,23 @@ unique_Base LoginScene::Update(unique_Base own, double delta)
 
 void LoginScene::Draw(void)
 {
+	for (int i = 0; i < static_cast<int>(ipData_.size()); i++)
+	{
+		if (ipData_[i].d1 == 192)
+		{
+			DrawFormatString(0, 0, 0xffffff, "自分のグローバルIPアドレス:%d.%d.%d.%d", ipData_[i].d1, ipData_[i].d2, ipData_[i].d3, ipData_[i].d4);
+		}
+		else
+		{
+			DrawFormatString(0, 20, 0xffffff,"自分のローカルIPアドレス:%d.%d.%d.%d", ipData_[i].d1, ipData_[i].d2, ipData_[i].d3, ipData_[i].d4);
+		}
+	}
+
+	(drawFunc_[updateMode_])();
+
 	if (!lpNetWork.GetConnectFlag())
 	{
-		DrawString(200, 200, "待機中", 0xffffff);
+		DrawString(0, 40, "待機中", 0xffffff);
 	}
 	else
 	{
@@ -67,7 +98,7 @@ void LoginScene::Draw(void)
 		{
 			time = 0;
 		}
-		DrawFormatString(200, 200, 0xffffff, "開始まで残り%d秒", time / 1000);
+		DrawFormatString(0, 40, 0xffffff, "開始まで残り%d秒", time / 1000);
 	}
 }
 
@@ -80,76 +111,26 @@ void LoginScene::DrawOwnScreen(void)
 
 void LoginScene::SetNetWorkMode(void)
 {
-	auto ipdata = lpNetWork.GetIP();
-
-	//TRACE("自分のIPアドレス:%d.%d.%d.%d\n", ipdata.d1, ipdata.d2, ipdata.d3, ipdata.d4);
-	for (int i = 0; i < static_cast<int>(ipdata.size()); i++)
+	if (CheckHitKey(KEY_INPUT_NUMPAD0))
 	{
-		if (ipdata[i].d1 == 192)
-		{
-			TRACE("自分のグローバルIPアドレス:%d.%d.%d.%d\n", ipdata[i].d1, ipdata[i].d2, ipdata[i].d3, ipdata[i].d4);
-		}
-		else
-		{
-			TRACE("自分のローカルIPアドレス:%d.%d.%d.%d\n", ipdata[i].d1, ipdata[i].d2, ipdata[i].d3, ipdata[i].d4);
-		}
+		lpNetWork.SetNetWorkMode(NetWorkMode::Host);
+		updateMode_ = UpdateMode::StartInit;
 	}
-
-	// 前回接続したIPｱﾄﾞﾚｽ
-	TRACE("接続方法を選択してください\n");
-	std::ifstream ifs("ini/hostIP.txt");
-	if (!ifs)
+	else if (CheckHitKey(KEY_INPUT_NUMPAD1))
 	{
-		TRACE("0:ホストになる\n1:ゲストになる\n\n3:オフライン\n");
+		lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
+		updateMode_ = UpdateMode::SethostIP;
 	}
-	else
+	else if (CheckHitKey(KEY_INPUT_NUMPAD2))
 	{
-		std::string ip;
-		ifs >> ip;
-		TRACE("0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)%s\n3:オフライン\n", ip.c_str());
+		lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
+		updateMode_ = UpdateMode::SethostIP;
+		reConnect_ = true;
 	}
-
-	int mode;
-	do 
+	else if (CheckHitKey(KEY_INPUT_NUMPAD3))
 	{
-		std::cin >> mode;
-		if (mode == 0)
-		{
-			lpNetWork.SetNetWorkMode(NetWorkMode::Host);
-			updateMode_ = UpdateMode::StartInit;
-		}
-		else if (mode == 1)
-		{
-			lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
-			updateMode_ = UpdateMode::SethostIP;
-		}
-		else if (mode == 2)
-		{
-			reConnect_ = true;
-			lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
-			updateMode_ = UpdateMode::SethostIP;
-		}
-		else if (mode == 3)
-		{
-			lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
-			gameStart_ = true;
-		}
-	} while (0 > mode || mode > 3);
-
-	switch (lpNetWork.GetNetWorkMode())
-	{
-	case NetWorkMode::Offline:
-		TRACE("あなたはオフラインです\n");
-		break;
-	case NetWorkMode::Host:
-		TRACE("あなたはホストです\n");
-		break;
-	case NetWorkMode::Guest:
-		TRACE("あなたはゲストです\n");
-		break;
-	default:
-		AST();
-		break;
+		lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
+		gameStart_ = true;
 	}
 }
 
@@ -245,4 +226,18 @@ void LoginScene::SetHostIP(void)
 	{
 		TRACE("接続失敗\n");
 	}
+}
+
+void LoginScene::SetNetWorkModeDraw(void)
+{
+	DrawString(200, 200, "接続方法を選択してください。", 0xffffff);
+	DrawString(200, 220, select_.c_str(), 0xffffff);
+}
+
+void LoginScene::StartInitDraw(void)
+{
+}
+
+void LoginScene::SetHostIPDraw(void)
+{
 }
