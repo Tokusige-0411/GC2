@@ -33,6 +33,7 @@ void FireGenerator::operator()(double delta)
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { chipPos_.x * mapInfo_.tileWidth, (chipPos_.y - offset) * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Up;
+					Firemap_[num].fire.up = 1;
 				};
 				if (mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Blue) ||
 					mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Red))
@@ -62,6 +63,7 @@ void FireGenerator::operator()(double delta)
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { chipPos_.x * mapInfo_.tileWidth, (chipPos_.y + offset) * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Down;
+					Firemap_[num].fire.down = 1;
 				};
 				if (mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Blue) ||
 					mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Red))
@@ -90,6 +92,7 @@ void FireGenerator::operator()(double delta)
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { (chipPos_.x + offset) * mapInfo_.tileWidth, chipPos_.y * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Right;
+					Firemap_[num].fire.right = 1;
 				};
 				if (mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Blue) ||
 					mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Red))
@@ -118,6 +121,7 @@ void FireGenerator::operator()(double delta)
 					Firemap_[num].length = SetAnim(a);
 					Firemap_[num].pos = { (chipPos_.x - offset) * mapInfo_.tileWidth, chipPos_.y * mapInfo_.tileHeight };
 					Firemap_[num].dir = FireDir::Left;
+					Firemap_[num].fire.left = 1;
 				};
 				if (mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Blue) ||
 					mapData_["Obj"][num] == static_cast<int>(BlockType::Wall_Red))

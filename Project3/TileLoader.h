@@ -46,10 +46,10 @@ enum class BlockType
 
 struct ClossFire
 {
-	int up : 1;
-	int down : 1;
-	int right : 1;
-	int left : 1;
+	int up;
+	int down;
+	int right;
+	int left;
 };
 
 enum class FireDir

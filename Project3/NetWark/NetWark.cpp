@@ -142,6 +142,7 @@ void NetWark::Update(void)
 		if (recvPacket.size() > 4)
 		{
 			return;
+			TRACE("不正なデータです\n");
 		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
@@ -158,6 +159,7 @@ void NetWark::Update(void)
 		if (recvPacket.size() > 7)
 		{
 			return;
+			TRACE("不正なデータです\n");
 		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
@@ -181,6 +183,7 @@ void NetWark::Update(void)
 		if (recvPacket.size() > 1)
 		{
 			return;
+			TRACE("不正なデータです\n");
 		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
@@ -197,6 +200,7 @@ void NetWark::Update(void)
 		if (recvPacket.size() > 1)
 		{
 			return;
+			TRACE("不正なデータです\n");
 		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{

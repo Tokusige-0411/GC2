@@ -174,15 +174,20 @@ void TileLoader::Draw()
 			}
 		}
 	};
+
 	draw("Bg");
 	draw("Item");
 	draw("Obj");
-	//draw("Char");
 
 	for (auto& data : fireMap_)
 	{
 		if (data.animCnt > 0.0f)
 		{
+			int count = (data.fire.up + data.fire.down + data.fire.left + data.fire.right);
+			if (count > 1)
+			{
+				data.length = 0;
+			}
 			auto animOffset = static_cast<int>(data.animCnt * 60 / 1000);
 			animOffset = abs(abs(animOffset / 10 - 3) - 3);
 			DrawRotaGraph(
@@ -193,6 +198,10 @@ void TileLoader::Draw()
 				IMAGE_ID(ObjectID::Fire)[animOffset * 3 + data.length],
 				true);
 			data.animCnt -= delta_;
+		}
+		else
+		{
+			data.fire = { 0 };
 		}
 	}
 }
@@ -206,14 +215,6 @@ void TileLoader::FireUpdate(double delta)
 	}
 	fireGeneratorList_.remove_if([](std::unique_ptr<FireGenerator>& data) { return !(data->GetLength()); });
 	auto end = lpSceneMng.GetTime();
-	for (auto& data : fireMap_)
-	{
-		int count = (data.fire.up + data.fire.down + data.fire.left + data.fire.right);
-		if (count > 1)
-		{
-			data.length = 0;
-		}
-	}
 }
 
 const TMXInfo& TileLoader::GetTmxInfo(void)

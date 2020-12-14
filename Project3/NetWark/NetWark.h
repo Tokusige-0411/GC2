@@ -158,8 +158,8 @@ private:
 
 	time_point countStartTime_;										// ホストが接続し始めた時間
 	bool connectFlag_;												// 接続ができたかどうか
-	time_point gameStartTime_;
-	StartState startState_;
+	time_point gameStartTime_;										// ｹﾞｰﾑｽﾀｰﾄする時間
+	StartState startState_;											// ｽﾀｰﾄまでのｽﾃｰﾄ管理
 	PairInt playerInf_;												// <自分のPlayerID, Playerの総人数>
 	int playerMax_;
 

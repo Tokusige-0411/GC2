@@ -92,6 +92,8 @@ bool Player::Update(void)
 {
 	if (alive_)
 	{
+		// パワーアップなどの処理したい
+		animCnt_++;
 		return update_();
 	}
 	return true;
@@ -101,7 +103,6 @@ void Player::Draw(void)
 {
 	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID(ObjectID::Player)[(2 + (animCnt_ / 15 % 2)) * 5 + static_cast<int>(dir_)], true);
 	_dbgDrawBox(pos_.x, pos_.y, pos_.x + 32, pos_.y + 32, 0xffffff, false);
-	animCnt_++;
 }
 
 int Player::GetPlayerID(void)
