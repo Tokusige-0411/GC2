@@ -23,17 +23,18 @@
 enum class MesType : unsigned char
 {
 	Non = 100,			// ﾀｲﾌﾟなし
-	Count_Down_Room,
-	ID,
+	Count_Down_Room,	// 接続制限時間
+	ID,					// ﾌﾟﾚｲﾔｰID
 	Stanby_Host,		// ｽﾀﾝﾊﾞｲ
 	Stanby_Guest,		// ｹﾞｰﾑ開始
-	Count_Down_Game,	
+	Count_Down_Game,	// ｹﾞｰﾑ開始時間
 	TMX_Size,			// TMXのｻｲｽﾞ情報
 	TMX_Data,			// TMXのCSVﾃﾞｰﾀ情報
 	Pos,				// ﾌﾟﾚｲﾔｰの座標
-	Set_Bomb,
-	Deth,
-	Lost,
+	Set_Bomb,			// ﾎﾞﾑ設置
+	Deth,				// 死亡情報
+	Result,				// 結果情報
+	Lost,				// 切断情報
 	Max,
 };
 

@@ -75,7 +75,7 @@ bool SceneMng::SysInit()
 	return true;
 }
 
-SceneMng::SceneMng() : screenSize_{ 672, 544 }, screenCenter_{ screenSize_.x / 2, screenSize_.y / 2 }
+SceneMng::SceneMng() : screenSize_{ 800, 600 }, screenCenter_{ screenSize_.x / 2, screenSize_.y / 2 }
 {
 	SysInit();
 	frame_ = 0;

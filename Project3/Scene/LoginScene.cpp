@@ -5,8 +5,6 @@
 #include <vector>
 #include <array>
 #include <fstream>
-#include <rapidxml.hpp>
-#include <rapidxml_utils.hpp>
 #include "../_debug/_DebugConOut.h"
 #include "LoginScene.h"
 #include "CrossOver.h"
@@ -19,7 +17,14 @@
 LoginScene::LoginScene()
 {
 	Init();
+}
 
+LoginScene::~LoginScene()
+{
+}
+
+bool LoginScene::Init()
+{
 	func_.emplace(UpdateMode::SetNetworkMode, std::bind(&LoginScene::SetNetWorkMode, this));
 	func_.emplace(UpdateMode::SethostIP, std::bind(&LoginScene::SetHostIP, this));
 	func_.emplace(UpdateMode::StartInit, std::bind(&LoginScene::StartInit, this));
@@ -31,28 +36,38 @@ LoginScene::LoginScene()
 	updateMode_ = UpdateMode::SetNetworkMode;
 	ipData_ = lpNetWork.GetIP();
 
+	gameStart_ = false;
+	reConnect_ = false;
+
 	std::ifstream ifs("ini/hostIP.txt");
+	std::string ip;
 	if (!ifs)
 	{
 		select_ = "0:ホストになる\n1:ゲストになる\n\n3:オフライン";
 	}
 	else
 	{
-		std::string ip;
-		ifs >> ip;
-		//TRACE("0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)%s\n3:オフライン\n", ip.c_str());
-		select_ = "0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)\n3:オフライン";
+		do
+		{
+			ifs >> ip;
+			reConnectIP_.emplace_back(ip);
+		} while (!ifs.eof());
+		select_ = ("0:ホストになる\n1:ゲストになる\n2:ゲストになる(前回接続したIPアドレスへ再接続)\n3:オフライン");
+		reConnect_ = true;
 	}
-}
 
-LoginScene::~LoginScene()
-{
-}
-
-bool LoginScene::Init()
-{
-	reConnect_ = false;
-	gameStart_ = false;
+	numPad_[0] = '1';
+	numPad_[1] = '2';
+	numPad_[2] = '3';
+	numPad_[3] = '4';
+	numPad_[4] = '5';
+	numPad_[5] = '6';
+	numPad_[6] = '7';
+	numPad_[7] = '8';
+	numPad_[8] = '9';
+	numPad_[9] = '.';
+	numPad_[10] = '0';
+	numPad_[11] = '←';
 
 	mapObj_ = std::make_shared<TileLoader>();
 
@@ -120,23 +135,26 @@ void LoginScene::SetNetWorkMode(void)
 	{
 		lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
 		updateMode_ = UpdateMode::SethostIP;
+		reConnect_ = false;
 	}
 	else if (CheckHitKey(KEY_INPUT_NUMPAD2))
 	{
-		lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
-		updateMode_ = UpdateMode::SethostIP;
-		reConnect_ = true;
+		if (reConnect_)
+		{
+			lpNetWork.SetNetWorkMode(NetWorkMode::Guest);
+			updateMode_ = UpdateMode::SethostIP;
+		}
 	}
 	else if (CheckHitKey(KEY_INPUT_NUMPAD3))
 	{
 		lpNetWork.SetNetWorkMode(NetWorkMode::Offline);
+		lpNetWork.SetStartState(StartState::GameStart);
 		gameStart_ = true;
 	}
 }
 
 void LoginScene::StartInit(void)
 {
-	// ﾎｽﾄ側の処理
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
 		// 初期化が完了したらstanbyを送信
@@ -151,25 +169,20 @@ void LoginScene::StartInit(void)
 
 			// ｽﾀﾝﾊﾞｲ情報送信
 			lpNetWork.SendStanby();
-
-			TRACE("初期化情報を送信、開始合図待ち\n");
 		}
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
 			lpNetWork.SendCountGame();
 			gameStart_ = true;
-			TRACE("ゲームスタート\n");
 		}
 	}
 
-	// ｹﾞｽﾄ側の処理
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
 	{
 		if (lpNetWork.GetActive() == ActiveState::Play)
 		{
 			gameStart_ = true;
 			lpNetWork.SendStart();
-			TRACE("ゲームスタート情報送信\n");
 		}
 	}
 }
@@ -177,54 +190,44 @@ void LoginScene::StartInit(void)
 void LoginScene::SetHostIP(void)
 {
 	IPDATA hostIP;
-	std::string ip;
+	auto connectHost = [&]() {	
+		// IPDATAに変換したipをhostIPに入れる
+		std::istringstream iss(stringIP_);
+		std::string str;
+		auto ipConvert = [&](unsigned char& Hip) {
+			std::getline(iss, str, '.');
+			Hip = atoi(str.c_str());
+		};
+		ipConvert(hostIP.d1);
+		ipConvert(hostIP.d2);
+		ipConvert(hostIP.d3);
+		ipConvert(hostIP.d4); 
+
+		lpNetWork.ConnectHost(hostIP);
+
+		if (lpNetWork.GetNetHandleList() != -1)
+		{
+			// ﾌｧｲﾙへの書き出し
+			std::ofstream ofs("ini/hostIP.txt");
+			ofs << stringIP_;
+			updateMode_ = UpdateMode::StartInit;
+			TRACE("接続成功\n");
+			TRACE("IPアドレスをファイル出力\n");
+		}
+	};
+
 	if (reConnect_)
 	{
-		std::ifstream ifs("ini/hostIP.txt");
-		if (ifs)
-		{
-			ifs >> ip;
-		}
-		else
-		{
-			TRACE("前回接続したIPアドレスがありません\n");
-			TRACE("接続先のIPアドレスを入力\n");
-			std::cin >> ip;
-		}
+		stringIP_ = reConnectIP_[0];
+		connectHost();
 	}
 	else
 	{
-		TRACE("接続先のIPアドレスを入力\n");
-		std::cin >> ip;
-	}
-
-	// IPDATAに変換したipをhostIPに入れる
-	std::istringstream iss(ip);
-	std::string str;
-	auto ipConvert = [&](unsigned char& Hip) {
-		std::getline(iss, str, '.');
-		Hip = atoi(str.c_str());
-	};
-	ipConvert(hostIP.d1);
-	ipConvert(hostIP.d2);
-	ipConvert(hostIP.d3);
-	ipConvert(hostIP.d4);
-
-	TRACE("接続先のIPアドレス:%d.%d.%d.%d\n", hostIP.d1, hostIP.d2, hostIP.d3, hostIP.d4);
-	lpNetWork.ConnectHost(hostIP);
-
-	if (lpNetWork.GetNetHandleList() != -1)
-	{
-		// ﾌｧｲﾙへの書き出し
-		std::ofstream ofs("ini/hostIP.txt");
-		ofs << ip;
-		updateMode_ = UpdateMode::StartInit;
-		TRACE("接続成功\n");
-		TRACE("IPアドレスをファイル出力\n");
-	}
-	else
-	{
-		TRACE("接続失敗\n");
+		// 数字を入力してもらうか、パネルを作るか
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			connectHost();
+		}
 	}
 }
 
@@ -236,8 +239,41 @@ void LoginScene::SetNetWorkModeDraw(void)
 
 void LoginScene::StartInitDraw(void)
 {
+	auto state = lpNetWork.GetActive();
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
+	{
+		if (state == ActiveState::Wait)
+		{
+			DrawString(200, 200, "接続待ち", 0xffffff);
+		}
+		if (state == ActiveState::Init)
+		{
+			DrawString(200, 200, "ゲストからの接続を確認\nゲストへ初期化情報を送信します", 0xffffff);
+		}
+		if (state == ActiveState::Play)
+		{
+			DrawString(200, 200, "初期化情報の送信が完了しました\nゲームを開始します", 0xffffff);
+		}
+	}
+
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Guest)
+	{
+		if (state == ActiveState::Play)
+		{
+			DrawString(200, 200, "初期化の準備が終了しました\nゲームを開始します", 0xffffff);
+		}
+	}
 }
 
 void LoginScene::SetHostIPDraw(void)
 {
+	if (!reConnect_)
+	{
+		DrawString(100, 100, "接続先のIPアドレスを入力してください", 0xffffff);
+	}
+	else
+	{
+		DrawString(100, 100, "前回接続したIPアドレスへ接続します", 0xffffff);
+		DrawFormatString(100, 120, 0xffffff, "接続先:%s", reConnectIP_[0]);
+	}
 }

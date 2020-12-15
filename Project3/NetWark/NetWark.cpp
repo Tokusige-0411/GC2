@@ -520,10 +520,7 @@ int NetWark::GetNetHandleList(void)
 	{
 		return netState_->GetNetHandle().front().handle;
 	}
-	else
-	{
-		return -1;
-	}
+	return -1;
 }
 
 ActiveState NetWark::ConnectHost(IPDATA hostIP)
