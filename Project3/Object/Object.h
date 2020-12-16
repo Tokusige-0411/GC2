@@ -40,7 +40,6 @@ class Object
 {
 public:
 	Object();
-	Object(int id, Vector2 pos);
 	virtual ~Object();
 	virtual bool Update(void);
 	virtual bool UpdateDef(void);
@@ -55,6 +54,7 @@ public:
 
 private:
 	virtual void Init(void);
+	time_point startTime_;						// ê∂ê¨ÇµÇΩéûä‘
 
 protected:
 	Vector2 pos_;								// ç¿ïW

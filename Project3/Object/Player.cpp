@@ -164,6 +164,8 @@ bool Player::UpdateDef(void)
 		dethData[0].iData = objectID_;
 		lpNetWork.SendMesAll(dethData, MesType::Deth, 0);
 		alive_ = false;
+		deth_ = true;
+		dynamic_cast<GameScene&>(scene_).SetEnptyObj();
 	}
 
 	return true;
@@ -199,6 +201,8 @@ bool Player::UpdateNet(void)
 			if (data.first == MesType::Deth)
 			{
 				alive_ = false;
+				deth_ = true;
+				dynamic_cast<GameScene&>(scene_).SetEnptyObj();
 			}
 			if (data.first == MesType::Lost)
 			{

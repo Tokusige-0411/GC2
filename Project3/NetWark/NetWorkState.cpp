@@ -25,9 +25,25 @@ bool NetWorkState::Update(void)
 	return CheckNetWork();
 }
 
-NetHandleList& NetWorkState::GetNetHandle(void)
+NetHandleList NetWorkState::GetNetHandle(void)
 {
-	return netHandleList_;
+	{
+		std::lock_guard<std::mutex> lock(handleMtx_);
+		return netHandleList_;
+	}
+}
+
+std::mutex& NetWorkState::GetHandleMtx(void)
+{
+	return handleMtx_;
+}
+
+void NetWorkState::ResetNetHandle(void)
+{
+	{
+		std::lock_guard<std::mutex> lock(handleMtx_);
+		netHandleList_.clear();
+	}
 }
 
 ActiveState NetWorkState::ConnectHost(IPDATA hostIP)

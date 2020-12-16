@@ -22,6 +22,7 @@ public:
     void Draw(void) override;                                         // •`‰æ
 
     void SetBombObj(int owner, int self, Vector2 pos, int blastLength, bool sendFlag);
+    void SetEnptyObj(void);
     sharedObj GetPlayerObj(int id);
     void SetFireMap(const Vector2& pos, int length);
 

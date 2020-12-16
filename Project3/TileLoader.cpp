@@ -214,7 +214,6 @@ void TileLoader::FireUpdate(double delta)
 		(*data)(delta);
 	}
 	fireGeneratorList_.remove_if([](std::unique_ptr<FireGenerator>& data) { return !(data->GetLength()); });
-	auto end = lpSceneMng.GetTime();
 }
 
 const TMXInfo& TileLoader::GetTmxInfo(void)

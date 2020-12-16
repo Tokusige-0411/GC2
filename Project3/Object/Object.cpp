@@ -1,11 +1,7 @@
+#include <chrono>
 #include "Object.h"
 
 Object::Object()
-{
-	Init();
-}
-
-Object::Object(int id, Vector2 pos)
 {
 	Init();
 }
@@ -16,6 +12,12 @@ Object::~Object()
 
 bool Object::Update(void)
 {
+	auto endTime = lpSceneMng.GetTime();
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime_).count() >= 3000)
+	{
+		alive_ = false;
+		deth_ = true;
+	}
 	return true;
 }
 
@@ -56,4 +58,5 @@ void Object::Init(void)
 	lost_ = true;
 	objectID_ = 0;
 	animCnt_ = 0;
+	startTime_ = lpSceneMng.GetTime();
 }

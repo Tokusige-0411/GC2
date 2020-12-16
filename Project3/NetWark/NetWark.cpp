@@ -53,7 +53,7 @@ void NetWark::Update(void)
 	netFunc.emplace(MesType::Count_Down_Room, [&]() {
 		if (!connectFlag_)
 		{
-			std::lock_guard<std::mutex> mut(mtx_);
+			std::lock_guard<std::mutex> lock(mtx_);
 			TimeUnion data{};
 			data.data[0] = recvPacket[0].iData;
 			data.data[1] = recvPacket[1].iData;
@@ -73,7 +73,7 @@ void NetWark::Update(void)
 		{
 			if (recvPacket[0].iData / UNIT_ID_NUM < recvPacket[1].iData)
 			{
-				std::lock_guard<std::mutex> mut(mtx_);
+				std::lock_guard<std::mutex> lock(mtx_);
 				playerInf_.first = recvPacket[0].iData;
 				playerInf_.second = recvPacket[1].iData;
 				return;
@@ -84,14 +84,14 @@ void NetWark::Update(void)
 
 	// ゲスト
 	netFunc.emplace(MesType::TMX_Size, [&]() {
-		std::lock_guard<std::mutex> mut(mtx_);
+		std::lock_guard<std::mutex> lock(mtx_);
 		revBox_.resize((recvPacket[0].cData[0] * recvPacket[0].cData[1]) / BIT_NUM + 1);
 	});
 
 	// ゲスト
 	netFunc.emplace(MesType::TMX_Data, [&]() {
 		// 送られてきたデータを格納しやすいように
-		std::lock_guard<std::mutex> mut(mtx_);
+		std::lock_guard<std::mutex> lock(mtx_);
 		revBox_ = std::move(recvPacket);
 		MakeTmx(revBox_);
 	});
@@ -99,7 +99,7 @@ void NetWark::Update(void)
 	// ゲスト
 	netFunc.emplace(MesType::Stanby_Host, [&]() {
 		// 送信時間
-		std::lock_guard<std::mutex> mut(mtx_);
+		std::lock_guard<std::mutex> lock(mtx_);
 		end = std::chrono::system_clock::now();
 		double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 		netState_->SetActiveState(ActiveState::Play);
@@ -109,7 +109,7 @@ void NetWark::Update(void)
 	netFunc.emplace(MesType::Count_Down_Game, [&]() {
 		if (netState_->GetActiveState() == ActiveState::Play)
 		{
-			std::lock_guard<std::mutex> mut(mtx_);
+			std::lock_guard<std::mutex> lock(mtx_);
 			TimeUnion data{};
 			data.data[0] = recvPacket[0].iData;
 			data.data[1] = recvPacket[1].iData;
@@ -196,6 +196,11 @@ void NetWark::Update(void)
 		}
 	});
 
+	netFunc.emplace(MesType::Result, [&]() {
+		std::lock_guard<std::mutex> lock(mtx_);
+		result_ = recvPacket;
+	});
+
 	netFunc.emplace(MesType::Lost, [&]() {
 		if (recvPacket.size() > 1)
 		{
@@ -217,7 +222,7 @@ void NetWark::Update(void)
 	{
 		if (netState_->Update())
 		{
-			auto& handle = netState_->GetNetHandle();
+			auto handle = netState_->GetNetHandle();
 			for (auto& data : handle)
 			{
 				if (GetNetWorkDataLength(data.handle) >= sizeof(MesHeader))
@@ -257,6 +262,21 @@ void NetWark::InitCloseNetWork(void)
 	netState_.reset();
 	std::lock_guard<std::mutex> mut(revStanbyMtx_);
 	revStanby_ = false;
+	connectFlag_ = false;
+	ipData_ = { 0 };
+	startState_ = StartState::Wait;
+	playerInf_ = { 0, 0 };
+	playerMesList_.clear();
+}
+
+void NetWark::EndNetWork(void)
+{
+	auto handleList = netState_->GetNetHandle();
+	for (auto& handle : handleList)
+	{
+		CloseNetWork(handle.handle);
+	}
+	netState_->ResetNetHandle();
 }
 
 void NetWark::AddMesList(int id, MesPacketList& list, std::mutex& mutex)
@@ -581,6 +601,11 @@ StartState NetWark::GetStartState(void)
 void NetWark::SetStartState(StartState state)
 {
 	startState_ = state;
+}
+
+MesPacket NetWark::GetResult(void)
+{
+	return result_;
 }
 
 bool NetWark::Init(void)

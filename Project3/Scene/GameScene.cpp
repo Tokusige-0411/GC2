@@ -1,12 +1,13 @@
 #include <DxLib.h>
 #include "GameScene.h"
+#include "CrossOver.h"
+#include "ResultScene.h"
 #include "../input/PadInput.h"
 #include "../NetWark/NetWark.h"
 #include "../TileLoader.h"
 #include "../common/imageMng.h"
 #include "../Object/Player.h"
 #include "../Object/Bomb.h"
-
 #include "../_debug/_DebugConOut.h"
 
 bool GameScene::Init(void)
@@ -58,26 +59,36 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 			return a->IsPickUp() > b->IsPickUp();
 			});
 
+		int aliveCnt = 0;
 		for (auto& data : objList_)
 		{
 			if (!data->Update())
 			{
 				Player::fallCnt++;
 			}
+			if (!data->GetDeth())
+			{
+				aliveCnt++;
+			}
 		}
-
 		objList_.remove_if([](sharedObj& obj) { return (obj->GetDeth() && obj->GetLost()); });
+
+		// ±¸Ã¨ÌŞ‚ÈµÌŞ¼Şª¸Ä‚ª1‚Â‚É‚È‚Á‚½‚çØ»ŞÙÄ‚Ö
+		if (aliveCnt <= 1)
+		{
+			own = std::make_unique<CrossOver>(std::make_unique<ResultScene>(), std::move(own));
+		}
 	}
 
 	DrawOwnScreen();
 
+	// ‰½‰ñî•ñ‚ğ—‚Æ‚µ‚½‚©
 	end_ = std::chrono::system_clock::now();
 	if (std::chrono::duration_cast<std::chrono::seconds>(end_ - start_).count() >= 1)
 	{
 		timeCnt_++;
 		start_ = end_;
 	}
-
 	DrawBox(190, 0, 220, 15, 0x000000, true);
 	DrawFormatString(200, 0, 0xffffff, "%d", Player::fallCnt / timeCnt_);
 
@@ -112,6 +123,11 @@ void GameScene::SetBombObj(int owner, int self, Vector2 pos, int blastLength, bo
 	{
 		objList_.emplace_back(std::make_shared<Bomb>(owner, self, blastLength, pos, mapObj_, *this));
 	}
+}
+
+void GameScene::SetEnptyObj(void)
+{
+	objList_.emplace_back(std::make_shared<Object>());
 }
 
 sharedObj GameScene::GetPlayerObj(int id)

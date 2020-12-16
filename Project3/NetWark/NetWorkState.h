@@ -1,5 +1,6 @@
 #pragma once
 #include<list>
+#include<mutex>
 
 enum class NetWorkMode
 {
@@ -37,7 +38,9 @@ public:
 	bool Update(void);
 	ActiveState GetActiveState(void);
 	void SetActiveState(ActiveState state);
-	NetHandleList& GetNetHandle(void);
+	NetHandleList GetNetHandle(void);
+	std::mutex& GetHandleMtx(void);
+	void ResetNetHandle(void);
 	virtual ActiveState ConnectHost(IPDATA hostIP);
 
 private:
@@ -47,5 +50,6 @@ protected:
 	const int portNum_ = 8086;
 	ActiveState active_;
 	NetHandleList netHandleList_;
+	std::mutex handleMtx_;
 };
 

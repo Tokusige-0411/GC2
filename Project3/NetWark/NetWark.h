@@ -1,7 +1,7 @@
 #pragma once
 #include<DxLib.h>
 #include<memory>
-#include <utility>
+#include<utility>
 #include<array>
 #include<vector>
 #include<chrono>
@@ -94,6 +94,7 @@ public:
 	void RunUpdata(void);												// Update•Ê½Ú¯ÄŞ‰»
 	void Update(void);													// XV
 	void InitCloseNetWork(void);										// Ø’fÈ¯ÄÜ°¸î•ñ‰Šú‰»
+	void EndNetWork(void);
 
 	void AddMesList(int id, MesPacketList& list, std::mutex& mutex);	// 
 
@@ -130,6 +131,8 @@ public:
 	StartState GetStartState(void);
 	void SetStartState(StartState state);
 
+	MesPacket GetResult(void);
+
 private:
 	struct NetWorkDeleter
 	{
@@ -162,7 +165,7 @@ private:
 	time_point gameStartTime_;										// ¹Ş°Ñ½À°Ä‚·‚éŠÔ
 	StartState startState_;											// ½À°Ä‚Ü‚Å‚Ì½Ã°ÄŠÇ—
 	PairInt playerInf_;												// <©•ª‚ÌPlayerID, Player‚Ì‘l”>
-	int playerMax_;
+	MesPacket result_;												// ¹Ş°ÑŒ‹‰Êî•ñ
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// ‘—‚ç‚ê‚Ä‚«‚½ÌßÚ²Ô°î•ñ‚ğŠi”[‚·‚éêŠ
 
