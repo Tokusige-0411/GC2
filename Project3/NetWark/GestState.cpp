@@ -12,13 +12,19 @@ GestState::~GestState()
 
 ActiveState GestState::ConnectHost(IPDATA hostIP)
 {
-	//netHandle_ = ConnectNetWork(hostIP, portNum_);
-	netHandleList_.push_back(PlayerHandle{ConnectNetWork(hostIP, portNum_), 0, 0});
-
-	if (netHandleList_.front().handle != -1)
+	auto handle = ConnectNetWork(hostIP, portNum_);
+	if (handle != -1)
 	{
-		active_ = ActiveState::Init;
-		return active_;
+		netHandleList_.push_back(PlayerHandle{handle, 0, 0 });
+	}
+
+	if (netHandleList_.size())
+	{
+		if (netHandleList_.front().handle != -1)
+		{
+			active_ = ActiveState::Init;
+			return active_;
+		}
 	}
 
 	return ActiveState::Non;

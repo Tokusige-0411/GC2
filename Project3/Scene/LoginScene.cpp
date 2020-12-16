@@ -13,6 +13,7 @@
 #include "../NetWark/GestState.h"
 #include "../TileLoader.h"
 #include "../common/imageMng.h"
+#include "../input/KeyInput.h"
 
 LoginScene::LoginScene()
 {
@@ -67,7 +68,14 @@ bool LoginScene::Init()
 	numPad_[8] = '9';
 	numPad_[9] = '.';
 	numPad_[10] = '0';
-	numPad_[11] = '←';
+	numPad_[11] = 'E';
+
+	padBoxPos_ = { 0, 0 };
+
+	keyState_ = {};
+	keyStateOld_ = {};
+	input_ = std::make_unique<KeyInput>();
+	input_->SetUp(0);
 
 	mapObj_ = std::make_shared<TileLoader>();
 
@@ -76,6 +84,9 @@ bool LoginScene::Init()
 
 unique_Base LoginScene::Update(unique_Base own, double delta)
 {
+	keyStateOld_ = keyState_;
+	GetHitKeyStateAll(keyState_.data());
+	(*input_)();
 	(func_[updateMode_])();
 	DrawOwnScreen();
 	if (gameStart_)
@@ -216,6 +227,8 @@ void LoginScene::SetHostIP(void)
 		}
 	};
 
+	auto contData = input_->GetContData();
+
 	if (reConnect_)
 	{
 		stringIP_ = reConnectIP_[0];
@@ -224,9 +237,40 @@ void LoginScene::SetHostIP(void)
 	else
 	{
 		// 数字を入力してもらうか、パネルを作るか
-		if (CheckHitKey(KEY_INPUT_SPACE))
+		if (contData[INPUT_ID::UP][static_cast<int>(Trg::Now)] && !contData[INPUT_ID::UP][static_cast<int>(Trg::Old)])
 		{
-			connectHost();
+			if (padBoxPos_.y != 0)
+			{
+				padBoxPos_.y--;
+			}
+		}
+		if (contData[INPUT_ID::DOWN][static_cast<int>(Trg::Now)] && !contData[INPUT_ID::DOWN][static_cast<int>(Trg::Old)])
+		{
+			padBoxPos_.y++;
+		}
+		if (contData[INPUT_ID::LEFT][static_cast<int>(Trg::Now)] && !contData[INPUT_ID::LEFT][static_cast<int>(Trg::Old)])
+		{
+			if (padBoxPos_.x != 0)
+			{
+				padBoxPos_.x--;
+			}
+		}
+		if (contData[INPUT_ID::RIGHT][static_cast<int>(Trg::Now)] && !contData[INPUT_ID::RIGHT][static_cast<int>(Trg::Old)])
+		{
+			padBoxPos_.x++;
+		}
+
+		if (contData[INPUT_ID::SET_BOMB][static_cast<int>(Trg::Now)] && !contData[INPUT_ID::SET_BOMB][static_cast<int>(Trg::Old)])
+		{
+			auto count = (padBoxPos_.y % 4) * 3 + (padBoxPos_.x % 3);
+			if (count == 11)
+			{
+				connectHost();
+			}
+			else
+			{
+				stringIP_ += numPad_[count];
+			}
 		}
 	}
 }
@@ -270,6 +314,13 @@ void LoginScene::SetHostIPDraw(void)
 	if (!reConnect_)
 	{
 		DrawString(100, 100, "接続先のIPアドレスを入力してください", 0xffffff);
+		DrawString(100, 120, stringIP_.c_str(), 0xffffff);
+		for (int i = 0; i < numPad_.size(); i++)
+		{
+			DrawString(200 + (50 * (i % 3)), 150 + (40 * (i / 3)), numPad_[i].c_str(), 0xffffff);
+		}
+		Vector2 offSet = {175 + (50 * (padBoxPos_.x % 3)), 140 + (40 * (padBoxPos_.y % 4))};
+		DrawBox(offSet.x, offSet.y, offSet.x + 50, offSet.y + 40, 0xffffff, false);
 	}
 	else
 	{
