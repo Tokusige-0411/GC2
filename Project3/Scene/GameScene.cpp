@@ -37,9 +37,12 @@ bool GameScene::Init(void)
 		{
 			objList_.emplace_back(std::make_shared<Player>(instanceCnt, Vector2{ (i % mapInfo_.width) * mapInfo_.tileWidth, (i / mapInfo_.width) * mapInfo_.tileHeight }, mapObj_, *this));
 			instanceCnt += UNIT_ID_NUM;
-			if (instanceCnt / UNIT_ID_NUM >= lpNetWork.GetPlayerInf().second)
+			if (lpNetWork.GetNetWorkMode() != NetWorkMode::Offline)
 			{
-				break;
+				if (instanceCnt / UNIT_ID_NUM >= lpNetWork.GetPlayerInf().second)
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -76,6 +79,17 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 		// ±¸Ã¨ÌÞ‚ÈµÌÞ¼Þª¸Ä‚ª1‚Â‚É‚È‚Á‚½‚çØ»ÞÙÄ‚Ö
 		if (aliveCnt <= 1)
 		{
+			if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
+			{
+				for (auto& data : objList_)
+				{
+					if (!data->GetDeth())
+					{
+						lpNetWork.SetRanking(data->GetObjectID());
+					}
+				}
+				lpNetWork.SendResult();
+			}
 			own = std::make_unique<CrossOver>(std::make_unique<ResultScene>(), std::move(own));
 		}
 	}

@@ -27,10 +27,8 @@ bool NetWorkState::Update(void)
 
 NetHandleList NetWorkState::GetNetHandle(void)
 {
-	{
-		std::lock_guard<std::mutex> lock(handleMtx_);
-		return netHandleList_;
-	}
+	std::lock_guard<std::mutex> lock(handleMtx_);
+	return netHandleList_;
 }
 
 std::mutex& NetWorkState::GetHandleMtx(void)

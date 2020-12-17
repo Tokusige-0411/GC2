@@ -36,11 +36,11 @@ void ResultScene::Draw(void)
 	{
 		if (result_[i].iData == -1)
 		{
-			DrawFormatString(100, 150 + (i * 100), 0xffffff, "%dˆÊ:-", i + 1);
+			DrawFormatString(100, 150 + (i * 40), 0xffffff, "%dˆÊ:-", i + 1);
 		}
 		else
 		{
-			DrawFormatString(100, 150 + (i * 100), 0xffffff, "%dˆÊ:%d", i + 1, result_[i].iData / UNIT_ID_NUM + 1);
+			DrawFormatString(100, 150 + (i * 40), 0xffffff, "%dˆÊ:%d", i + 1, result_[i].iData / UNIT_ID_NUM + 1);
 		}
 	}
 }

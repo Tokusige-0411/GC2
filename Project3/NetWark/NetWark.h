@@ -9,6 +9,7 @@
 #include<mutex>
 #include<map>
 #include<functional>
+#include<list>
 #include"NetWorkState.h"
 #include"../Scene/SceneMng.h"
 
@@ -107,6 +108,7 @@ public:
 	void SendCountRoom(void);											// 接続待機時間送信
 	void SendCountGame(void);
 	void SendPlayerID(void);											// 各ゲストにPlayerID送信
+	void SendResult(void);
 
 	bool SetNetWorkMode(NetWorkMode mode);								// ﾈｯﾄﾜｰｸﾓｰﾄﾞの設定
 	NetWorkMode GetNetWorkMode(void);									// ﾈｯﾄﾜｰｸﾓｰﾄﾞ取得
@@ -132,6 +134,7 @@ public:
 	void SetStartState(StartState state);
 
 	MesPacket GetResult(void);
+	void SetRanking(unsigned int playerID);
 
 private:
 	struct NetWorkDeleter
@@ -166,6 +169,7 @@ private:
 	StartState startState_;											// ｽﾀｰﾄまでのｽﾃｰﾄ管理
 	PairInt playerInf_;												// <自分のPlayerID, Playerの総人数>
 	MesPacket result_;												// ｹﾞｰﾑ結果情報
+	std::list<unsigned int> ranking_;										// ｹﾞｰﾑの結果
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
 

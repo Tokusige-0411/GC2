@@ -166,6 +166,7 @@ bool Player::UpdateDef(void)
 		alive_ = false;
 		deth_ = true;
 		dynamic_cast<GameScene&>(scene_).SetEnptyObj();
+		lpNetWork.SetRanking(objectID_);
 	}
 
 	return true;
@@ -203,6 +204,7 @@ bool Player::UpdateNet(void)
 				alive_ = false;
 				deth_ = true;
 				dynamic_cast<GameScene&>(scene_).SetEnptyObj();
+				lpNetWork.SetRanking(objectID_);
 			}
 			if (data.first == MesType::Lost)
 			{
@@ -222,12 +224,13 @@ bool Player::UpdateAuto(void)
 {
 	// ‚©‚×Áª¯¸
 	auto mapData = mapObj_->GetMapData();
-
+	
 	// Ï½–Ú‚¿‚å‚¤‚Ç‚É‚È‚Á‚½‚ç4•ûŒü’²‚×‚é
 	dirPermit_[Dir::Up] = CheckWall(Dir::Up);
 	dirPermit_[Dir::Down] = CheckWall(Dir::Down);
 	dirPermit_[Dir::Right] = CheckWall(Dir::Right);
 	dirPermit_[Dir::Left] = CheckWall(Dir::Left);
+
 	// ˆÚ“®ˆ—‚Æ•ûŒü‚ğ’²‚×‚é
 	do
 	{

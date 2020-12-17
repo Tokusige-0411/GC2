@@ -13,7 +13,7 @@ Object::~Object()
 bool Object::Update(void)
 {
 	auto endTime = lpSceneMng.GetTime();
-	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime_).count() >= 3000)
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime_).count() >= 2000)
 	{
 		alive_ = false;
 		deth_ = true;

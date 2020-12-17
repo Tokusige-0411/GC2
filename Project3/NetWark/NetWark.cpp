@@ -266,11 +266,19 @@ void NetWark::InitCloseNetWork(void)
 	ipData_ = { 0 };
 	startState_ = StartState::Wait;
 	playerInf_ = { 0, 0 };
+	for (auto& data : ranking_)
+	{
+		data = -1;
+	}
 	playerMesList_.clear();
 }
 
 void NetWark::EndNetWork(void)
 {
+	if (!netState_)
+	{
+		return;
+	}
 	auto handleList = netState_->GetNetHandle();
 	for (auto& handle : handleList)
 	{
@@ -488,6 +496,21 @@ void NetWark::SendPlayerID(void)
 	}
 }
 
+void NetWark::SendResult(void)
+{
+	if (!netState_)
+	{
+		return;
+	}
+	MesPacket sendData;
+	for (auto& data : ranking_)
+	{
+		sendData.push_back(unionData{ data });
+		result_.emplace_back(unionData{ data });
+	}
+	SendMesAll(sendData, MesType::Result, -1);
+}
+
 bool NetWark::SetNetWorkMode(NetWorkMode mode)
 {
 	switch (mode)
@@ -608,6 +631,15 @@ MesPacket NetWark::GetResult(void)
 	return result_;
 }
 
+void NetWark::SetRanking(unsigned int playerID)
+{
+	ranking_.push_front(playerID);
+	if (static_cast<int>(ranking_.size()) > 5)
+	{
+		ranking_.pop_back();
+	}
+}
+
 bool NetWark::Init(void)
 {
 	revStanby_ = false;
@@ -616,6 +648,11 @@ bool NetWark::Init(void)
 	intSendCnt_ = 0;
 	startState_ = StartState::Wait;
 	playerInf_ = { 0, 0 };
+	ranking_.resize(5);
+	for (auto& data : ranking_)
+	{
+		data = -1;
+	}
 	// Ì§²Ù‚©‚ç‘—‚éƒoƒCƒg”‚ğ“Ç‚İ‚Ş
 	std::ifstream ifp("ini/setting.txt");
 	std::string strLine;
