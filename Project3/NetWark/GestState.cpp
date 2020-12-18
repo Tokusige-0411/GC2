@@ -1,5 +1,7 @@
 #include <DxLib.h>
 #include "GestState.h"
+#include "NetWark.h"
+#include "../Scene/SceneMng.h"
 #include "../_debug/_DebugConOut.h"
 
 GestState::GestState()
@@ -33,6 +35,12 @@ ActiveState GestState::ConnectHost(IPDATA hostIP)
 bool GestState::CheckNetWork(void)
 {
 	if (!(netHandleList_.size()))
+	{
+		return false;
+	}
+	auto now = lpSceneMng.GetTime();
+	auto time = (COUNT_DOWN_MAX - std::chrono::duration_cast<std::chrono::milliseconds>(now - lpNetWork.GetConnectTime()).count());
+	if (time > 0)
 	{
 		return false;
 	}

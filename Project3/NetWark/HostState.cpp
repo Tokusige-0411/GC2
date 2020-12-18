@@ -39,6 +39,7 @@ bool HostState::CheckNetWork(void)
 		{
 			if (data.handle == lost)
 			{
+				lpNetWork.SendLost(data.handle, data.playerID);
 				data.netState = -1;
 				CloseNetWork(data.handle);
 				TRACE("êÿífÇ™Ç†ÇËÇ‹ÇµÇΩ:ID%d\n", data.playerID);
@@ -60,14 +61,13 @@ bool HostState::CheckNetWork(void)
 		{
 			auto now = lpSceneMng.GetTime();
 			auto time = (COUNT_DOWN_MAX - std::chrono::duration_cast<std::chrono::milliseconds>(now - lpNetWork.GetConnectTime()).count());
-			if (time > 0)
+			if (time < 0)
 			{
-				return false;
+				active_ = ActiveState::Init;
+				lpNetWork.SetPlayerInf(static_cast<int>(netHandleList_.size() + 1));
+				StopListenNetWork();
+				return true;
 			}
-			active_ = ActiveState::Init;
-			lpNetWork.SetPlayerInf(static_cast<int>(netHandleList_.size() + 1));
-			StopListenNetWork();
-			return true;
 		}
 		return false;
 	}

@@ -109,6 +109,7 @@ public:
 	void SendCountGame(void);
 	void SendPlayerID(void);											// 奺僎僗僩偵PlayerID憲怣
 	void SendResult(void);
+	void SendLost(int handle, int playerID);
 
 	bool SetNetWorkMode(NetWorkMode mode);								// 券能案影霓偺愝掕
 	NetWorkMode GetNetWorkMode(void);									// 券能案影霓庢摼
@@ -134,7 +135,7 @@ public:
 	void SetStartState(StartState state);
 
 	MesPacket GetResult(void);
-	void SetRanking(unsigned int playerID);
+	void SetResult(unsigned int playerID);
 
 private:
 	struct NetWorkDeleter
@@ -169,7 +170,6 @@ private:
 	StartState startState_;											// 嚼澳傑偱偺矫澳娗棟
 	PairInt playerInf_;												// <帺暘偺PlayerID, Player偺憤恖悢>
 	MesPacket result_;												// 罐把寢壥忣曬
-	std::list<unsigned int> ranking_;										// 罐把偺寢壥
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 憲傜傟偰偒偨踢诓园忣曬傪奿擺偡傞応強
 

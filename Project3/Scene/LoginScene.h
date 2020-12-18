@@ -47,8 +47,6 @@ private:
 	std::string select_;
 	std::array<std::string, 12> numPad_;						// IPアドレスを入力させるときに使う電卓みたいなやつ
 	Vector2 padBoxPos_;
-	std::array<char, 256> keyState_;
-	std::array<char, 256> keyStateOld_;
 	std::unique_ptr<Controller> input_;							// ﾌﾟﾚｲﾔｰの入力情報
 	bool reConnect_;											// 再接続管理ﾌﾗｸﾞ
 	bool gameStart_;											// ｹﾞｰﾑｽﾀｰﾄﾌﾗｸﾞ

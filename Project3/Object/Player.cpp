@@ -166,7 +166,7 @@ bool Player::UpdateDef(void)
 		alive_ = false;
 		deth_ = true;
 		dynamic_cast<GameScene&>(scene_).SetEnptyObj();
-		lpNetWork.SetRanking(objectID_);
+		lpNetWork.SetResult(objectID_);
 	}
 
 	return true;
@@ -204,12 +204,14 @@ bool Player::UpdateNet(void)
 				alive_ = false;
 				deth_ = true;
 				dynamic_cast<GameScene&>(scene_).SetEnptyObj();
-				lpNetWork.SetRanking(objectID_);
+				lpNetWork.SetResult(objectID_);
 			}
 			if (data.first == MesType::Lost)
 			{
+				alive_ = false;
 				deth_ = true;
 				lost_ = true;
+				lpNetWork.SetResult(objectID_);
 			}
 		}
 		return true;

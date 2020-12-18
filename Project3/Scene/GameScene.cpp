@@ -79,17 +79,14 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 		// ±¸Ã¨ÌÞ‚ÈµÌÞ¼Þª¸Ä‚ª1‚Â‚É‚È‚Á‚½‚çØ»ÞÙÄ‚Ö
 		if (aliveCnt <= 1)
 		{
-			if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
+			for (auto& data : objList_)
 			{
-				for (auto& data : objList_)
+				if (!data->GetDeth())
 				{
-					if (!data->GetDeth())
-					{
-						lpNetWork.SetRanking(data->GetObjectID());
-					}
+					lpNetWork.SetResult(data->GetObjectID());
 				}
-				lpNetWork.SendResult();
 			}
+			lpNetWork.SendResult();
 			own = std::make_unique<CrossOver>(std::make_unique<ResultScene>(), std::move(own));
 		}
 	}

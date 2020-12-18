@@ -72,20 +72,19 @@ bool LoginScene::Init()
 
 	padBoxPos_ = { 0, 0 };
 
-	keyState_ = {};
-	keyStateOld_ = {};
 	input_ = std::make_unique<KeyInput>();
 	input_->SetUp(0);
 
 	mapObj_ = std::make_shared<TileLoader>();
+
+	lpNetWork.SetConnectFlag(false);
+	lpNetWork.SetStartState(StartState::Wait);
 
 	return true;
 }
 
 unique_Base LoginScene::Update(unique_Base own, double delta)
 {
-	keyStateOld_ = keyState_;
-	GetHitKeyStateAll(keyState_.data());
 	(*input_)();
 	(func_[updateMode_])();
 	DrawOwnScreen();
@@ -120,11 +119,19 @@ void LoginScene::Draw(void)
 	{
 		auto now = lpSceneMng.GetTime();
 		auto time = COUNT_DOWN_MAX - std::chrono::duration_cast<std::chrono::milliseconds>(now - lpNetWork.GetConnectTime()).count();
-		if (time < 0)
+		if (time > 0)
 		{
-			time = 0;
+			DrawFormatString(0, 40, 0xffffff, "ŠJŽn‚Ü‚ÅŽc‚è%d•b", time / 1000);
 		}
-		DrawFormatString(0, 40, 0xffffff, "ŠJŽn‚Ü‚ÅŽc‚è%d•b", time / 1000);
+		else
+		{
+			DrawFormatString(0, 40, 0xffffff, "€”õŠ®—¹‡}‘Ò‚¿\nŒo‰ßŽžŠÔ:%d•b", abs(time / 1000));
+			if (abs(time / 1000) >= 10)
+			{
+				updateMode_ = UpdateMode::SetNetworkMode;
+				lpNetWork.SetConnectFlag(false);
+			}
+		}
 	}
 }
 
@@ -195,6 +202,11 @@ void LoginScene::StartInit(void)
 			gameStart_ = true;
 			lpNetWork.SendStart();
 		}
+	}
+
+	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Non)
+	{
+
 	}
 }
 
