@@ -109,18 +109,19 @@ void NetWark::Update(void)
 	netFunc.emplace(MesType::Count_Down_Game, [&]() {
 		if (netState_->GetActiveState() == ActiveState::Play)
 		{
-			std::lock_guard<std::mutex> lock(mtx_);
-			TimeUnion data{};
-			data.data[0] = recvPacket[0].iData;
-			data.data[1] = recvPacket[1].iData;
-			gameStartTime_ = data.time;
-			startState_ = StartState::Countdown;
-			TRACE("Count_Down_Game受け取り\n");
+			if (startState_ == StartState::Wait)
+			{
+				std::lock_guard<std::mutex> lock(mtx_);
+				TimeUnion data{};
+				data.data[0] = recvPacket[0].iData;
+				data.data[1] = recvPacket[1].iData;
+				gameStartTime_ = data.time;
+				startState_ = StartState::Countdown;
+				TRACE("Count_Down_Game受け取り\n");
+				return;
+			}
 		}
-		else
-		{
-			TRACE("不正な時間値です:Count_Down_Game\n");
-		}
+		TRACE("不正な時間値です:Count_Down_Game\n");
 	});
 
 	// ホスト
@@ -139,11 +140,6 @@ void NetWark::Update(void)
 	});
 
 	netFunc.emplace(MesType::Pos, [&]() {
-		if (recvPacket.size() > 4)
-		{
-			return;
-			TRACE("不正なデータです\n");
-		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
 			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
@@ -156,11 +152,6 @@ void NetWark::Update(void)
 	});
 
 	netFunc.emplace(MesType::Set_Bomb, [&]() {
-		if (recvPacket.size() > 7)
-		{
-			return;
-			TRACE("不正なデータです\n");
-		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
 			if (recvPacket[1].iData % UNIT_ID_NUM)
@@ -180,11 +171,6 @@ void NetWark::Update(void)
 	});
 
 	netFunc.emplace(MesType::Deth, [&]() {
-		if (recvPacket.size() > 1)
-		{
-			return;
-			TRACE("不正なデータです\n");
-		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
 			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
@@ -197,16 +183,11 @@ void NetWark::Update(void)
 	});
 
 	netFunc.emplace(MesType::Result, [&]() {
-		std::lock_guard<std::mutex> lock(mtx_);
-		result_ = recvPacket;
+		std::lock_guard<std::mutex> lock(resultMtx_);
+		result_ = std::move(recvPacket);
 	});
 
 	netFunc.emplace(MesType::Lost, [&]() {
-		if (recvPacket.size() > 1)
-		{
-			return;
-			TRACE("不正なデータです\n");
-		}
 		if ((recvPacket[0].iData / UNIT_ID_NUM) < playerMesList_.size())
 		{
 			std::lock_guard<std::mutex> lock(playerMesList_[recvPacket[0].iData / UNIT_ID_NUM].second);
@@ -217,6 +198,8 @@ void NetWark::Update(void)
 			TRACE("PlayerIDが不正です。:ID%d\n", recvPacket[0].iData);
 		}
 	});
+
+	bool nextFlag = false;
 
 	while (!ProcessMessage() && netState_->GetNetHandle().size())
 	{
@@ -232,6 +215,7 @@ void NetWark::Update(void)
 						writePos = 0;
 					}
 
+					data.oldMes = recvHeader.type;
 					NetWorkRecv(data.handle, &recvHeader, sizeof(MesHeader));
 
 					if (recvHeader.length)
@@ -240,14 +224,27 @@ void NetWark::Update(void)
 						NetWorkRecv(data.handle, recvPacket.data() + writePos, recvHeader.length * sizeof(unionData));
 						writePos = static_cast<unsigned int>(recvPacket.size());
 					}
+
 					// nextがあるかどうか
 					if (recvHeader.next)
 					{
 						TRACE("追加情報アリ\n");
 						continue;
 					}
-					SendMesAll(recvPacket, recvHeader.type, data.handle);
-					(netFunc[recvHeader.type])();
+
+					if (netFunc.find(recvHeader.type) != netFunc.end())
+					{
+						if (recvPacket.size() == dataLengthMap_[recvHeader.type])
+						{
+							SendMesAll(recvPacket, recvHeader.type, data.handle);
+							(netFunc[recvHeader.type])();
+						}
+						else
+						{
+							recvPacket.clear();
+							TRACE("不正なデータ長です。Type:%d, length:%d\n", recvHeader.type, recvPacket.size());
+						}
+					}
 				}
 			}
 		}
@@ -511,10 +508,12 @@ void NetWark::SendLost(int handle, int playerID)
 	}
 	MesPacket data;
 	SendMesAll(data, MesType::Lost, handle);
-	if (playerMesList_.size())
 	{
 		std::lock_guard<std::mutex> lock(playerMesList_[playerID / UNIT_ID_NUM].second);
-		playerMesList_[playerID / UNIT_ID_NUM].first.emplace_back(MesPair{ MesType::Lost, data });
+		if (playerMesList_.size())
+		{
+			playerMesList_[playerID / UNIT_ID_NUM].first.emplace_back(MesPair{ MesType::Lost, data });
+		}
 	}
 }
 
@@ -635,15 +634,20 @@ void NetWark::SetStartState(StartState state)
 
 MesPacket NetWark::GetResult(void)
 {
+	std::lock_guard<std::mutex> lock(resultMtx_);
 	return result_;
 }
 
 void NetWark::SetResult(unsigned int playerID)
 {
-	result_.insert(result_.begin(), unionData{ playerID });
-	if (static_cast<int>(result_.size()) > 5)
+	if(netState_->GetMode() != NetWorkMode::Guest)
 	{
-		result_.pop_back();
+		std::lock_guard<std::mutex> lock(resultMtx_);
+		result_.insert(result_.begin(), unionData{ playerID });
+		if (static_cast<int>(result_.size()) > 5)
+		{
+			result_.pop_back();
+		}
 	}
 }
 
@@ -655,11 +659,24 @@ bool NetWark::Init(void)
 	intSendCnt_ = 0;
 	startState_ = StartState::Wait;
 	playerInf_ = { 0, 0 };
+	dataLengthMap_.emplace(MesType::Count_Down_Room, 2);
+	dataLengthMap_.emplace(MesType::ID, 2);
+	dataLengthMap_.emplace(MesType::Stanby_Host, 0);
+	dataLengthMap_.emplace(MesType::Stanby_Guest, 0);
+	dataLengthMap_.emplace(MesType::TMX_Size, 1);
+	dataLengthMap_.emplace(MesType::TMX_Data, 179);
+	dataLengthMap_.emplace(MesType::Count_Down_Game, 2);
+	dataLengthMap_.emplace(MesType::Pos, 4);
+	dataLengthMap_.emplace(MesType::Set_Bomb, 7);
+	dataLengthMap_.emplace(MesType::Deth, 1);
+	dataLengthMap_.emplace(MesType::Result, 5);
+	dataLengthMap_.emplace(MesType::Lost, 1);
 	result_.resize(5);
 	for (auto& data : result_)
 	{
 		data.iData = -1;
 	}
+
 	// ﾌｧｲﾙから送るバイト数を読み込む
 	std::ifstream ifp("ini/setting.txt");
 	std::string strLine;

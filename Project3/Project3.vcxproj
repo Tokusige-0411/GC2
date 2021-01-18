@@ -24,6 +24,7 @@
     <ClCompile Include="common\imageMng.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\Player.cpp" />
+    <ClCompile Include="Scene\Original.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\CrossOver.cpp" />
     <ClCompile Include="Scene\GameScene.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="common\imageMng.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="Object\Player.h" />
+    <ClInclude Include="Scene\Original.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\CrossOver.h" />
     <ClInclude Include="Scene\GameScene.h" />

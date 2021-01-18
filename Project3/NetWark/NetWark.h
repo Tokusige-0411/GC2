@@ -159,6 +159,7 @@ private:
 	std::thread updata_;											// 別ｽﾚｯﾄﾞ化したｱｯﾌﾟﾃﾞｰﾄ
 
 	std::mutex revStanbyMtx_;										// revStanbyにﾛｯｸをかける
+	std::mutex resultMtx_;											// リザルトのMtx
 	std::mutex mtx_;												// 変数にﾛｯｸをかける
 										
 	std::chrono::system_clock::time_point start;					// 接続開始時間
@@ -172,6 +173,8 @@ private:
 	MesPacket result_;												// ｹﾞｰﾑ結果情報
 
 	std::vector<std::pair<MesPacketList&, std::mutex&>> playerMesList_;		// 送られてきたﾌﾟﾚｲﾔｰ情報を格納する場所
+
+	std::map<MesType, int> dataLengthMap_;
 
 	NetWark();
 	~NetWark();

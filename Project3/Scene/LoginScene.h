@@ -51,4 +51,5 @@ private:
 	bool reConnect_;											// ÄÚ‘±ŠÇ—Ì×¸Ş
 	bool gameStart_;											// ¹Ş°Ñ½À°ÄÌ×¸Ş
 	UpdateMode updateMode_;										// ±¯ÌßÃŞ°Ä
+	int titleH_;
 };

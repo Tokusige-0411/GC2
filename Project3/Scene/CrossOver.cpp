@@ -32,6 +32,7 @@ unique_Base CrossOver::Update(unique_Base own, double delta)
 void CrossOver::Draw(void)
 {
 	SetDrawScreen(screenID_);
+	ClsDrawScreen();
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, fadeCnt_);
 	nextScene_->Draw();
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - fadeCnt_);

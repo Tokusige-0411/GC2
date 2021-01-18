@@ -9,6 +9,7 @@
 #include "LoginScene.h"
 #include "CrossOver.h"
 #include "GameScene.h"
+#include "Original.h"
 #include "../NetWark/HostState.h"
 #include "../NetWark/GestState.h"
 #include "../TileLoader.h"
@@ -77,6 +78,8 @@ bool LoginScene::Init()
 
 	mapObj_ = std::make_shared<TileLoader>();
 
+	titleH_ = LoadGraph("image/title.png");
+
 	lpNetWork.SetConnectFlag(false);
 	lpNetWork.SetStartState(StartState::Wait);
 
@@ -90,13 +93,17 @@ unique_Base LoginScene::Update(unique_Base own, double delta)
 	DrawOwnScreen();
 	if (gameStart_)
 	{
-		own = std::make_unique<CrossOver>(std::make_unique<GameScene>(), std::move(own));
+		//own = std::make_unique<CrossOver>(std::make_unique<GameScene>(), std::move(own));
+		own = std::make_unique<Original>(std::make_unique<GameScene>(), std::move(own));
 	}
 	return own;
 }
 
 void LoginScene::Draw(void)
 {
+	auto center = lpSceneMng.GetScreenCenter();
+	DrawRotaGraph(center.x, center.y - 100, 1.0, 0.0, titleH_, true);
+
 	for (int i = 0; i < static_cast<int>(ipData_.size()); i++)
 	{
 		if (ipData_[i].d1 == 192)
@@ -203,11 +210,6 @@ void LoginScene::StartInit(void)
 			lpNetWork.SendStart();
 		}
 	}
-
-	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Non)
-	{
-
-	}
 }
 
 void LoginScene::SetHostIP(void)
@@ -289,8 +291,8 @@ void LoginScene::SetHostIP(void)
 
 void LoginScene::SetNetWorkModeDraw(void)
 {
-	DrawString(200, 200, "接続方法を選択してください。", 0xffffff);
-	DrawString(200, 220, select_.c_str(), 0xffffff);
+	DrawString(200, 400, "接続方法を選択してください。", 0xffffff);
+	DrawString(200, 420, select_.c_str(), 0xffffff);
 }
 
 void LoginScene::StartInitDraw(void)

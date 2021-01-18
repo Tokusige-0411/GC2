@@ -2,6 +2,8 @@
 #include<list>
 #include<mutex>
 
+enum class MesType : unsigned char;
+
 enum class NetWorkMode
 {
 	Non,
@@ -10,6 +12,7 @@ enum class NetWorkMode
 	Guest,
 	Max
 };
+
 enum class ActiveState
 {
 	Non,
@@ -25,6 +28,8 @@ struct PlayerHandle
 	int handle;
 	unsigned int playerID;
 	int netState;
+	MesType nowMes;
+	MesType oldMes;
 };
 
 using NetHandleList = std::list<PlayerHandle>;
