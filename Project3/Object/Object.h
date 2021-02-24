@@ -51,6 +51,7 @@ public:
 	bool GetDeth(void) { return deth_; };
 	bool GetLost(void) { return lost_; };
 	int GetObjectID(void) { return objectID_; };
+	bool SetAnim(const AnimState state, AnimVector& animVec);
 
 private:
 	virtual void Init(void);

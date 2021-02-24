@@ -63,6 +63,7 @@ void SceneMng::AddDrawQue(DrawQueT dQue)
 bool SceneMng::SysInit()
 {
 	ChangeWindowMode(true);
+	SetDoubleStartValidFlag(true);
 	SetGraphMode(screenSize_.x, screenSize_.y, 16);
 
 	if (DxLib_Init() == -1)

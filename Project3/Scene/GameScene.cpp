@@ -88,6 +88,7 @@ unique_Base GameScene::Update(unique_Base own, double delta)
 			}
 			lpNetWork.SendResult();
 			own = std::make_unique<CrossOver>(std::make_unique<ResultScene>(), std::move(own));
+			lpNetWork.EndNetWork();
 		}
 	}
 

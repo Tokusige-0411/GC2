@@ -238,6 +238,7 @@ void NetWark::Update(void)
 						{
 							SendMesAll(recvPacket, recvHeader.type, data.handle);
 							(netFunc[recvHeader.type])();
+							recvPacket.clear();
 						}
 						else
 						{

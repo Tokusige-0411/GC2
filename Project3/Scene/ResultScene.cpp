@@ -22,7 +22,6 @@ unique_Base ResultScene::Update(unique_Base own, double delta)
 {
 	if (CheckHitKey(KEY_INPUT_SPACE))
 	{
-		lpNetWork.EndNetWork();
 		own = std::make_unique<CrossOver>(std::make_unique<LoginScene>(), std::move(own));
 	}
 	DrawOwnScreen();

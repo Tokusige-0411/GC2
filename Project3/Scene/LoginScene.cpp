@@ -286,6 +286,13 @@ void LoginScene::SetHostIP(void)
 				stringIP_ += numPad_[count];
 			}
 		}
+		if (CheckHitKey(KEY_INPUT_B))
+		{
+			if (!stringIP_.empty())
+			{
+				stringIP_.clear();
+			}
+		}
 	}
 }
 

@@ -37,6 +37,7 @@ private:
 
 	int speed_;
 	int blastLength_;
+	int numColor_;
 
 	std::unique_ptr<Controller> input_;					// ²İ¯ÌßÄî•ñ
 	std::map<Dir, bool> dirPermit_;						// Še•ûŒüs‚¯‚é‚©

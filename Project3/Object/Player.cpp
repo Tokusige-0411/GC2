@@ -27,6 +27,7 @@ Player::~Player()
 void Player::Init(void)
 {
 	lpImageMng.GetID(ObjectID::Player, "image/bomberman.png", { 32, 51 }, { 5, 4 });
+	numColor_ = 0xff0000;
 
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Host)
 	{
@@ -39,6 +40,7 @@ void Player::Init(void)
 		else
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
+			numColor_ = 0xffffff;
 		}
 	}
 
@@ -53,6 +55,7 @@ void Player::Init(void)
 		else
 		{
 			update_ = std::bind(&Player::UpdateNet, this);
+			numColor_ = 0xffffff;
 		}
 	}
 	if (lpNetWork.GetNetWorkMode() == NetWorkMode::Offline)
@@ -66,6 +69,7 @@ void Player::Init(void)
 		else
 		{
 			update_ = std::bind(&Player::UpdateAuto, this);
+			numColor_ = 0xffffff;
 		}
 	}
 
@@ -76,14 +80,18 @@ void Player::Init(void)
 	dirPermit_[Dir::Left] = true;
 
 	animCnt_ = 0;
-	speed_ = 4;
+	speed_ = 2;
 	blastLength_ = 3;
 	lost_ = false;
 
-	bombList_.push_back(1);
-	bombList_.push_back(2);
-	bombList_.push_back(3);
-	bombList_.push_back(4);
+	bombList_.push_back(1 + objectID_);
+	bombList_.push_back(2 + objectID_);
+	bombList_.push_back(3 + objectID_);
+	bombList_.push_back(4 + objectID_);
+
+	//AnimVector vec;
+	//vec.emplace_back(IMAGE_ID(ObjectID::Player)[]);
+
 
 	lpNetWork.AddMesList(objectID_ / UNIT_ID_NUM, mesList_, mtx_);
 }
@@ -101,6 +109,7 @@ bool Player::Update(void)
 
 void Player::Draw(void)
 {
+	DrawFormatStringF(pos_.x + 5, pos_.y - 36, numColor_, "%d", objectID_ / UNIT_ID_NUM + 1);
 	DrawRotaGraph(pos_.x + 16, pos_.y, 1.0, 0.0, IMAGE_ID(ObjectID::Player)[(2 + (animCnt_ / 15 % 2)) * 5 + static_cast<int>(dir_)], true);
 	_dbgDrawBox(pos_.x, pos_.y, pos_.x + 32, pos_.y + 32, 0xffffff, false);
 }
@@ -115,7 +124,17 @@ bool Player::UpdateDef(void)
 	(*input_)();
 
 	auto data = input_->GetContData();
-	auto mapInfo = mapObj_->GetTmxInfo();
+	auto& mapInfo = mapObj_->GetTmxInfo();
+	auto mapData = mapObj_->GetMapData();
+
+	// パワーアップ
+	auto chipPos = Vector2(pos_.x / mapInfo.tileWidth, pos_.y / mapInfo.tileWidth);
+	int mdata = mapData["Item"][chipPos.y * mapInfo.width + chipPos.x];
+	if (mdata)
+	{
+
+	}
+
 	for (auto inputMove = inputMoveList_.begin(); inputMove != inputMoveList_.end(); inputMove++)
 	{
 		if ((*inputMove)(data, true))
@@ -174,7 +193,7 @@ bool Player::UpdateDef(void)
 
 bool Player::UpdateNet(void)
 {
-	auto mapInfo = mapObj_->GetTmxInfo();
+	auto& mapInfo = mapObj_->GetTmxInfo();
 	if (Object::IsPickUp())
 	{
 		while (Object::IsPickUp())
@@ -399,7 +418,7 @@ void Player::SetInputMoveList(void)
 bool Player::CheckWall(Dir dir)
 {
 	Vector2 checkPos = pos_;
-	auto data = mapObj_->GetTmxInfo();
+	auto& data = mapObj_->GetTmxInfo();
 	switch (dir)
 	{
 	case Dir::Up:

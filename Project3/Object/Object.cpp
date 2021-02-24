@@ -49,6 +49,11 @@ MesPair Object::PickUp(void)
 	return data;
 }
 
+bool Object::SetAnim(const AnimState state, AnimVector& animVec)
+{
+	return (animMap_.try_emplace(state, std::move(animVec))).second;
+}
+
 void Object::Init(void)
 {
 	dir_ = Dir::Up;
